@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bouw stap voor stap een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL en XAMPP. Inclusief werkende copy-paste starters.">
+    <meta name="theme-color" content="#f3f0e8">
+    <title>CodingForDummies — Bouw je eerste CRUD-app</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./script.js"></script>
+  </head>
+  <body>
+    <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="CodingForDummies startpagina">
+        <span class="wordmark-mark">CFD/</span>
+        <span>CodingForDummies</span>
+      </a>
+
+      <nav class="top-nav" data-top-nav aria-label="Hoofdnavigatie">
+        <a href="#bouwroute">Bouwroute</a>
+        <a href="#codebank">Codebank</a>
+        <a href="#foutzoeker">Foutzoeker</a>
+        <a href="#publiceren">Publiceren</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-button search-trigger" type="button" data-open-search aria-label="Open zoeken">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          <span>Zoeken</span><kbd>Ctrl K</kbd>
+        </button>
+        <a class="header-cta" href="./downloads/studenten-crud.zip">Download starter</a>
+        <button class="menu-button" type="button" data-menu-button aria-expanded="false" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="kicker"><span></span> 3 complete routes · voor beginners</p>
+          <h1>Van lege map naar <em>werkende</em> CRUD.</h1>
+          <p class="hero-lead">Bouw een complete studentenadministratie met <strong>PHP of JavaScript</strong> en verander die daarna in ieder thema dat je wilt. Elke stap legt uit wat je plakt, waar het hoort en waarom het werkt.</p>
+          <div class="hero-actions">
+            <a class="button button--primary" href="#bouwroute">Start bij stap 1 <span aria-hidden="true">→</span></a>
+            <a class="button button--secondary" href="./downloads/studenten-crud.zip">Download compleet project <span aria-hidden="true">↓</span></a>
+          </div>
+          <dl class="hero-facts">
+            <div><dt>Ervaring nodig</dt><dd>Bijna geen</dd></div>
+            <div><dt>Routes</dt><dd>PHP of JavaScript</dd></div>
+            <div><dt>Databases</dt><dd>SQLite of MySQL</dd></div>
+          </dl>
+        </div>
+
+        <figure class="hero-visual">
+          <div class="figure-label">Het herhaalbare patroon</div>
+          <img src="./assets/crud-blueprint.png" alt="Technische illustratie van een formulier, tabel, database en code die met elkaar verbonden zijn">
+          <figcaption>
+            <span><b>C</b>reate</span>
+            <span><b>R</b>ead</span>
+            <span><b>U</b>pdate</span>
+            <span><b>D</b>elete</span>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="promise-strip" aria-label="Wat je krijgt">
+        <p><strong>Geen losse snippets.</strong> Eén route van installatie tot werkende applicatie.</p>
+        <ul>
+          <li><span>01</span> Copy-paste klaar</li>
+          <li><span>02</span> Veilig opgebouwd</li>
+          <li><span>03</span> In normaal Nederlands</li>
+        </ul>
+      </section>
+
+      <div class="guide-layout" id="bouwroute">
+        <aside class="guide-sidebar" aria-label="Hoofdstukken">
+          <div class="sidebar-progress">
+            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/11</strong></div>
+            <div class="progress-track"><span data-checklist-progress></span></div>
+          </div>
+          <nav class="chapter-nav" data-chapter-nav aria-label="Gidshoofdstukken">
+            <a href="#begin"><span>01</span> Begin hier</a>
+            <a href="#stack"><span>02</span> Kies je stack</a>
+            <a href="#xampp"><span>03</span> XAMPP klaarzetten</a>
+            <a href="#mappen"><span>04</span> Projectmap maken</a>
+            <a href="#database"><span>05</span> SQLite koppelen</a>
+            <a href="#mysql-route"><span>06</span> MySQL alternatief</a>
+            <a href="#crud"><span>07</span> PHP CRUD bouwen</a>
+            <a href="#javascript-route"><span>08</span> JavaScript route</a>
+            <a href="#uitbreiden"><span>09</span> Uitbreiden</a>
+            <a href="#eigen-maken"><span>10</span> Eigen thema</a>
+            <a href="#publiceren"><span>11</span> Gids publiceren</a>
+          </nav>
+          <a class="sidebar-download" href="./downloads/studenten-crud.zip">
+            <span>Eenvoudigste starter</span>
+            <strong>PHP + SQLite</strong>
+            <small>Geen MySQL-configuratie nodig</small>
+          </a>
+        </aside>
+
+        <article class="guide-content">
+          <section id="begin" class="guide-section" data-search-title="Begin hier: wat ga je bouwen?">
+            <div class="section-number">Hoofdstuk 01</div>
+            <h2>Wat ga je precies bouwen?</h2>
+            <p class="section-intro">Een echte administratie-app met twee gekoppelde onderdelen: <strong>studenten</strong> en een <strong>landenregister</strong>. Dit is bewust groter dan een simpele takenlijst, zodat je patronen leert die je opnieuw kunt gebruiken.</p>
+
+            <div class="build-output">
+              <div class="output-title">
+                <span class="live-dot"></span>
+                Eindresultaat
+              </div>
+              <div class="output-columns">
+                <div><b>Studenten</b><span>Toevoegen, bekijken, wijzigen, verwijderen</span></div>
+                <div><b>Overzicht</b><span>Zoeken, filteren, sorteren, pagina’s</span></div>
+                <div><b>Relatie</b><span>Iedere student hoort bij één land</span></div>
+                <div><b>Veiligheid</b><span>Validatie, prepared statements, CSRF</span></div>
+              </div>
+            </div>
+
+            <div class="concept-line" role="group" aria-label="CRUD datastroom">
+              <div><span>1</span><b>Formulier</b><small>HTML vraagt invoer</small></div>
+              <i aria-hidden="true">→</i>
+              <div><span>2</span><b>PHP</b><small>controleert en verwerkt</small></div>
+              <i aria-hidden="true">→</i>
+              <div><span>3</span><b>SQLite</b><small>bewaart de gegevens</small></div>
+              <i aria-hidden="true">→</i>
+              <div><span>4</span><b>Overzicht</b><small>toont het resultaat</small></div>
+            </div>
+
+            <label class="chapter-check"><input type="checkbox" data-progress-item="begin"><span><b>Ik begrijp wat CRUD betekent</b><small>Create, Read, Update en Delete zijn vier bewerkingen op gegevens.</small></span></label>
+          </section>
+
+          <section id="stack" class="guide-section" data-search-title="PHP SQLite MySQL of JavaScript kiezen">
+            <div class="section-number">Hoofdstuk 02</div>
+            <h2>Kies de route die bij jou past.</h2>
+            <p class="section-intro">Alle drie bouwen dezelfde applicatie. <strong>PHP + SQLite</strong> is het eenvoudigst. <strong>PHP + MySQL</strong> gebruikt de database die al in XAMPP zit. <strong>JavaScript + SQLite</strong> leert je een frontend, API en backend apart koppelen.</p>
+
+            <div class="stack-decision stack-decision--three">
+              <div class="stack-choice is-recommended">
+                <div class="choice-top"><span>Route A</span><b>Begin hier</b></div>
+                <h3>PHP + SQLite</h3>
+                <p>Minste installatie, goed te volgen en direct bruikbaar met XAMPP.</p>
+                <ul><li>Geen losse databaseserver nodig</li><li>Formulieren werken zonder frontend-framework</li><li>Volledig uitgewerkt in deze gids</li></ul>
+              </div>
+              <div class="stack-choice">
+                <div class="choice-top"><span>Route B</span></div>
+                <h3>PHP + MySQL</h3>
+                <p>Dezelfde simpele PHP, met MySQL en phpMyAdmin uit XAMPP.</p>
+                <ul><li>Apache én MySQL starten</li><li>Tabellen zichtbaar in phpMyAdmin</li><li>Complete aparte download</li></ul>
+              </div>
+              <div class="stack-choice">
+                <div class="choice-top"><span>Route C</span></div>
+                <h3>JavaScript + SQLite</h3>
+                <p>Dezelfde CRUD-flow, maar met Node.js, Express, fetch en een API.</p>
+                <ul><li>Frontend en backend apart</li><li>Handig als je later React wilt</li><li>Complete werkende starter</li></ul>
+              </div>
+            </div>
+
+            <details class="explain-details">
+              <summary><span>Hoe ziet de JavaScript-route eruit?</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+              <div>
+                <p>Het voorbeeld “Herkansing KT2” gebruikt deze route: browser-JavaScript verstuurt een <code>fetch()</code> naar Express, Express voert SQL uit met <code>better-sqlite3</code> en stuurt JSON terug. Je installeert de basis zo:</p>
+                <div class="mini-code"><code>npm install express better-sqlite3</code><button type="button" data-copy-text="npm install express better-sqlite3">Kopieer</button></div>
+                <p>Deze route is verderop volledig uitgewerkt. Begin met PHP als je bijna geen code-ervaring hebt; kies JavaScript als je specifiek een API en <code>fetch()</code> wilt leren.</p>
+              </div>
+            </details>
+
+            <label class="chapter-check"><input type="checkbox" data-progress-item="stack"><span><b>Ik heb één route gekozen</b><small>Maak eerst één starter werkend; vergelijk de andere route pas daarna.</small></span></label>
+          </section>
+
+          <section id="xampp" class="guide-section" data-search-title="XAMPP installeren en SQLite activeren">
+            <div class="section-number">Hoofdstuk 03</div>
+            <h2>Zet XAMPP één keer goed klaar.</h2>
+            <p class="section-intro">XAMPP levert Apache, PHP én MySQL. Voor de SQLite-route start je alleen Apache. Voor de MySQL-route start je <strong>Apache en MySQL</strong>. Kies één database per project.</p>
+
+            <ol class="instruction-list">
+              <li><span>01</span><div><h3>Start de onderdelen voor jouw route</h3><p>Open het XAMPP Control Panel. Start altijd <strong>Apache</strong>. Start bij PHP + MySQL ook <strong>MySQL</strong>. Beide rijen moeten groen worden.</p></div></li>
+              <li><span>02</span><div><h3>Controleer de juiste projectmap</h3><p>Je projecten staan normaal in <code>C:\xampp\htdocs\</code>. Maak daar straks de map <code>studenten-crud</code>.</p></div></li>
+              <li><span>03</span><div><h3>Controleer SQLite</h3><p>Open XAMPP → Apache → Config → PHP (php.ini). Zoek de volgende regels en haal de puntkomma vooraan weg.</p>
+                <div class="code-block code-block--small">
+                  <div class="code-toolbar"><span>php.ini</span><button type="button" data-copy-target="phpini-code">Kopieer</button></div>
+                  <pre><code id="phpini-code">extension=pdo_sqlite
+extension=sqlite3</code></pre>
+                </div>
+                <p class="note-inline"><b>Daarna:</b> sla <code>php.ini</code> op en herstart Apache. Zonder herstart ziet PHP de wijziging niet.</p>
+              </div></li>
+              <li><span>04</span><div><h3>Doe de 10-seconden test</h3><p>Maak tijdelijk <code>test.php</code> in <code>htdocs</code> met onderstaande code. Zie je <em>SQLite werkt</em>? Dan kun je verder.</p>
+                <div class="mini-code"><code>&lt;?php echo extension_loaded('pdo_sqlite') ? 'SQLite werkt' : 'SQLite ontbreekt';</code><button type="button" data-copy-text="&lt;?php echo extension_loaded('pdo_sqlite') ? 'SQLite werkt' : 'SQLite ontbreekt';">Kopieer</button></div>
+              </div></li>
+            </ol>
+
+            <div class="warning-callout"><span>!</span><div><b>SQLite en MySQL zijn alternatieven.</b><p>SQLite is één bestand en het makkelijkst. MySQL draait als XAMPP-service en kun je bekijken via <code>http://localhost/phpmyadmin/</code>.</p></div></div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="xampp"><span><b>Apache is gestart en SQLite werkt</b><small>Open <code>http://localhost/test.php</code> om dit te controleren.</small></span></label>
+          </section>
+
+          <section id="mappen" class="guide-section" data-search-title="Projectmap en bestanden maken">
+            <div class="section-number">Hoofdstuk 04</div>
+            <h2>Maak deze projectstructuur exact na.</h2>
+            <p class="section-intro">Bestandsnamen zijn geen decoratie: PHP zoekt straks op deze paden. Kopieer de structuur dus eerst letterlijk. Daarna vullen we ieder bestand.</p>
+
+            <div class="folder-layout">
+              <div class="folder-code">
+                <div class="code-toolbar"><span>C:\xampp\htdocs\studenten-crud\</span><button type="button" data-copy-target="tree-code">Kopieer</button></div>
+                <pre><code id="tree-code">studenten-crud/
+├── index.php
+├── assets/
+│   ├── app.css
+│   └── app.js
+├── config/
+│   └── database.php
+├── database/
+│   └── schema.sql
+├── includes/
+│   └── functions.php
+└── data/
+    └── (app.sqlite komt automatisch)</code></pre>
+              </div>
+              <div class="folder-explanation">
+                <div><code>index.php</code><p>Verwerkt acties en bouwt de HTML-pagina.</p></div>
+                <div><code>database.php</code><p>Maakt één veilige PDO-verbinding met SQLite.</p></div>
+                <div><code>schema.sql</code><p>Beschrijft tabellen, velden, relaties en startdata.</p></div>
+                <div><code>functions.php</code><p>Bevat herbruikbare validatie- en beveiligingsfuncties.</p></div>
+              </div>
+            </div>
+
+            <div class="download-panel">
+              <div><span>Sneller beginnen?</span><h3>De hele map staat al voor je klaar.</h3><p>Pak het ZIP-bestand uit in <code>htdocs</code> en open daarna <code>http://localhost/studenten-crud/</code>.</p></div>
+              <a class="button button--primary" href="./downloads/studenten-crud.zip">Download starter.zip <span>↓</span></a>
+            </div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="folders"><span><b>Mijn projectmap klopt</b><small>Ook lege submappen en bestandsnamen staan op de juiste plek.</small></span></label>
+          </section>
+
+          <section id="database" class="guide-section" data-search-title="SQLite database koppelen met PDO">
+            <div class="section-number">Hoofdstuk 05</div>
+            <h2>Koppel PHP aan SQLite.</h2>
+            <p class="section-intro">Er zijn twee delen: <code>schema.sql</code> beschrijft <em>wat</em> er wordt opgeslagen. <code>database.php</code> opent het databasebestand en voert het schema uit.</p>
+
+            <div class="database-diagram">
+              <div><span>PHP</span><b>database()</b><small>vraagt een verbinding</small></div>
+              <i>→</i>
+              <div><span>PDO</span><b>sqlite:</b><small>opent het bestand</small></div>
+              <i>→</i>
+              <div><span>Bestand</span><b>app.sqlite</b><small>bewaart alle rijen</small></div>
+            </div>
+
+            <div class="callout"><div class="callout-label">Belangrijk begrip</div><p><strong>PDO</strong> is de standaard PHP-laag waarmee je databasevragen uitvoert. Een <strong>prepared statement</strong> houdt gebruikersinvoer apart van SQL en voorkomt SQL-injectie.</p></div>
+
+            <div class="code-block">
+              <div class="code-toolbar"><span>config/database.php · kern</span><button type="button" data-copy-target="database-core">Kopieer</button></div>
+              <pre><code id="database-core">$connection = new PDO('sqlite:' . $databaseFile, null, null, [
+    PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+]);
+
+$connection-&gt;exec('PRAGMA foreign_keys = ON');
+$connection-&gt;exec(file_get_contents($schemaFile));</code></pre>
+            </div>
+
+            <div class="line-by-line">
+              <h3>Regel voor regel</h3>
+              <dl>
+                <div><dt><code>new PDO('sqlite:' ...)</code></dt><dd>Opent SQLite op het opgegeven bestandspad.</dd></div>
+                <div><dt><code>ERRMODE_EXCEPTION</code></dt><dd>Zorgt dat een SQL-fout een duidelijke foutmelding wordt.</dd></div>
+                <div><dt><code>foreign_keys = ON</code></dt><dd>Dwingt de relatie tussen student en land echt af.</dd></div>
+                <div><dt><code>schema.sql</code></dt><dd>Maakt tabellen alleen als ze nog niet bestaan.</dd></div>
+              </dl>
+            </div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="database"><span><b>Mijn database wordt automatisch gemaakt</b><small>Na de eerste paginalaad staat <code>app.sqlite</code> in de map <code>data</code>.</small></span></label>
+          </section>
+
+          <section id="mysql-route" class="guide-section" data-search-title="PHP koppelen aan MySQL in XAMPP en phpMyAdmin">
+            <div class="section-number">Hoofdstuk 06 · alternatief</div>
+            <h2>Liever MySQL uit XAMPP?</h2>
+            <p class="section-intro">Dat kan. De formulieren en bijna alle PHP-code blijven hetzelfde. Alleen de databaseverbinding en enkele regels in het schema veranderen. Start bij deze route <strong>Apache én MySQL</strong>.</p>
+
+            <div class="route-summary">
+              <div><span>SQLite</span><b>Eén bestand</b><small><code>data/app.sqlite</code></small></div>
+              <div><span>MySQL</span><b>Lokale service</b><small>Te bekijken via phpMyAdmin</small></div>
+              <div><span>Wat blijft gelijk?</span><b>PDO + prepared statements</b><small>Je CRUD-query's blijven herkenbaar</small></div>
+            </div>
+
+            <ol class="instruction-list">
+              <li><span>01</span><div><h3>Start Apache en MySQL</h3><p>Open XAMPP en zorg dat beide rijen groen zijn. Open daarna <code>http://localhost/phpmyadmin/</code> om te controleren dat MySQL reageert.</p></div></li>
+              <li><span>02</span><div><h3>Gebruik de MySQL-starter</h3><p>De starter gebruikt lokaal de standaard XAMPP-login: gebruiker <code>root</code> met een leeg wachtwoord. Heb jij een wachtwoord ingesteld, wijzig dat bovenaan <code>config/database.php</code>.</p></div></li>
+              <li><span>03</span><div><h3>Laat PHP de database maken</h3><p>Bij de eerste paginaweergave maakt PHP automatisch de database <code>studenten_crud</code>, de tabellen en vijf voorbeeldlanden.</p></div></li>
+            </ol>
+
+            <div class="code-block">
+              <div class="code-toolbar"><span>config/database.php · MySQL-kern</span><button type="button" data-copy-target="mysql-core">Kopieer</button></div>
+              <pre><code id="mysql-core">$connection = new PDO(
+    'mysql:host=127.0.0.1;port=3306;charset=utf8mb4',
+    'root',
+    '',
+    [PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION]
+);
+
+$connection-&gt;exec('CREATE DATABASE IF NOT EXISTS studenten_crud');
+$connection-&gt;exec('USE studenten_crud');</code></pre>
+            </div>
+
+            <div class="simple-plus">
+              <div><span>Houd het simpel</span><h3>Eerst verbinding, tabel, toevoegen en overzicht.</h3><p>Loginrollen, repositories en frameworks zijn niet nodig om je eerste CRUD te begrijpen.</p></div>
+              <div><span>Plus voor later</span><h3>Voeg beveiliging en structuur in lagen toe.</h3><p>De download bevat prepared statements, validatie en CSRF al veilig, met comments erbij.</p></div>
+            </div>
+
+            <div class="file-viewer file-viewer--compact" data-file-viewer>
+              <div class="file-sidebar" role="tablist" aria-label="MySQL bestanden">
+                <button class="is-active" type="button" data-source="./code/mysql-database.php.txt"><span>PHP</span>config/database.php</button>
+                <button type="button" data-source="./code/mysql-schema.sql.txt"><span>SQL</span>database/schema.sql</button>
+              </div>
+              <div class="file-code">
+                <div class="code-toolbar"><span data-current-file>config/database.php</span><div><span class="line-count" data-line-count>laden…</span><button type="button" data-copy-file>Kopieer bestand</button></div></div>
+                <pre><code data-file-code>Bestand wordt geladen…</code></pre>
+              </div>
+            </div>
+
+            <div class="download-panel">
+              <div><span>Route B · compleet</span><h3>PHP + MySQL starter</h3><p>Uitpakken in <code>htdocs</code>, Apache en MySQL starten, pagina openen.</p></div>
+              <a class="button button--primary" href="./downloads/php-mysql-crud.zip">Download MySQL-starter <span>↓</span></a>
+            </div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="mysql"><span><b>Mijn gekozen PHP-database reageert</b><small>SQLite óf MySQL is genoeg. Je hoeft niet beide routes af te ronden.</small></span></label>
+          </section>
+
+          <section id="crud" class="guide-section" data-search-title="Create Read Update Delete bouwen met PHP">
+            <div class="section-number">Hoofdstuk 07 · PHP-route</div>
+            <h2>Bouw CRUD in deze volgorde.</h2>
+            <p class="section-intro">Werk niet aan alles tegelijk. Test na iedere bewerking. Dan weet je precies in welk blok een fout is ontstaan.</p>
+
+            <nav class="crud-tabs" role="tablist" aria-label="CRUD onderdelen">
+              <button class="is-active" type="button" role="tab" data-crud-tab="create"><span>C</span>Create</button>
+              <button type="button" role="tab" data-crud-tab="read"><span>R</span>Read</button>
+              <button type="button" role="tab" data-crud-tab="update"><span>U</span>Update</button>
+              <button type="button" role="tab" data-crud-tab="delete"><span>D</span>Delete</button>
+            </nav>
+
+            <div class="crud-panel is-active" data-crud-panel="create">
+              <div class="crud-heading"><span>01</span><div><h3>Create — een student toevoegen</h3><p>Het formulier verstuurt een POST-request. PHP valideert de velden en voert daarna één INSERT uit.</p></div></div>
+              <div class="code-block"><div class="code-toolbar"><span>index.php · CREATE</span><button type="button" data-copy-target="create-code">Kopieer</button></div><pre><code id="create-code">$student = student_input($db);
+$statement = $db-&gt;prepare(
+    'INSERT INTO studenten
+        (studentnummer, voornaam, achternaam, email, opleiding, land_id, status)
+     VALUES
+        (:studentnummer, :voornaam, :achternaam, :email, :opleiding, :land_id, :status)'
+);
+$statement-&gt;execute($student);</code></pre></div>
+              <div class="why-grid"><div><b>Waarom POST?</b><p>Omdat de actie gegevens verandert.</p></div><div><b>Waarom dubbele punten?</b><p><code>:voornaam</code> is een veilige placeholder.</p></div><div><b>Wat komt terug?</b><p>Na opslaan redirect PHP naar het overzicht.</p></div></div>
+            </div>
+
+            <div class="crud-panel" data-crud-panel="read" hidden>
+              <div class="crud-heading"><span>02</span><div><h3>Read — rijen ophalen en tonen</h3><p>Een SELECT haalt de studenten op. De foreach-lus maakt voor iedere rij een tabelregel.</p></div></div>
+              <div class="code-block"><div class="code-toolbar"><span>index.php · READ</span><button type="button" data-copy-target="read-code">Kopieer</button></div><pre><code id="read-code">$statement = $db-&gt;query(
+    'SELECT studenten.*, landen.naam AS land_naam
+     FROM studenten
+     JOIN landen ON landen.id = studenten.land_id
+     ORDER BY studenten.id DESC'
+);
+$students = $statement-&gt;fetchAll();
+
+foreach ($students as $student) {
+    echo e($student['voornaam']);
+}</code></pre></div>
+              <div class="why-grid"><div><b>Waarom JOIN?</b><p>De student bewaart alleen <code>land_id</code>; JOIN haalt de landnaam erbij.</p></div><div><b>Waarom <code>e()</code>?</b><p>Het ontsmet tekst voordat die in HTML komt.</p></div><div><b>Waarom ORDER BY?</b><p>Daarmee bepaal jij de volgorde van het overzicht.</p></div></div>
+            </div>
+
+            <div class="crud-panel" data-crud-panel="update" hidden>
+              <div class="crud-heading"><span>03</span><div><h3>Update — één rij wijzigen</h3><p>Laad eerst de bestaande student in het formulier. Bij opslaan bepaalt de verborgen <code>id</code> welke rij verandert.</p></div></div>
+              <div class="code-block"><div class="code-toolbar"><span>index.php · UPDATE</span><button type="button" data-copy-target="update-code">Kopieer</button></div><pre><code id="update-code">$student = student_input($db);
+$student['id'] = positive_id($_POST['id'], 'Student-ID');
+
+$statement = $db-&gt;prepare(
+    'UPDATE studenten SET
+        voornaam = :voornaam,
+        achternaam = :achternaam,
+        email = :email,
+        opleiding = :opleiding,
+        land_id = :land_id,
+        status = :status
+     WHERE id = :id'
+);
+$statement-&gt;execute($student);</code></pre></div>
+              <div class="why-grid"><div><b>Waarom WHERE?</b><p>Zonder <code>WHERE id = :id</code> wijzig je iedere student.</p></div><div><b>Waarom verborgen ID?</b><p>Het formulier weet zo welke rij je aan het bewerken bent.</p></div><div><b>Zelfde validatie?</b><p>Ja. Create en Update gebruiken allebei <code>student_input()</code>.</p></div></div>
+            </div>
+
+            <div class="crud-panel" data-crud-panel="delete" hidden>
+              <div class="crud-heading"><span>04</span><div><h3>Delete — veilig verwijderen</h3><p>Verwijderen gebruikt ook POST, een CSRF-token en een exact ID. Gebruik hiervoor nooit een simpele GET-link.</p></div></div>
+              <div class="code-block"><div class="code-toolbar"><span>index.php · DELETE</span><button type="button" data-copy-target="delete-code">Kopieer</button></div><pre><code id="delete-code">verify_csrf($_POST['_token'] ?? null);
+$id = positive_id($_POST['id'] ?? null, 'Student-ID');
+
+$statement = $db-&gt;prepare('DELETE FROM studenten WHERE id = ?');
+$statement-&gt;execute([$id]);
+
+if ($statement-&gt;rowCount() === 0) {
+    throw new RuntimeException('Student niet gevonden.');
+}</code></pre></div>
+              <div class="why-grid"><div><b>Waarom CSRF?</b><p>Voorkomt dat een andere site namens jou een verwijderactie stuurt.</p></div><div><b>Waarom <code>?</code>?</b><p>Dat is een positionele placeholder voor het ID.</p></div><div><b>Waarom rowCount?</b><p>Je ontdekt daarmee of er echt een rij is verwijderd.</p></div></div>
+            </div>
+
+            <div class="test-order">
+              <h3>Testcheck na ieder onderdeel</h3>
+              <ol><li>Voeg één student toe.</li><li>Vernieuw de pagina: blijft de student staan?</li><li>Wijzig de achternaam.</li><li>Verwijder de teststudent.</li></ol>
+            </div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="crud"><span><b>Mijn vier CRUD-acties werken</b><small>Create, Read, Update en Delete zijn ieder apart getest.</small></span></label>
+          </section>
+
+          <section id="codebank" class="guide-section codebank-section" data-search-title="Volledige copy-paste bestanden codebank">
+            <div class="section-number">PHP + SQLite codebank</div>
+            <h2>Complete PHP-bestanden, zonder gaten.</h2>
+            <p class="section-intro">Kies een bestand, kopieer alles en plak het op precies hetzelfde pad in jouw PHP + SQLite-project. Dit is dezelfde code als in de download.</p>
+
+            <div class="file-viewer" data-file-viewer>
+              <div class="file-sidebar" role="tablist" aria-label="Projectbestanden">
+                <button class="is-active" type="button" data-source="./code/index.php.txt"><span>PHP</span>index.php</button>
+                <button type="button" data-source="./code/database.php.txt"><span>PHP</span>config/database.php</button>
+                <button type="button" data-source="./code/functions.php.txt"><span>PHP</span>includes/functions.php</button>
+                <button type="button" data-source="./code/schema.sql.txt"><span>SQL</span>database/schema.sql</button>
+                <button type="button" data-source="./code/app.css.txt"><span>CSS</span>assets/app.css</button>
+                <button type="button" data-source="./code/app.js.txt"><span>JS</span>assets/app.js</button>
+              </div>
+              <div class="file-code">
+                <div class="code-toolbar"><span data-current-file>index.php</span><div><span class="line-count" data-line-count>laden…</span><button type="button" data-copy-file>Kopieer bestand</button></div></div>
+                <pre><code data-file-code>Bestand wordt geladen…</code></pre>
+              </div>
+            </div>
+            <p class="codebank-note"><span>i</span><b>Begin je vanaf nul?</b> Download dan de ZIP. De Codebank is vooral handig wanneer je één beschadigd of aangepast bestand wilt vervangen.</p>
+          </section>
+
+          <section id="javascript-route" class="guide-section javascript-section" data-search-title="Volledige JavaScript Node Express SQLite CRUD route">
+            <div class="section-number">Hoofdstuk 08 · JavaScript-route</div>
+            <h2>Bouw dezelfde CRUD met JavaScript.</h2>
+            <p class="section-intro">Deze route gebruikt JavaScript op twee plekken. <strong>Browser-JavaScript</strong> leest formulieren en toont rijen. <strong>Node.js + Express</strong> ontvangt API-requests en voert SQL uit met <code>better-sqlite3</code>.</p>
+
+            <div class="js-flow" role="group" aria-label="JavaScript CRUD datastroom">
+              <div><span>Frontend</span><b>app.js</b><small>fetch('/api/students')</small></div>
+              <i>→</i>
+              <div><span>Backend</span><b>Express</b><small>POST /api/students</small></div>
+              <i>→</i>
+              <div><span>Database</span><b>SQLite</b><small>INSERT INTO students</small></div>
+              <i>→</i>
+              <div><span>Antwoord</span><b>JSON</b><small>{ id, firstName, … }</small></div>
+            </div>
+
+            <div class="callout"><div class="callout-label">Verschil met PHP</div><p>Bij PHP verstuurt een formulier rechtstreeks naar <code>index.php</code> en bouwt PHP opnieuw de HTML. Bij deze JavaScript-route blijft de pagina open, haalt <code>fetch()</code> JSON op en rendert <code>app.js</code> het overzicht opnieuw.</p></div>
+
+            <ol class="instruction-list">
+              <li><span>01</span><div><h3>Installeer Node.js en de packages</h3><p>Open een terminal in de startermap. <code>npm install</code> leest <code>package.json</code> en installeert Express en better-sqlite3.</p><div class="mini-code"><code>npm install</code><button type="button" data-copy-text="npm install">Kopieer</button></div></div></li>
+              <li><span>02</span><div><h3>Start de backend</h3><p><code>npm start</code> opent de SQLite-database, maakt tabellen, registreert API-routes en serveert de frontend op poort 3000.</p><div class="mini-code"><code>npm start</code><button type="button" data-copy-text="npm start">Kopieer</button></div></div></li>
+              <li><span>03</span><div><h3>Open de applicatie</h3><p>Ga naar <code>http://localhost:3000</code>. Gebruik niet Live Server: de Express-backend moet de pagina en API samen serveren.</p></div></li>
+            </ol>
+
+            <div class="folder-layout js-folder-layout">
+              <div class="folder-code">
+                <div class="code-toolbar"><span>javascript-sqlite-crud/</span><button type="button" data-copy-target="js-tree">Kopieer</button></div>
+                <pre><code id="js-tree">javascript-sqlite-crud/
+├── package.json
+├── backend/
+│   └── server.js
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+└── data/
+    └── app.sqlite</code></pre>
+              </div>
+              <div class="folder-explanation">
+                <div><code>server.js</code><p>Express, SQLite, validatie en alle API-routes.</p></div>
+                <div><code>index.html</code><p>Formulieren, filters, tabellen en dashboard.</p></div>
+                <div><code>app.js</code><p>fetch, state, renderfuncties en events.</p></div>
+                <div><code>app.sqlite</code><p>Wordt automatisch bij de eerste start gemaakt.</p></div>
+              </div>
+            </div>
+
+            <h3 class="subheading">1. Database en tabel maken</h3>
+            <p>De backend opent eerst het bestand. Daarna voert <code>db.exec()</code> de tabeldefinities uit. <code>IF NOT EXISTS</code> maakt opnieuw starten veilig.</p>
+            <div class="code-block"><div class="code-toolbar"><span>backend/server.js · database</span><button type="button" data-copy-target="js-db-code">Kopieer</button></div><pre><code id="js-db-code">const Database = require('better-sqlite3');
+const db = new Database('data/app.sqlite');
+
+db.pragma('foreign_keys = ON');
+db.pragma('journal_mode = WAL');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_number TEXT NOT NULL UNIQUE,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE
+  )
+`);</code></pre></div>
+
+            <h3 class="subheading">2. API-route maken</h3>
+            <p>De URL en HTTP-methode vertellen welke actie wordt uitgevoerd. De backend valideert <code>req.body</code>, voert een prepared INSERT uit en stuurt JSON terug.</p>
+            <div class="code-block"><div class="code-toolbar"><span>backend/server.js · CREATE API</span><button type="button" data-copy-target="js-api-code">Kopieer</button></div><pre><code id="js-api-code">app.post('/api/students', (req, res) =&gt; {
+  const student = readStudent(req.body);
+  const result = db.prepare(`
+    INSERT INTO students
+      (student_number, first_name, last_name, email)
+    VALUES
+      (@studentNumber, @firstName, @lastName, @email)
+  `).run(student);
+
+  res.status(201).json(getStudent(result.lastInsertRowid));
+});</code></pre></div>
+
+            <h3 class="subheading">3. Frontend koppelen met fetch</h3>
+            <p>De browser zet het formulier om naar JSON. Na een succesvol antwoord wordt het overzicht opnieuw geladen. Daardoor verschijnt de nieuwe student zonder volledige paginavernieuwing.</p>
+            <div class="code-block"><div class="code-toolbar"><span>frontend/app.js · fetch</span><button type="button" data-copy-target="js-fetch-code">Kopieer</button></div><pre><code id="js-fetch-code">async function createStudent(student) {
+  const response = await fetch('/api/students', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(student)
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error);
+  }
+
+  return response.json();
+}</code></pre></div>
+
+            <div class="api-table">
+              <div class="api-head"><span>Actie</span><span>Methode</span><span>URL</span><span>SQL</span></div>
+              <div><b>Lijst</b><code>GET</code><code>/api/students</code><span>SELECT</span></div>
+              <div><b>Toevoegen</b><code>POST</code><code>/api/students</code><span>INSERT</span></div>
+              <div><b>Wijzigen</b><code>PUT</code><code>/api/students/:id</code><span>UPDATE</span></div>
+              <div><b>Verwijderen</b><code>DELETE</code><code>/api/students/:id</code><span>DELETE</span></div>
+            </div>
+
+            <h3 class="subheading">Volledige JavaScript-codebank</h3>
+            <p>Kopieer bestanden alleen los als je begrijpt in welke map ze horen. Voor de eerste keer is de ZIP veiliger.</p>
+            <div class="file-viewer" data-file-viewer>
+              <div class="file-sidebar" role="tablist" aria-label="JavaScript starterbestanden">
+                <button class="is-active" type="button" data-source="./code/js-server.js.txt"><span>JS</span>backend/server.js</button>
+                <button type="button" data-source="./code/js-index.html.txt"><span>HTML</span>frontend/index.html</button>
+                <button type="button" data-source="./code/js-app.js.txt"><span>JS</span>frontend/app.js</button>
+                <button type="button" data-source="./code/js-style.css.txt"><span>CSS</span>frontend/style.css</button>
+                <button type="button" data-source="./code/js-package.json.txt"><span>JSON</span>package.json</button>
+              </div>
+              <div class="file-code">
+                <div class="code-toolbar"><span data-current-file>backend/server.js</span><div><span class="line-count" data-line-count>laden…</span><button type="button" data-copy-file>Kopieer bestand</button></div></div>
+                <pre><code data-file-code>Bestand wordt geladen…</code></pre>
+              </div>
+            </div>
+
+            <div class="download-panel">
+              <div><span>Route C · compleet</span><h3>JavaScript + SQLite starter</h3><p>Na uitpakken: <code>npm install</code>, <code>npm start</code>, open poort 3000.</p></div>
+              <a class="button button--primary" href="./downloads/javascript-sqlite-crud.zip">Download JavaScript-starter <span>↓</span></a>
+            </div>
+
+            <div class="warning-callout"><span>!</span><div><b>Open de frontend niet als los bestand.</b><p>De API bestaat alleen terwijl <code>node backend/server.js</code> draait. Gebruik altijd <code>http://localhost:3000</code>.</p></div></div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="javascript"><span><b>Mijn JavaScript API antwoordt</b><small>Open <code>http://localhost:3000/api/students</code>; je moet een JSON-array zien.</small></span></label>
+          </section>
+
+          <section id="uitbreiden" class="guide-section" data-search-title="CRUD uitbreiden zoeken filter sorteren paginering relaties dashboard">
+            <div class="section-number">Hoofdstuk 09</div>
+            <h2>Van basis-CRUD naar echte applicatie.</h2>
+            <p class="section-intro">De starter bevat de functies die docenten en opdrachtgevers meestal na de vier basisacties verwachten.</p>
+
+            <div class="feature-ledger">
+              <article><span>01</span><div><h3>Zoeken</h3><p>Zoek tegelijk op studentnummer, naam, e-mail en opleiding met <code>LIKE</code>.</p></div><b>In starter</b></article>
+              <article><span>02</span><div><h3>Filteren</h3><p>Toon alleen actieve studenten of alleen studenten uit één land.</p></div><b>In starter</b></article>
+              <article><span>03</span><div><h3>Sorteren</h3><p>Een vaste allowlist voorkomt dat ongecontroleerde tekst in <code>ORDER BY</code> komt.</p></div><b>In starter</b></article>
+              <article><span>04</span><div><h3>Paginering</h3><p><code>LIMIT</code> en <code>OFFSET</code> houden grote overzichten snel en leesbaar.</p></div><b>In starter</b></article>
+              <article><span>05</span><div><h3>Relaties</h3><p>Een foreign key verbindt studenten aan landen en voorkomt kapotte verwijzingen.</p></div><b>In starter</b></article>
+              <article><span>06</span><div><h3>Dashboard</h3><p>Kleine <code>COUNT(*)</code>-queries geven direct aantallen voor het overzicht.</p></div><b>In starter</b></article>
+            </div>
+
+            <details class="explain-details">
+              <summary><span>Bonus: CSV-export toevoegen</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+              <div><p>Maak een aparte actie die headers instelt, alle studenten ophaalt en iedere rij met <code>fputcsv()</code> schrijft. Doe dit vóórdat er HTML is verstuurd.</p><div class="mini-code"><code>header('Content-Type: text/csv; charset=utf-8');</code><button type="button" data-copy-text="header('Content-Type: text/csv; charset=utf-8');">Kopieer</button></div></div>
+            </details>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="features"><span><b>Ik heb minstens één uitbreiding getest</b><small>Probeer een zoekterm, statusfilter en andere sortering.</small></span></label>
+          </section>
+
+          <section id="eigen-maken" class="guide-section" data-search-title="CRUD aanpassen naar eigen thema studenten producten landen boeken">
+            <div class="section-number">Hoofdstuk 10</div>
+            <h2>Maak het van jou, zonder iets te missen.</h2>
+            <p class="section-intro">Een CRUD voor producten, boeken of voertuigen gebruikt exact dezelfde structuur. Je verandert vooral de namen en velden. Kies hieronder een thema om de vertaling te zien.</p>
+
+            <div class="theme-switcher">
+              <div class="theme-buttons" role="tablist" aria-label="Voorbeeldthema">
+                <button class="is-active" type="button" data-theme="students">Studenten</button>
+                <button type="button" data-theme="products">Producten</button>
+                <button type="button" data-theme="books">Boeken</button>
+                <button type="button" data-theme="countries">Landen</button>
+              </div>
+              <div class="mapping-table">
+                <div class="mapping-head"><span>Onderdeel</span><span>Enkelvoud</span><span>Meervoud / tabel</span><span>Belangrijkste velden</span></div>
+                <div><b>Jouw resource</b><code data-map="singular">student</code><code data-map="plural">studenten</code><span data-map="fields">studentnummer, naam, e-mail</span></div>
+                <div><b>PHP actie</b><code data-map="create">create_student</code><code data-map="update">update_student</code><span><code>delete_…</code></span></div>
+                <div><b>Database</b><code>id</code><code data-map="table">studenten</code><span><code>created_at</code>, <code>updated_at</code></span></div>
+              </div>
+            </div>
+
+            <div class="rename-checklist">
+              <h3>De veilige hernoemvolgorde</h3>
+              <ol>
+                <li><span>1</span><p><b>Database eerst.</b> Wijzig tabelnaam, kolommen en eventuele foreign keys in <code>schema.sql</code>.</p></li>
+                <li><span>2</span><p><b>PHP-verwerking.</b> Pas de inputfunctie, INSERT, SELECT, UPDATE en DELETE aan.</p></li>
+                <li><span>3</span><p><b>Formulier.</b> Laat iedere <code>name="..."</code> exact overeenkomen met wat PHP leest.</p></li>
+                <li><span>4</span><p><b>Overzicht.</b> Vervang tabelkoppen en de velden in de <code>foreach</code>-lus.</p></li>
+                <li><span>5</span><p><b>Reset en test.</b> Verwijder tijdens ontwikkeling <code>app.sqlite</code> zodat je nieuwe schema schoon start.</p></li>
+              </ol>
+            </div>
+
+            <div class="danger-callout"><span>Niet blind zoeken/vervangen</span><p><code>student</code> zit ook in woorden als <code>studentnummer</code>. Werk per bestand en controleer na iedere stap.</p></div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="custom"><span><b>Ik heb mijn resource en velden op papier gezet</b><small>Enkelvoud, meervoud, tabelnaam, formulierlabels en datatypes zijn bepaald.</small></span></label>
+          </section>
+
+          <section id="foutzoeker" class="guide-section error-section" data-search-title="Fouten oplossen PHP JavaScript Node SQLite MySQL XAMPP">
+            <div class="section-number">Foutzoeker</div>
+            <h2>Zoek op wat jij in beeld ziet.</h2>
+            <p class="section-intro">Kopieer alleen het herkenbare deel van je foutmelding. De foutzoeker gebruikt simpele woorden, dus <code>driver</code> of <code>locked</code> is vaak al genoeg.</p>
+
+            <label class="error-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+              <input type="search" data-error-search placeholder="Bijvoorbeeld: could not find driver" autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+            <p class="error-result-count" data-error-count>11 oplossingen</p>
+
+            <div class="error-list">
+              <details data-error-item data-keywords="could not find driver pdo sqlite ontbreekt php.ini extension">
+                <summary><span class="error-code">PDO</span><span><b>could not find driver</b><small>PHP ziet de SQLite-extensie niet.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Open het actieve <code>php.ini</code>-bestand via XAMPP. Haal de puntkomma weg voor <code>extension=pdo_sqlite</code> en <code>extension=sqlite3</code>. Sla op en herstart Apache.</p><p><b>Controle:</b> maak een pagina met <code>phpinfo();</code> en zoek daarin naar <em>pdo_sqlite</em>.</p></div>
+              </details>
+              <details data-error-item data-keywords="no such table geen tabel schema sql database reset">
+                <summary><span class="error-code">SQL</span><span><b>no such table: studenten</b><small>Je schema is niet uitgevoerd of je opent een ander bestand.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Controleer het pad naar <code>schema.sql</code> in <code>database.php</code>. Verwijder daarna tijdens ontwikkeling <code>data/app.sqlite</code> en laad de pagina opnieuw.</p></div>
+              </details>
+              <details data-error-item data-keywords="database is locked locked sqlite apache bestand open">
+                <summary><span class="error-code">SQL</span><span><b>database is locked</b><small>Een ander proces houdt het SQLite-bestand vast.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Sluit een SQLite-browser die het bestand bewerkt, wacht kort en probeer opnieuw. De starter gebruikt al <code>PRAGMA busy_timeout = 5000</code>. Synchroniseer de datamap niet live met cloudsoftware.</p></div>
+              </details>
+              <details data-error-item data-keywords="attempt to write readonly database read only rechten data map">
+                <summary><span class="error-code">SQL</span><span><b>attempt to write a readonly database</b><small>Apache mag niet schrijven in de datamap.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Zorg dat de map <code>data</code> en het bestand <code>app.sqlite</code> niet op alleen-lezen staan. Plaats het project in <code>htdocs</code>, niet in een beschermde systeemmap.</p></div>
+              </details>
+              <details data-error-item data-keywords="headers already sent header location whitespace output php">
+                <summary><span class="error-code">PHP</span><span><b>headers already sent</b><small>Er is al tekst verstuurd vóór de redirect.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Zet de POST-verwerking en <code>header('Location: ...')</code> vóór alle HTML. Controleer ook dat er niets vóór de eerste <code>&lt;?php</code> staat.</p></div>
+              </details>
+              <details data-error-item data-keywords="unique constraint failed dubbel email studentnummer land code">
+                <summary><span class="error-code">SQL</span><span><b>UNIQUE constraint failed</b><small>Een waarde die uniek moet zijn bestaat al.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Gebruik een ander studentnummer, e-mailadres of een andere landcode. Verwijder <code>UNIQUE</code> niet zomaar: die regel beschermt je data.</p></div>
+              </details>
+              <details data-error-item data-keywords="foreign key constraint failed land verwijderen relatie studenten">
+                <summary><span class="error-code">SQL</span><span><b>FOREIGN KEY constraint failed</b><small>Je verwijdert een rij waar andere gegevens nog naar verwijzen.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Een land kan niet weg zolang studenten dat land gebruiken. Wijzig eerst die studenten naar een ander land of verwijder ze.</p></div>
+              </details>
+              <details data-error-item data-keywords="404 not found localhost apache xampp url map htdocs">
+                <summary><span class="error-code">HTTP</span><span><b>404 Not Found op localhost</b><small>Apache vindt je map of bestand niet.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Controleer of Apache groen is, de map echt in <code>C:\xampp\htdocs\studenten-crud</code> staat en je <code>http://localhost/studenten-crud/</code> opent.</p></div>
+              </details>
+              <details data-error-item data-keywords="access denied for user root localhost mysql xampp password phpmyadmin">
+                <summary><span class="error-code">MYSQL</span><span><b>Access denied for user 'root'</b><small>De MySQL-inloggegevens komen niet overeen.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Controleer of MySQL groen is in XAMPP. Pas daarna <code>$username</code> en <code>$password</code> in <code>config/database.php</code> aan. Een standaard lokale XAMPP-installatie gebruikt vaak <code>root</code> met een leeg wachtwoord.</p></div>
+              </details>
+              <details data-error-item data-keywords="cannot find module express better-sqlite3 npm install node javascript">
+                <summary><span class="error-code">NODE</span><span><b>Cannot find module 'express'</b><small>De JavaScript-packages zijn nog niet geïnstalleerd.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Open een terminal in de map waar <code>package.json</code> staat en voer <code>npm install</code> uit. Start daarna opnieuw met <code>npm start</code>.</p></div>
+              </details>
+              <details data-error-item data-keywords="failed to fetch fetch api refused localhost 3000 node server javascript">
+                <summary><span class="error-code">FETCH</span><span><b>Failed to fetch / API reageert niet</b><small>De frontend kan de Express-server niet bereiken.</small></span><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div><p>Controleer of <code>npm start</code> nog draait en open de app via <code>http://localhost:3000</code>. Open <code>frontend/index.html</code> niet rechtstreeks en gebruik voor deze starter geen aparte Live Server-poort.</p></div>
+              </details>
+            </div>
+            <div class="no-errors" data-no-errors hidden><b>Geen exacte match.</b><span>Probeer één technisch woord uit je fout, zoals “driver”, “locked” of “headers”.</span></div>
+          </section>
+
+          <section id="publiceren" class="guide-section publish-section" data-search-title="CodingForDummies gids publiceren op Vercel">
+            <div class="section-number">Hoofdstuk 11</div>
+            <h2>Zet deze gids op Vercel.</h2>
+            <p class="section-intro">Dit gaat over <strong>CodingForDummies zelf</strong>: de site die je nu leest. Die bestaat uit statische HTML, CSS, JavaScript en downloads en past daardoor goed op Vercel.</p>
+
+            <div class="scope-note">
+              <div><span>Publiceer op Vercel</span><b>Deze gids</b><small>HTML · CSS · JavaScript · ZIP</small></div>
+              <i>≠</i>
+              <div><span>Draai lokaal tijdens het leren</span><b>De CRUD-starters</b><small>XAMPP voor PHP · Node.js voor JavaScript</small></div>
+            </div>
+
+            <ol class="deploy-steps">
+              <li><span>1</span><div><h3>Zet CodingForDummies op GitHub</h3><p>Maak een repository, voeg deze projectmap toe en push de bestanden.</p><div class="mini-code"><code>git add . &amp;&amp; git commit -m "Launch CodingForDummies"</code><button type="button" data-copy-text="git add . && git commit -m &quot;Launch CodingForDummies&quot;">Kopieer</button></div></div></li>
+              <li><span>2</span><div><h3>Importeer de repository in Vercel</h3><p>Kies <strong>Add New → Project</strong>, selecteer de repository en laat Vercel de Vite-instellingen herkennen.</p></div></li>
+              <li><span>3</span><div><h3>Klik op Deploy</h3><p>Build command: <code>npm run build</code>. Output directory: <code>dist</code>. Iedere volgende push publiceert automatisch een nieuwe versie.</p></div></li>
+            </ol>
+
+            <div class="finish-panel">
+              <div><p class="kicker"><span></span> Klaar om te bouwen</p><h3>Begin met één werkende basis. Maak hem daarna van jou.</h3><p>PHP gaat in <code>htdocs</code>. De JavaScript-starter start je in zijn eigen map met <code>npm start</code>.</p></div>
+              <div class="finish-actions"><a class="button button--light" href="./downloads/studenten-crud.zip">PHP + SQLite <span>↓</span></a><a class="button button--outline-light" href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite <span>↓</span></a></div>
+            </div>
+            <label class="chapter-check chapter-check--finish"><input type="checkbox" data-progress-item="deploy"><span><b>Mijn CodingForDummies repository staat klaar voor Vercel</b><small>De gids en het PHP-starterproject hebben ieder hun eigen duidelijke rol.</small></span></label>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div><a class="wordmark" href="#top"><span class="wordmark-mark">CFD/</span><span>CodingForDummies</span></a><p>Van “ik snap de fout niet” naar een CRUD die je zelf kunt uitleggen.</p></div>
+      <div class="footer-links"><div><b>Gids</b><a href="#bouwroute">Bouwroute</a><a href="#codebank">PHP-codebank</a><a href="#javascript-route">JavaScript-route</a><a href="#foutzoeker">Foutzoeker</a></div><div><b>Downloads</b><a href="./downloads/studenten-crud.zip">PHP + SQLite</a><a href="./downloads/php-mysql-crud.zip">PHP + MySQL</a><a href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite</a></div></div>
+      <p class="footer-note">Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken.</p>
+    </footer>
+
+    <dialog class="search-dialog" data-search-dialog>
+      <div class="search-dialog-inner">
+        <div class="search-top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          <input type="search" data-global-search placeholder="Zoek: SQLite koppelen, delete, driver…" aria-label="Doorzoek de gids">
+          <button type="button" data-close-search aria-label="Sluit zoeken">Esc</button>
+        </div>
+        <div class="search-results" data-search-results>
+          <p>Typ een onderwerp of foutmelding. Je kunt ook zoeken op “XAMPP”, “update” of “Vercel”.</p>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="copy-toast" data-copy-toast role="status" aria-live="polite">Code gekopieerd</div>
+  </body>
+</html>

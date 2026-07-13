@@ -1,0 +1,547 @@
+<?php
+
+declare(strict_types=1);
+
+session_start();
+
+require __DIR__ . '/config/database.php';
+require __DIR__ . '/includes/functions.php';
+
+try {
+    $db = database();
+} catch (Throwable $fatalError) {
+    http_response_code(500);
+    ?>
+    <!DOCTYPE html>
+    <html lang="nl">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Databasefout</title>
+        <link rel="stylesheet" href="assets/app.css">
+    </head>
+    <body class="setup-error-page">
+        <main class="setup-error">
+            <p class="eyebrow">Installatiecontrole</p>
+            <h1>MySQL kon niet starten</h1>
+            <p><?= e($fatalError->getMessage()) ?></p>
+            <p>Start MySQL in XAMPP en controleer de gebruikersnaam en het wachtwoord in <code>config/database.php</code>.</p>
+        </main>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+$requestedPage = (string) ($_GET['page'] ?? 'students');
+$currentPage = in_array($requestedPage, ['students', 'countries'], true) ? $requestedPage : 'students';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $intent = post_text('intent');
+    $returnPage = post_text('return_page') === 'countries' ? 'countries' : 'students';
+    $resource = str_contains($intent, 'country') ? 'country' : 'student';
+
+    try {
+        verify_csrf($_POST['_token'] ?? null);
+
+        switch ($intent) {
+            case 'create_student':
+                $student = student_input($db);
+                $statement = $db->prepare(
+                    'INSERT INTO studenten
+                        (studentnummer, voornaam, achternaam, email, opleiding, land_id, status, updated_at)
+                     VALUES
+                        (:studentnummer, :voornaam, :achternaam, :email, :opleiding, :land_id, :status, CURRENT_TIMESTAMP)'
+                );
+                $statement->execute($student);
+                flash('success', 'Student is toegevoegd.');
+                break;
+
+            case 'update_student':
+                $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+                $student = student_input($db);
+                $student['id'] = $id;
+                $statement = $db->prepare(
+                    'UPDATE studenten SET
+                        studentnummer = :studentnummer,
+                        voornaam = :voornaam,
+                        achternaam = :achternaam,
+                        email = :email,
+                        opleiding = :opleiding,
+                        land_id = :land_id,
+                        status = :status,
+                        updated_at = CURRENT_TIMESTAMP
+                     WHERE id = :id'
+                );
+                $statement->execute($student);
+
+                if ($statement->rowCount() === 0) {
+                    $exists = $db->prepare('SELECT COUNT(*) FROM studenten WHERE id = ?');
+                    $exists->execute([$id]);
+                    if ((int) $exists->fetchColumn() === 0) {
+                        throw new RuntimeException('Student niet gevonden.');
+                    }
+                }
+
+                flash('success', 'Student is bijgewerkt.');
+                break;
+
+            case 'delete_student':
+                $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+                $statement = $db->prepare('DELETE FROM studenten WHERE id = ?');
+                $statement->execute([$id]);
+
+                if ($statement->rowCount() === 0) {
+                    throw new RuntimeException('Student niet gevonden.');
+                }
+
+                flash('success', 'Student is verwijderd.');
+                break;
+
+            case 'create_country':
+                $country = country_input();
+                $statement = $db->prepare(
+                    'INSERT INTO landen (naam, code, regio, updated_at)
+                     VALUES (:naam, :code, :regio, CURRENT_TIMESTAMP)'
+                );
+                $statement->execute($country);
+                flash('success', 'Land is toegevoegd.');
+                break;
+
+            case 'update_country':
+                $id = positive_id($_POST['id'] ?? null, 'Land-ID');
+                $country = country_input();
+                $country['id'] = $id;
+                $statement = $db->prepare(
+                    'UPDATE landen SET
+                        naam = :naam,
+                        code = :code,
+                        regio = :regio,
+                        updated_at = CURRENT_TIMESTAMP
+                     WHERE id = :id'
+                );
+                $statement->execute($country);
+
+                if ($statement->rowCount() === 0) {
+                    $exists = $db->prepare('SELECT COUNT(*) FROM landen WHERE id = ?');
+                    $exists->execute([$id]);
+                    if ((int) $exists->fetchColumn() === 0) {
+                        throw new RuntimeException('Land niet gevonden.');
+                    }
+                }
+
+                flash('success', 'Land is bijgewerkt.');
+                break;
+
+            case 'delete_country':
+                $id = positive_id($_POST['id'] ?? null, 'Land-ID');
+                $inUse = $db->prepare('SELECT COUNT(*) FROM studenten WHERE land_id = ?');
+                $inUse->execute([$id]);
+
+                if ((int) $inUse->fetchColumn() > 0) {
+                    throw new RuntimeException('Dit land is gekoppeld aan studenten en kan daarom niet worden verwijderd.');
+                }
+
+                $statement = $db->prepare('DELETE FROM landen WHERE id = ?');
+                $statement->execute([$id]);
+
+                if ($statement->rowCount() === 0) {
+                    throw new RuntimeException('Land niet gevonden.');
+                }
+
+                flash('success', 'Land is verwijderd.');
+                break;
+
+            default:
+                throw new RuntimeException('Onbekende actie.');
+        }
+    } catch (PDOException $exception) {
+        flash('error', unique_error_message($exception, $resource));
+    } catch (RuntimeException $exception) {
+        flash('error', $exception->getMessage());
+    }
+
+    redirect($returnPage === 'countries' ? 'index.php?page=countries' : 'index.php');
+}
+
+$countries = $db->query('SELECT id, naam, code FROM landen ORDER BY naam')->fetchAll();
+$stats = $db->query(
+    "SELECT
+        (SELECT COUNT(*) FROM studenten) AS total_students,
+        (SELECT COUNT(*) FROM studenten WHERE status = 'actief') AS active_students,
+        (SELECT COUNT(*) FROM studenten WHERE status = 'afgestudeerd') AS graduated_students,
+        (SELECT COUNT(*) FROM landen) AS total_countries"
+)->fetch();
+
+$search = trim((string) ($_GET['search'] ?? ''));
+$statusFilter = (string) ($_GET['status'] ?? 'all');
+$statusFilter = in_array($statusFilter, ['all', 'actief', 'inactief', 'afgestudeerd'], true) ? $statusFilter : 'all';
+$countryFilter = filter_input(INPUT_GET, 'country', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+$countryFilter = $countryFilter === false || $countryFilter === null ? 0 : (int) $countryFilter;
+$sort = (string) ($_GET['sort'] ?? 'newest');
+$sortOptions = [
+    'newest' => 'studenten.id DESC',
+    'name' => 'studenten.achternaam ASC, studenten.voornaam ASC',
+    'number' => 'studenten.studentnummer ASC',
+    'education' => 'studenten.opleiding ASC',
+];
+$sort = array_key_exists($sort, $sortOptions) ? $sort : 'newest';
+
+$studentWhere = [];
+$studentParams = [];
+
+if ($search !== '') {
+    $studentWhere[] = '(studenten.studentnummer LIKE :search_number
+        OR studenten.voornaam LIKE :search_first
+        OR studenten.achternaam LIKE :search_last
+        OR studenten.email LIKE :search_email
+        OR studenten.opleiding LIKE :search_education)';
+    $needle = '%' . $search . '%';
+    $studentParams = [
+        'search_number' => $needle,
+        'search_first' => $needle,
+        'search_last' => $needle,
+        'search_email' => $needle,
+        'search_education' => $needle,
+    ];
+}
+
+if ($statusFilter !== 'all') {
+    $studentWhere[] = 'studenten.status = :status';
+    $studentParams['status'] = $statusFilter;
+}
+
+if ($countryFilter > 0) {
+    $studentWhere[] = 'studenten.land_id = :country';
+    $studentParams['country'] = $countryFilter;
+}
+
+$whereSql = $studentWhere ? 'WHERE ' . implode(' AND ', $studentWhere) : '';
+$countStatement = $db->prepare('SELECT COUNT(*) FROM studenten ' . $whereSql);
+$countStatement->execute($studentParams);
+$studentTotal = (int) $countStatement->fetchColumn();
+$perPage = 8;
+$studentPage = query_page();
+$pageCount = max(1, (int) ceil($studentTotal / $perPage));
+$studentPage = min($studentPage, $pageCount);
+$offset = ($studentPage - 1) * $perPage;
+
+$studentStatement = $db->prepare(
+    'SELECT
+        studenten.*,
+        landen.naam AS land_naam,
+        landen.code AS land_code
+     FROM studenten
+     JOIN landen ON landen.id = studenten.land_id
+     ' . $whereSql . '
+     ORDER BY ' . $sortOptions[$sort] . '
+     LIMIT ' . $perPage . ' OFFSET ' . $offset
+);
+$studentStatement->execute($studentParams);
+$students = $studentStatement->fetchAll();
+
+$editingStudent = null;
+$editStudentId = filter_input(INPUT_GET, 'edit_student', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+if ($editStudentId !== false && $editStudentId !== null) {
+    $statement = $db->prepare('SELECT * FROM studenten WHERE id = ?');
+    $statement->execute([(int) $editStudentId]);
+    $editingStudent = $statement->fetch() ?: null;
+}
+
+$countrySearch = trim((string) ($_GET['country_search'] ?? ''));
+$countryQuery = 'SELECT landen.*, COUNT(studenten.id) AS student_count
+                 FROM landen
+                 LEFT JOIN studenten ON studenten.land_id = landen.id';
+$countryParams = [];
+if ($countrySearch !== '') {
+    $countryQuery .= ' WHERE landen.naam LIKE :country_name OR landen.code LIKE :country_code OR landen.regio LIKE :country_region';
+    $countryNeedle = '%' . $countrySearch . '%';
+    $countryParams = [
+        'country_name' => $countryNeedle,
+        'country_code' => $countryNeedle,
+        'country_region' => $countryNeedle,
+    ];
+}
+$countryQuery .= ' GROUP BY landen.id, landen.naam, landen.code, landen.regio, landen.created_at, landen.updated_at
+                   ORDER BY landen.naam ASC';
+$countryStatement = $db->prepare($countryQuery);
+$countryStatement->execute($countryParams);
+$countryRows = $countryStatement->fetchAll();
+
+$editingCountry = null;
+$editCountryId = filter_input(INPUT_GET, 'edit_country', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+if ($editCountryId !== false && $editCountryId !== null) {
+    $statement = $db->prepare('SELECT * FROM landen WHERE id = ?');
+    $statement->execute([(int) $editCountryId]);
+    $editingCountry = $statement->fetch() ?: null;
+}
+
+$flashMessage = pull_flash();
+$studentQuery = http_build_query([
+    'search' => $search,
+    'status' => $statusFilter,
+    'country' => $countryFilter ?: null,
+    'sort' => $sort,
+]);
+?>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Voorbeeld van een studentenadministratie met PHP en MySQL.">
+    <title>Campus — Studentenadministratie</title>
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+</head>
+<body>
+    <header class="app-header">
+        <a class="brand" href="index.php" aria-label="Campus startpagina">
+            <span class="brand-mark">C/</span>
+            <span>Campus Admin</span>
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="main-navigation">Menu</button>
+        <nav id="main-navigation" class="main-navigation" data-navigation aria-label="Hoofdnavigatie">
+            <a class="<?= $currentPage === 'students' ? 'is-active' : '' ?>" href="index.php">Studenten</a>
+            <a class="<?= $currentPage === 'countries' ? 'is-active' : '' ?>" href="index.php?page=countries">Landenregister</a>
+        </nav>
+        <div class="environment"><span></span> MySQL lokaal</div>
+    </header>
+
+    <main class="app-shell">
+        <?php if ($flashMessage): ?>
+            <div class="flash flash--<?= e($flashMessage['type']) ?>" role="status">
+                <strong><?= $flashMessage['type'] === 'success' ? 'Gelukt' : 'Controleer dit' ?></strong>
+                <span><?= e($flashMessage['message']) ?></span>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($currentPage === 'students'): ?>
+            <section class="page-heading">
+                <div>
+                    <p class="eyebrow">Studentenadministratie</p>
+                    <h1>Overzicht studenten</h1>
+                    <p>Beheer inschrijvingen, opleidingen, status en land vanuit één overzicht.</p>
+                </div>
+                <a class="primary-action" href="#student-form">+ Nieuwe student</a>
+            </section>
+
+            <section class="stats" aria-label="Dashboardcijfers">
+                <article><span>Totaal studenten</span><strong><?= e($stats['total_students']) ?></strong><small>Alle inschrijvingen</small></article>
+                <article><span>Actief</span><strong><?= e($stats['active_students']) ?></strong><small>Momenteel ingeschreven</small></article>
+                <article><span>Afgestudeerd</span><strong><?= e($stats['graduated_students']) ?></strong><small>Traject afgerond</small></article>
+                <article><span>Landen</span><strong><?= e($stats['total_countries']) ?></strong><small>In het register</small></article>
+            </section>
+
+            <section class="workspace">
+                <div class="list-panel">
+                    <form class="filters" method="get">
+                        <label class="search-field">
+                            <span>Zoeken</span>
+                            <input type="search" name="search" value="<?= e($search) ?>" placeholder="Naam, nummer of opleiding">
+                        </label>
+                        <label>
+                            <span>Status</span>
+                            <select name="status">
+                                <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>Alle statussen</option>
+                                <option value="actief" <?= $statusFilter === 'actief' ? 'selected' : '' ?>>Actief</option>
+                                <option value="inactief" <?= $statusFilter === 'inactief' ? 'selected' : '' ?>>Inactief</option>
+                                <option value="afgestudeerd" <?= $statusFilter === 'afgestudeerd' ? 'selected' : '' ?>>Afgestudeerd</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Land</span>
+                            <select name="country">
+                                <option value="">Alle landen</option>
+                                <?php foreach ($countries as $country): ?>
+                                    <option value="<?= e($country['id']) ?>" <?= $countryFilter === (int) $country['id'] ? 'selected' : '' ?>>
+                                        <?= e($country['naam']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Sorteren</span>
+                            <select name="sort">
+                                <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Nieuwste eerst</option>
+                                <option value="name" <?= $sort === 'name' ? 'selected' : '' ?>>Achternaam A–Z</option>
+                                <option value="number" <?= $sort === 'number' ? 'selected' : '' ?>>Studentnummer</option>
+                                <option value="education" <?= $sort === 'education' ? 'selected' : '' ?>>Opleiding</option>
+                            </select>
+                        </label>
+                        <button type="submit">Toepassen</button>
+                    </form>
+
+                    <div class="table-heading">
+                        <div><strong><?= e($studentTotal) ?></strong> resultaten</div>
+                        <?php if ($search !== '' || $statusFilter !== 'all' || $countryFilter > 0): ?>
+                            <a href="index.php">Filters wissen</a>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Opleiding</th>
+                                    <th>Land</th>
+                                    <th>Status</th>
+                                    <th><span class="visually-hidden">Acties</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($students as $student): ?>
+                                    <tr>
+                                        <td>
+                                            <strong><?= e($student['voornaam'] . ' ' . $student['achternaam']) ?></strong>
+                                            <small><?= e($student['studentnummer']) ?> · <?= e($student['email']) ?></small>
+                                        </td>
+                                        <td><?= e($student['opleiding']) ?></td>
+                                        <td><span class="country-code"><?= e($student['land_code']) ?></span> <?= e($student['land_naam']) ?></td>
+                                        <td><span class="status status--<?= e($student['status']) ?>"><?= e(ucfirst($student['status'])) ?></span></td>
+                                        <td class="row-actions">
+                                            <a href="?<?= e($studentQuery) ?>&edit_student=<?= e($student['id']) ?>#student-form">Bewerk</a>
+                                            <form method="post" data-confirm="Weet je zeker dat je deze student wilt verwijderen?">
+                                                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                                                <input type="hidden" name="intent" value="delete_student">
+                                                <input type="hidden" name="return_page" value="students">
+                                                <input type="hidden" name="id" value="<?= e($student['id']) ?>">
+                                                <button class="danger-link" type="submit">Verwijder</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (!$students): ?>
+                                    <tr><td class="empty-state" colspan="5"><strong>Geen studenten gevonden.</strong><span>Pas je zoekterm of filters aan, of voeg een student toe.</span></td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <?php if ($pageCount > 1): ?>
+                        <nav class="pagination" aria-label="Paginering">
+                            <?php for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++): ?>
+                                <a class="<?= $pageNumber === $studentPage ? 'is-current' : '' ?>" href="?<?= e($studentQuery) ?>&p=<?= $pageNumber ?>"><?= $pageNumber ?></a>
+                            <?php endfor; ?>
+                        </nav>
+                    <?php endif; ?>
+                </div>
+
+                <aside id="student-form" class="form-panel">
+                    <div class="form-heading">
+                        <div>
+                            <p class="eyebrow"><?= $editingStudent ? 'Update' : 'Create' ?></p>
+                            <h2><?= $editingStudent ? 'Student bewerken' : 'Student toevoegen' ?></h2>
+                        </div>
+                        <?php if ($editingStudent): ?><a href="index.php#student-form">Annuleer</a><?php endif; ?>
+                    </div>
+                    <form class="stack-form" method="post">
+                        <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                        <input type="hidden" name="intent" value="<?= $editingStudent ? 'update_student' : 'create_student' ?>">
+                        <input type="hidden" name="return_page" value="students">
+                        <?php if ($editingStudent): ?><input type="hidden" name="id" value="<?= e($editingStudent['id']) ?>"><?php endif; ?>
+
+                        <label><span>Studentnummer</span><input name="studentnummer" maxlength="30" placeholder="STU-2026-001" value="<?= e($editingStudent['studentnummer'] ?? '') ?>" required></label>
+                        <div class="field-row">
+                            <label><span>Voornaam</span><input name="voornaam" maxlength="80" value="<?= e($editingStudent['voornaam'] ?? '') ?>" required></label>
+                            <label><span>Achternaam</span><input name="achternaam" maxlength="100" value="<?= e($editingStudent['achternaam'] ?? '') ?>" required></label>
+                        </div>
+                        <label><span>E-mailadres</span><input type="email" name="email" maxlength="160" placeholder="naam@example.com" value="<?= e($editingStudent['email'] ?? '') ?>" required></label>
+                        <label><span>Opleiding</span><input name="opleiding" maxlength="120" placeholder="Software Developer" value="<?= e($editingStudent['opleiding'] ?? '') ?>" required></label>
+                        <div class="field-row">
+                            <label>
+                                <span>Land</span>
+                                <select name="land_id" required>
+                                    <option value="">Kies een land</option>
+                                    <?php foreach ($countries as $country): ?>
+                                        <option value="<?= e($country['id']) ?>" <?= (int) ($editingStudent['land_id'] ?? 0) === (int) $country['id'] ? 'selected' : '' ?>><?= e($country['naam']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </label>
+                            <label>
+                                <span>Status</span>
+                                <?php $formStatus = $editingStudent['status'] ?? 'actief'; ?>
+                                <select name="status" required>
+                                    <option value="actief" <?= $formStatus === 'actief' ? 'selected' : '' ?>>Actief</option>
+                                    <option value="inactief" <?= $formStatus === 'inactief' ? 'selected' : '' ?>>Inactief</option>
+                                    <option value="afgestudeerd" <?= $formStatus === 'afgestudeerd' ? 'selected' : '' ?>>Afgestudeerd</option>
+                                </select>
+                            </label>
+                        </div>
+                        <button class="primary-action" type="submit"><?= $editingStudent ? 'Wijzigingen opslaan' : 'Student toevoegen' ?></button>
+                    </form>
+                </aside>
+            </section>
+
+        <?php else: ?>
+            <section class="page-heading">
+                <div>
+                    <p class="eyebrow">Gerelateerde tabel</p>
+                    <h1>Landenregister</h1>
+                    <p>Beheer de landen die je in het studentenformulier kunt kiezen.</p>
+                </div>
+                <a class="primary-action" href="#country-form">+ Nieuw land</a>
+            </section>
+
+            <section class="workspace workspace--countries">
+                <div class="list-panel">
+                    <form class="country-search" method="get">
+                        <input type="hidden" name="page" value="countries">
+                        <label class="search-field"><span>Zoeken in landen</span><input type="search" name="country_search" value="<?= e($countrySearch) ?>" placeholder="Naam, code of regio"></label>
+                        <button type="submit">Zoeken</button>
+                    </form>
+                    <div class="table-scroll">
+                        <table>
+                            <thead><tr><th>Land</th><th>Code</th><th>Regio</th><th>Studenten</th><th><span class="visually-hidden">Acties</span></th></tr></thead>
+                            <tbody>
+                                <?php foreach ($countryRows as $country): ?>
+                                    <tr>
+                                        <td><strong><?= e($country['naam']) ?></strong></td>
+                                        <td><span class="country-code"><?= e($country['code']) ?></span></td>
+                                        <td><?= e($country['regio']) ?></td>
+                                        <td><?= e($country['student_count']) ?></td>
+                                        <td class="row-actions">
+                                            <a href="?page=countries&edit_country=<?= e($country['id']) ?>#country-form">Bewerk</a>
+                                            <form method="post" data-confirm="Weet je zeker dat je dit land wilt verwijderen?">
+                                                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                                                <input type="hidden" name="intent" value="delete_country">
+                                                <input type="hidden" name="return_page" value="countries">
+                                                <input type="hidden" name="id" value="<?= e($country['id']) ?>">
+                                                <button class="danger-link" type="submit" <?= (int) $country['student_count'] > 0 ? 'title="Dit land is nog in gebruik"' : '' ?>>Verwijder</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php if (!$countryRows): ?>
+                                    <tr><td class="empty-state" colspan="5"><strong>Geen landen gevonden.</strong><span>Probeer een andere zoekterm.</span></td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <aside id="country-form" class="form-panel">
+                    <div class="form-heading">
+                        <div><p class="eyebrow"><?= $editingCountry ? 'Update' : 'Create' ?></p><h2><?= $editingCountry ? 'Land bewerken' : 'Land toevoegen' ?></h2></div>
+                        <?php if ($editingCountry): ?><a href="index.php?page=countries#country-form">Annuleer</a><?php endif; ?>
+                    </div>
+                    <form class="stack-form" method="post">
+                        <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                        <input type="hidden" name="intent" value="<?= $editingCountry ? 'update_country' : 'create_country' ?>">
+                        <input type="hidden" name="return_page" value="countries">
+                        <?php if ($editingCountry): ?><input type="hidden" name="id" value="<?= e($editingCountry['id']) ?>"><?php endif; ?>
+                        <label><span>Landnaam</span><input name="naam" maxlength="100" placeholder="Suriname" value="<?= e($editingCountry['naam'] ?? '') ?>" required></label>
+                        <label><span>Landcode</span><input name="code" minlength="2" maxlength="2" placeholder="SR" value="<?= e($editingCountry['code'] ?? '') ?>" required></label>
+                        <label><span>Regio</span><input name="regio" maxlength="80" placeholder="Zuid-Amerika" value="<?= e($editingCountry['regio'] ?? '') ?>" required></label>
+                        <button class="primary-action" type="submit"><?= $editingCountry ? 'Wijzigingen opslaan' : 'Land toevoegen' ?></button>
+                    </form>
+                    <div class="form-note"><strong>Waarom kan verwijderen soms niet?</strong><p>Een land met gekoppelde studenten is beschermd door de foreign key. Verplaats of verwijder die studenten eerst.</p></div>
+                </aside>
+            </section>
+        <?php endif; ?>
+    </main>
+
+    <footer><span>Campus Admin</span><span>Gebouwd met PHP + MySQL</span></footer>
+</body>
+</html>

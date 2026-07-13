@@ -1,0 +1,40 @@
+CREATE TABLE IF NOT EXISTS landen (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  naam VARCHAR(100) NOT NULL,
+  code CHAR(2) NOT NULL,
+  regio VARCHAR(80) NOT NULL DEFAULT '',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_landen_code (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS studenten (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  studentnummer VARCHAR(30) NOT NULL,
+  voornaam VARCHAR(80) NOT NULL,
+  achternaam VARCHAR(100) NOT NULL,
+  email VARCHAR(160) NOT NULL,
+  opleiding VARCHAR(120) NOT NULL,
+  land_id INT UNSIGNED NOT NULL,
+  status ENUM('actief', 'inactief', 'afgestudeerd') NOT NULL DEFAULT 'actief',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_studenten_studentnummer (studentnummer),
+  UNIQUE KEY uq_studenten_email (email),
+  KEY idx_studenten_naam (achternaam, voornaam),
+  KEY idx_studenten_status (status),
+  KEY idx_studenten_land_id (land_id),
+  CONSTRAINT fk_studenten_land
+    FOREIGN KEY (land_id) REFERENCES landen(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO landen (naam, code, regio) VALUES
+  ('Suriname', 'SR', 'Zuid-Amerika'),
+  ('Nederland', 'NL', 'Europa'),
+  ('België', 'BE', 'Europa'),
+  ('Guyana', 'GY', 'Zuid-Amerika'),
+  ('Curaçao', 'CW', 'Cariben');
+

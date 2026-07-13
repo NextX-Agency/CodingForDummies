@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Studentenadministratie met JavaScript en SQLite">
+    <title>Campus JS — Studentenadministratie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="#"><span>C/</span>Campus JS</a>
+      <nav aria-label="Onderdelen">
+        <button class="nav-button is-active" type="button" data-page="students">Studenten</button>
+        <button class="nav-button" type="button" data-page="countries">Landenregister</button>
+      </nav>
+      <div class="connection"><span></span> API verbonden</div>
+    </header>
+
+    <main class="shell">
+      <div id="message" class="message" role="status" hidden></div>
+
+      <section id="students-page" class="page is-active">
+        <div class="page-heading">
+          <div><p class="eyebrow">JavaScript + SQLite</p><h1>Studenten</h1><p>Beheer inschrijvingen via een JSON API.</p></div>
+          <button class="primary-button" type="button" data-focus-student>+ Nieuwe student</button>
+        </div>
+
+        <section class="stats" aria-label="Dashboardcijfers">
+          <article><span>Totaal</span><strong id="stat-total">0</strong><small>Studenten</small></article>
+          <article><span>Actief</span><strong id="stat-active">0</strong><small>Ingeschreven</small></article>
+          <article><span>Afgestudeerd</span><strong id="stat-graduated">0</strong><small>Afgerond</small></article>
+          <article><span>Landen</span><strong id="stat-countries">0</strong><small>In register</small></article>
+        </section>
+
+        <div class="workspace">
+          <section class="list-panel">
+            <form id="student-filters" class="filters">
+              <label><span>Zoeken</span><input id="search" type="search" placeholder="Naam, nummer of opleiding"></label>
+              <label><span>Status</span><select id="status-filter"><option value="all">Alle statussen</option><option value="active">Actief</option><option value="inactive">Inactief</option><option value="graduated">Afgestudeerd</option></select></label>
+              <label><span>Land</span><select id="country-filter"><option value="">Alle landen</option></select></label>
+              <button type="submit">Toepassen</button>
+            </form>
+            <div class="result-heading"><strong id="student-count">0 resultaten</strong><button id="clear-filters" type="button">Filters wissen</button></div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Student</th><th>Opleiding</th><th>Land</th><th>Status</th><th><span class="sr-only">Acties</span></th></tr></thead>
+                <tbody id="student-rows"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="form-panel" id="student-form-panel">
+            <div class="form-heading"><div><p class="eyebrow" id="student-form-mode">Create</p><h2 id="student-form-title">Student toevoegen</h2></div><button id="cancel-student-edit" type="button" hidden>Annuleer</button></div>
+            <form id="student-form" class="stack-form">
+              <input id="student-id" type="hidden">
+              <label><span>Studentnummer</span><input id="student-number" maxlength="30" placeholder="STU-2026-001" required></label>
+              <div class="field-row"><label><span>Voornaam</span><input id="first-name" maxlength="80" required></label><label><span>Achternaam</span><input id="last-name" maxlength="100" required></label></div>
+              <label><span>E-mailadres</span><input id="email" type="email" maxlength="160" required></label>
+              <label><span>Opleiding</span><input id="education" maxlength="120" placeholder="Software Developer" required></label>
+              <div class="field-row"><label><span>Land</span><select id="student-country" required><option value="">Kies een land</option></select></label><label><span>Status</span><select id="student-status" required><option value="active">Actief</option><option value="inactive">Inactief</option><option value="graduated">Afgestudeerd</option></select></label></div>
+              <button id="student-submit" class="primary-button" type="submit">Student toevoegen</button>
+            </form>
+          </aside>
+        </div>
+      </section>
+
+      <section id="countries-page" class="page">
+        <div class="page-heading"><div><p class="eyebrow">Gerelateerde resource</p><h1>Landenregister</h1><p>Deze landen verschijnen in het studentenformulier.</p></div><button class="primary-button" type="button" data-focus-country>+ Nieuw land</button></div>
+        <div class="workspace">
+          <section class="list-panel">
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>Land</th><th>Code</th><th>Regio</th><th>Studenten</th><th><span class="sr-only">Acties</span></th></tr></thead>
+                <tbody id="country-rows"></tbody>
+              </table>
+            </div>
+          </section>
+          <aside class="form-panel" id="country-form-panel">
+            <div class="form-heading"><div><p class="eyebrow" id="country-form-mode">Create</p><h2 id="country-form-title">Land toevoegen</h2></div><button id="cancel-country-edit" type="button" hidden>Annuleer</button></div>
+            <form id="country-form" class="stack-form">
+              <input id="country-id" type="hidden">
+              <label><span>Landnaam</span><input id="country-name" maxlength="100" placeholder="Suriname" required></label>
+              <label><span>Landcode</span><input id="country-code" minlength="2" maxlength="2" placeholder="SR" required></label>
+              <label><span>Regio</span><input id="country-region" maxlength="80" placeholder="Zuid-Amerika" required></label>
+              <button id="country-submit" class="primary-button" type="submit">Land toevoegen</button>
+            </form>
+            <div class="note"><strong>Foreign key</strong><p>Een land met studenten kan niet worden verwijderd. Zo blijven relaties geldig.</p></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

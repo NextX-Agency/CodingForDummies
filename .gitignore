@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.vercel/
+starter/studenten-crud/data/*.sqlite
+

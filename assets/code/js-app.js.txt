@@ -1,0 +1,314 @@
+const API = {
+  students: "/api/students",
+  countries: "/api/countries",
+  stats: "/api/stats"
+};
+
+const state = {
+  students: [],
+  countries: []
+};
+
+const elements = {
+  pages: document.querySelectorAll(".page"),
+  navButtons: document.querySelectorAll(".nav-button"),
+  message: document.querySelector("#message"),
+  studentRows: document.querySelector("#student-rows"),
+  countryRows: document.querySelector("#country-rows"),
+  studentCount: document.querySelector("#student-count"),
+  studentForm: document.querySelector("#student-form"),
+  studentId: document.querySelector("#student-id"),
+  studentNumber: document.querySelector("#student-number"),
+  firstName: document.querySelector("#first-name"),
+  lastName: document.querySelector("#last-name"),
+  email: document.querySelector("#email"),
+  education: document.querySelector("#education"),
+  studentCountry: document.querySelector("#student-country"),
+  studentStatus: document.querySelector("#student-status"),
+  studentSubmit: document.querySelector("#student-submit"),
+  studentFormMode: document.querySelector("#student-form-mode"),
+  studentFormTitle: document.querySelector("#student-form-title"),
+  cancelStudentEdit: document.querySelector("#cancel-student-edit"),
+  filters: document.querySelector("#student-filters"),
+  search: document.querySelector("#search"),
+  statusFilter: document.querySelector("#status-filter"),
+  countryFilter: document.querySelector("#country-filter"),
+  clearFilters: document.querySelector("#clear-filters"),
+  countryForm: document.querySelector("#country-form"),
+  countryId: document.querySelector("#country-id"),
+  countryName: document.querySelector("#country-name"),
+  countryCode: document.querySelector("#country-code"),
+  countryRegion: document.querySelector("#country-region"),
+  countrySubmit: document.querySelector("#country-submit"),
+  countryFormMode: document.querySelector("#country-form-mode"),
+  countryFormTitle: document.querySelector("#country-form-title"),
+  cancelCountryEdit: document.querySelector("#cancel-country-edit")
+};
+
+async function request(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (response.status === 204) {
+    return null;
+  }
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Er ging iets mis.");
+  }
+
+  return data;
+}
+
+function jsonOptions(method, body) {
+  return {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  };
+}
+
+function escapeHtml(value) {
+  const element = document.createElement("div");
+  element.textContent = String(value ?? "");
+  return element.innerHTML;
+}
+
+function showMessage(text, type = "success") {
+  elements.message.textContent = text;
+  elements.message.className = `message message--${type}`;
+  elements.message.hidden = false;
+  window.setTimeout(() => { elements.message.hidden = true; }, 3500);
+}
+
+function statusLabel(status) {
+  return { active: "Actief", inactive: "Inactief", graduated: "Afgestudeerd" }[status] || status;
+}
+
+function renderStudents() {
+  elements.studentCount.textContent = `${state.students.length} resultaten`;
+
+  if (state.students.length === 0) {
+    elements.studentRows.innerHTML = '<tr><td class="empty" colspan="5"><strong>Geen studenten gevonden.</strong><span>Pas je filters aan of voeg een student toe.</span></td></tr>';
+    return;
+  }
+
+  elements.studentRows.innerHTML = state.students.map((student) => `
+    <tr>
+      <td><strong>${escapeHtml(student.firstName)} ${escapeHtml(student.lastName)}</strong><small>${escapeHtml(student.studentNumber)} · ${escapeHtml(student.email)}</small></td>
+      <td>${escapeHtml(student.education)}</td>
+      <td><span class="country-code">${escapeHtml(student.countryCode)}</span> ${escapeHtml(student.countryName)}</td>
+      <td><span class="status status--${escapeHtml(student.status)}">${escapeHtml(statusLabel(student.status))}</span></td>
+      <td class="actions"><button type="button" data-edit-student="${student.id}">Bewerk</button><button class="danger" type="button" data-delete-student="${student.id}">Verwijder</button></td>
+    </tr>
+  `).join("");
+}
+
+function renderCountries() {
+  const options = state.countries.map((country) =>
+    `<option value="${country.id}">${escapeHtml(country.name)}</option>`
+  ).join("");
+
+  const selectedFilter = elements.countryFilter.value;
+  const selectedFormCountry = elements.studentCountry.value;
+  elements.countryFilter.innerHTML = `<option value="">Alle landen</option>${options}`;
+  elements.studentCountry.innerHTML = `<option value="">Kies een land</option>${options}`;
+  elements.countryFilter.value = selectedFilter;
+  elements.studentCountry.value = selectedFormCountry;
+
+  elements.countryRows.innerHTML = state.countries.map((country) => `
+    <tr>
+      <td><strong>${escapeHtml(country.name)}</strong></td>
+      <td><span class="country-code">${escapeHtml(country.code)}</span></td>
+      <td>${escapeHtml(country.region)}</td>
+      <td>${country.studentCount}</td>
+      <td class="actions"><button type="button" data-edit-country="${country.id}">Bewerk</button><button class="danger" type="button" data-delete-country="${country.id}">Verwijder</button></td>
+    </tr>
+  `).join("");
+}
+
+async function loadStats() {
+  const stats = await request(API.stats);
+  document.querySelector("#stat-total").textContent = stats.totalStudents;
+  document.querySelector("#stat-active").textContent = stats.activeStudents;
+  document.querySelector("#stat-graduated").textContent = stats.graduatedStudents;
+  document.querySelector("#stat-countries").textContent = stats.totalCountries;
+}
+
+async function loadCountries() {
+  state.countries = await request(API.countries);
+  renderCountries();
+}
+
+async function loadStudents() {
+  const params = new URLSearchParams();
+  if (elements.search.value.trim()) params.set("search", elements.search.value.trim());
+  if (elements.statusFilter.value !== "all") params.set("status", elements.statusFilter.value);
+  if (elements.countryFilter.value) params.set("countryId", elements.countryFilter.value);
+  const query = params.toString() ? `?${params}` : "";
+  state.students = await request(`${API.students}${query}`);
+  renderStudents();
+}
+
+function readStudentForm() {
+  return {
+    studentNumber: elements.studentNumber.value.trim(),
+    firstName: elements.firstName.value.trim(),
+    lastName: elements.lastName.value.trim(),
+    email: elements.email.value.trim(),
+    education: elements.education.value.trim(),
+    countryId: Number(elements.studentCountry.value),
+    status: elements.studentStatus.value
+  };
+}
+
+function resetStudentForm() {
+  elements.studentForm.reset();
+  elements.studentId.value = "";
+  elements.studentFormMode.textContent = "Create";
+  elements.studentFormTitle.textContent = "Student toevoegen";
+  elements.studentSubmit.textContent = "Student toevoegen";
+  elements.cancelStudentEdit.hidden = true;
+}
+
+function startStudentEdit(id) {
+  const student = state.students.find((item) => item.id === id);
+  if (!student) return;
+  elements.studentId.value = student.id;
+  elements.studentNumber.value = student.studentNumber;
+  elements.firstName.value = student.firstName;
+  elements.lastName.value = student.lastName;
+  elements.email.value = student.email;
+  elements.education.value = student.education;
+  elements.studentCountry.value = student.countryId;
+  elements.studentStatus.value = student.status;
+  elements.studentFormMode.textContent = "Update";
+  elements.studentFormTitle.textContent = "Student bewerken";
+  elements.studentSubmit.textContent = "Wijzigingen opslaan";
+  elements.cancelStudentEdit.hidden = false;
+  document.querySelector("#student-form-panel").scrollIntoView({ behavior: "smooth" });
+}
+
+async function saveStudent(event) {
+  event.preventDefault();
+  const id = elements.studentId.value;
+
+  try {
+    if (id) {
+      await request(`${API.students}/${id}`, jsonOptions("PUT", readStudentForm()));
+      showMessage("Student is bijgewerkt.");
+    } else {
+      await request(API.students, jsonOptions("POST", readStudentForm()));
+      showMessage("Student is toegevoegd.");
+    }
+    resetStudentForm();
+    await Promise.all([loadStudents(), loadCountries(), loadStats()]);
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
+async function deleteStudent(id) {
+  if (!window.confirm("Weet je zeker dat je deze student wilt verwijderen?")) return;
+  try {
+    await request(`${API.students}/${id}`, { method: "DELETE" });
+    showMessage("Student is verwijderd.");
+    await Promise.all([loadStudents(), loadCountries(), loadStats()]);
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
+function readCountryForm() {
+  return {
+    name: elements.countryName.value.trim(),
+    code: elements.countryCode.value.trim(),
+    region: elements.countryRegion.value.trim()
+  };
+}
+
+function resetCountryForm() {
+  elements.countryForm.reset();
+  elements.countryId.value = "";
+  elements.countryFormMode.textContent = "Create";
+  elements.countryFormTitle.textContent = "Land toevoegen";
+  elements.countrySubmit.textContent = "Land toevoegen";
+  elements.cancelCountryEdit.hidden = true;
+}
+
+function startCountryEdit(id) {
+  const country = state.countries.find((item) => item.id === id);
+  if (!country) return;
+  elements.countryId.value = country.id;
+  elements.countryName.value = country.name;
+  elements.countryCode.value = country.code;
+  elements.countryRegion.value = country.region;
+  elements.countryFormMode.textContent = "Update";
+  elements.countryFormTitle.textContent = "Land bewerken";
+  elements.countrySubmit.textContent = "Wijzigingen opslaan";
+  elements.cancelCountryEdit.hidden = false;
+  document.querySelector("#country-form-panel").scrollIntoView({ behavior: "smooth" });
+}
+
+async function saveCountry(event) {
+  event.preventDefault();
+  const id = elements.countryId.value;
+  try {
+    if (id) {
+      await request(`${API.countries}/${id}`, jsonOptions("PUT", readCountryForm()));
+      showMessage("Land is bijgewerkt.");
+    } else {
+      await request(API.countries, jsonOptions("POST", readCountryForm()));
+      showMessage("Land is toegevoegd.");
+    }
+    resetCountryForm();
+    await Promise.all([loadCountries(), loadStats(), loadStudents()]);
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
+async function deleteCountry(id) {
+  if (!window.confirm("Weet je zeker dat je dit land wilt verwijderen?")) return;
+  try {
+    await request(`${API.countries}/${id}`, { method: "DELETE" });
+    showMessage("Land is verwijderd.");
+    await Promise.all([loadCountries(), loadStats()]);
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+}
+
+function showPage(name) {
+  elements.pages.forEach((page) => page.classList.toggle("is-active", page.id === `${name}-page`));
+  elements.navButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.page === name));
+}
+
+elements.navButtons.forEach((button) => button.addEventListener("click", () => showPage(button.dataset.page)));
+elements.studentForm.addEventListener("submit", saveStudent);
+elements.cancelStudentEdit.addEventListener("click", resetStudentForm);
+elements.countryForm.addEventListener("submit", saveCountry);
+elements.cancelCountryEdit.addEventListener("click", resetCountryForm);
+elements.filters.addEventListener("submit", (event) => { event.preventDefault(); loadStudents().catch((error) => showMessage(error.message, "error")); });
+elements.clearFilters.addEventListener("click", () => { elements.filters.reset(); loadStudents(); });
+document.querySelector("[data-focus-student]").addEventListener("click", () => { resetStudentForm(); document.querySelector("#student-form-panel").scrollIntoView({ behavior: "smooth" }); });
+document.querySelector("[data-focus-country]").addEventListener("click", () => { resetCountryForm(); document.querySelector("#country-form-panel").scrollIntoView({ behavior: "smooth" }); });
+
+elements.studentRows.addEventListener("click", (event) => {
+  const editButton = event.target.closest("[data-edit-student]");
+  const deleteButton = event.target.closest("[data-delete-student]");
+  if (editButton) startStudentEdit(Number(editButton.dataset.editStudent));
+  if (deleteButton) deleteStudent(Number(deleteButton.dataset.deleteStudent));
+});
+
+elements.countryRows.addEventListener("click", (event) => {
+  const editButton = event.target.closest("[data-edit-country]");
+  const deleteButton = event.target.closest("[data-delete-country]");
+  if (editButton) startCountryEdit(Number(editButton.dataset.editCountry));
+  if (deleteButton) deleteCountry(Number(deleteButton.dataset.deleteCountry));
+});
+
+Promise.all([loadCountries(), loadStudents(), loadStats()])
+  .catch((error) => showMessage(error.message, "error"));
+
