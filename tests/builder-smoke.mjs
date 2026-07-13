@@ -59,6 +59,16 @@ if (styles.includes('.beginner-code:not(.is-code-open)') || styles.includes('vis
   throw new Error('Beginnersmodus verbergt nog code of een kopieerknop.');
 }
 
+const siteHeader = window.document.querySelector('.site-header');
+if (!siteHeader.querySelector('.header-utilities')
+  || siteHeader.querySelector('[data-header-route]')
+  || siteHeader.querySelector('kbd')
+  || siteHeader.querySelector('[data-theme-toggle]').textContent.trim()
+  || siteHeader.querySelector('.header-cta').textContent.trim() !== 'Starter'
+  || !styles.includes('min-height: 64px')) {
+  throw new Error('De header is niet teruggebracht tot compacte navigatie, utilities en één starter-CTA.');
+}
+
 const beginnerToggle = window.document.querySelector('[data-beginner-toggle]');
 beginnerToggle.click();
 if (window.document.body.classList.contains('beginner-mode') || window.localStorage.getItem('cfd-beginner-mode') !== 'false') {
@@ -567,7 +577,10 @@ if (window.document.querySelector('#database').hidden || !window.document.queryS
 if (window.document.querySelector('[data-progress-total]').textContent !== '9') {
   throw new Error('De voortgang is niet aangepast aan PHP + SQLite.');
 }
-if (stack.value !== 'php-sqlite' || window.document.querySelector('.header-cta').getAttribute('href') !== './downloads/studenten-crud.zip') {
+if (stack.value !== 'php-sqlite'
+  || window.document.querySelector('.header-cta').getAttribute('href') !== './downloads/studenten-crud.zip'
+  || window.document.querySelector('.header-cta').textContent.trim() !== 'Starter'
+  || !window.document.querySelector('.header-cta').getAttribute('aria-label').includes('PHP + SQLite')) {
   throw new Error('Builder of download volgt de gekozen SQLite-route niet.');
 }
 

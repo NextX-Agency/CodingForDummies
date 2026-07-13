@@ -203,6 +203,7 @@ function applyLanguage(language, updateUrl = true) {
     entry.text = entry.element.textContent.replace(/\s+/g, " ").trim();
   });
   $("[data-crud-builder]")?.refreshLanguage?.();
+  if (activeRoute && routeDefinitions[activeRoute]) updateRouteDownloads(routeDefinitions[activeRoute]);
   applyTheme(document.documentElement.dataset.theme || "light");
   localStorage.setItem("cfd-language", activeLanguage);
   if (updateUrl) {
@@ -2110,7 +2111,11 @@ function updateRouteDownloads(route) {
   const sidebarDownload = $(".sidebar-download");
   if (headerDownload) {
     headerDownload.href = route.download;
-    headerDownload.textContent = `Download ${route.name}`;
+    const downloadLabel = activeLanguage === "en"
+      ? `Download the ${route.name} starter`
+      : `Download de ${route.name}-starter`;
+    headerDownload.setAttribute("aria-label", downloadLabel);
+    headerDownload.title = downloadLabel;
   }
   if (sidebarDownload) {
     sidebarDownload.href = route.download;
