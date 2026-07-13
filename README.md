@@ -10,6 +10,8 @@ Een Nederlandstalige, beginnersvriendelijke gids voor het bouwen van een complet
 
 Iedere route heeft een downloadbare studentenadministratie met een gekoppeld landenregister. De starters bevatten CRUD, zoeken, filters, validatie en veilige databasevragen.
 
+De gids bevat daarnaast een interactieve CRUD-builder voor eigen resources en een snippetbibliotheek voor veldtypes, relaties, detailpagina's, login, uploads, CSV-export, soft delete en transacties. Daarmee is de gids gericht op vrijwel iedere normale administratieve CRUD-app. Betalingen, realtime chat en vergelijkbare specialistische systemen vallen bewust buiten de scope.
+
 ## Gids lokaal starten
 
 ```bash
@@ -47,4 +49,3 @@ starter/php-mysql-crud/         PHP + MySQL
 starter/javascript-sqlite-crud/ JavaScript + SQLite
 tests/mysql-smoke.php           tijdelijke MySQL CRUD-controle
 ```
-
