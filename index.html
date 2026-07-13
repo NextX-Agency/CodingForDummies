@@ -255,19 +255,20 @@
 
               <div class="builder-output">
                 <div class="builder-tabs" role="tablist" aria-label="Gegenereerde code">
-                  <button class="is-active" type="button" data-builder-tab="sql">1. Database</button>
+                  <button type="button" data-builder-tab="sql">1. Database</button>
                   <button type="button" data-builder-tab="form">2. Invulvelden</button>
                   <button type="button" data-builder-tab="backend">3. Opslaan</button>
-                  <button type="button" data-builder-tab="steps">4. Waar plakken?</button>
+                  <button type="button" data-builder-tab="frontend">4. Browsercode</button>
+                  <button class="is-active" type="button" data-builder-tab="steps">5. Start: waar plakken?</button>
                 </div>
-                <div class="code-block builder-code">
+                <div class="code-block builder-code is-code-open">
                   <div class="code-toolbar"><span data-builder-file>database/schema.sql</span><button type="button" data-copy-builder>Kopieer resultaat</button></div>
                   <pre><code data-builder-code></code></pre>
                 </div>
               </div>
             </div>
 
-            <div class="warning-callout"><span>!</span><div><b>De builder maakt een veilig beginpunt, geen compleet nieuw framework.</b><p>Gebruik altijd één van de drie starters als basis. Voeg daarna de gegenereerde resource toe en test eerst Create en Read.</p></div></div>
+            <div class="warning-callout"><span>!</span><div><b>De builder maakt een complete extra CRUD, maar gebruikt de basis uit de starter.</b><p>Tab 2 bevat formulier, overzicht, bewerken en verwijderen. Tab 3 verwerkt alle vier de acties. Volg altijd eerst tab 5, omdat daar de exacte bestanden en zoekankers staan.</p></div></div>
           </section>
 
           <section id="xampp" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="XAMPP installeren en SQLite activeren">
@@ -323,6 +324,30 @@ extension=sqlite3</code></pre>
                 <div><code>schema.sql</code><p>Beschrijft tabellen, velden, relaties en startdata.</p></div>
                 <div><code>functions.php</code><p>Bevat herbruikbare validatie- en beveiligingsfuncties.</p></div>
               </div>
+            </div>
+
+            <div class="php-map" data-php-map>
+              <div class="php-map-heading"><span>PHP zonder voorkennis</span><h3>Waar hoort code eigenlijk?</h3><p>Klik op een bestand. Je ziet welke taak het heeft, welke delen erin staan en wat je daar wel of niet mag plakken.</p></div>
+              <div class="php-map-tabs" role="tablist" aria-label="PHP-bestanden uitgelegd">
+                <button class="is-active" type="button" data-anatomy-file="index" role="tab">index.php</button>
+                <button type="button" data-anatomy-file="database" role="tab">database.php</button>
+                <button type="button" data-anatomy-file="functions" role="tab">functions.php</button>
+                <button type="button" data-anatomy-file="schema" role="tab">schema.sql</button>
+              </div>
+              <div class="php-map-content">
+                <div class="php-map-summary"><span data-anatomy-path>studenten-crud/index.php</span><h4 data-anatomy-title>De hoofdpagina en alle acties</h4><p data-anatomy-description></p><div class="php-map-rule"><b>Veilige plakregel</b><span data-anatomy-rule></span></div></div>
+                <ol class="php-zones" data-anatomy-zones></ol>
+              </div>
+            </div>
+
+            <div class="paste-contract">
+              <div class="paste-contract-heading"><span>De drie plakmethodes</span><h3>“Plakken” betekent niet altijd hetzelfde.</h3></div>
+              <div class="paste-contract-grid">
+                <div><span class="paste-method paste-method--safe">Veiligst</span><b>Heel bestand vervangen</b><p>Open het bestand, druk <kbd>Ctrl A</kbd>, plak de complete bestandscode en sla op. Gebruik dit als je niet weet hoe PHP in elkaar zit.</p></div>
+                <div><span class="paste-method paste-method--replace">Exact blok</span><b>Tussen twee zoekankers vervangen</b><p>De gids geeft een beginregel en eindregel. Selecteer inclusief beide regels en plak het nieuwe blok één keer.</p></div>
+                <div><span class="paste-method paste-method--multi">Meerdere delen</span><b>Een recept stap voor stap uitvoeren</b><p>Sommige functies hebben database-, PHP- én formuliercode nodig. Voer dan ieder genummerd deel uit; één los blok is niet genoeg.</p></div>
+              </div>
+              <p class="paste-contract-warning"><b>Nooit doen:</b> code ergens onderaan plakken omdat daar ruimte is. PHP-code vóór de HTML en HTML-code ín de pagina zijn verschillende plekken.</p>
             </div>
 
             <div class="download-panel">
@@ -426,7 +451,18 @@ $connection-&gt;exec('USE studenten_crud');</code></pre>
           <section id="crud" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="Create Read Update Delete bouwen met PHP">
             <div class="section-number">Hoofdstuk 07 · PHP-route</div>
             <h2>Bouw CRUD in deze volgorde.</h2>
-            <p class="section-intro">Werk niet aan alles tegelijk. Test na iedere bewerking. Dan weet je precies in welk blok een fout is ontstaan.</p>
+            <p class="section-intro">Werk niet aan alles tegelijk. Iedere tab hieronder noemt het bestand, de eerste regel en de laatste regel. Daardoor hoef je niet te raden waar de code hoort.</p>
+
+            <div class="paste-demo">
+              <div class="paste-demo-heading"><span>Voorbeeld: een blok vervangen</span><h3>Zo gebruik je de zoekankers.</h3><p>Je zoekt niet naar een regelnummer, want regelnummers veranderen. Je zoekt naar tekst die letterlijk in jouw starter staat.</p></div>
+              <div class="paste-demo-flow">
+                <div><span>1 · Zoek</span><b>Druk <kbd>Ctrl F</kbd></b><code>case 'create_student':</code><small>De editor springt naar het begin van Create.</small></div>
+                <i aria-hidden="true">→</i>
+                <div><span>2 · Selecteer</span><b>Van beginanker tot eindanker</b><code>break;</code><small>Neem de eerste <code>break;</code> na het beginanker mee.</small></div>
+                <i aria-hidden="true">→</i>
+                <div><span>3 · Vervang</span><b>Plak precies één keer</b><code>Ctrl V · Ctrl S</code><small>Je voegt dus geen tweede Create-blok toe.</small></div>
+              </div>
+            </div>
 
             <nav class="crud-tabs" role="tablist" aria-label="CRUD onderdelen">
               <button class="is-active" type="button" role="tab" data-crud-tab="create"><span>C</span>Create</button>
@@ -437,63 +473,84 @@ $connection-&gt;exec('USE studenten_crud');</code></pre>
 
             <div class="crud-panel is-active" data-crud-panel="create">
               <div class="crud-heading"><span>01</span><div><h3>Create — een student toevoegen</h3><p>Het formulier verstuurt een POST-request. PHP valideert de velden en voert daarna één INSERT uit.</p></div></div>
-              <div class="code-block"><div class="code-toolbar"><span>index.php · CREATE</span><button type="button" data-copy-target="create-code">Kopieer</button></div><pre><code id="create-code">$student = student_input($db);
-$statement = $db-&gt;prepare(
-    'INSERT INTO studenten
-        (studentnummer, voornaam, achternaam, email, opleiding, land_id, status)
-     VALUES
-        (:studentnummer, :voornaam, :achternaam, :email, :opleiding, :land_id, :status)'
-);
-$statement-&gt;execute($student);</code></pre></div>
+              <div class="code-block"><div class="code-toolbar"><span>index.php · CREATE · compleet vervangblok</span><button type="button" data-copy-target="create-code">Kopieer vervangblok</button></div><pre><code id="create-code">case 'create_student':
+    $student = student_input($db);
+    $statement = $db-&gt;prepare(
+        'INSERT INTO studenten
+            (studentnummer, voornaam, achternaam, email, opleiding, land_id, status, updated_at)
+         VALUES
+            (:studentnummer, :voornaam, :achternaam, :email, :opleiding, :land_id, :status, CURRENT_TIMESTAMP)'
+    );
+    $statement-&gt;execute($student);
+    flash('success', 'Student is toegevoegd.');
+    break;</code></pre></div>
               <div class="why-grid"><div><b>Waarom POST?</b><p>Omdat de actie gegevens verandert.</p></div><div><b>Waarom dubbele punten?</b><p><code>:voornaam</code> is een veilige placeholder.</p></div><div><b>Wat komt terug?</b><p>Na opslaan redirect PHP naar het overzicht.</p></div></div>
             </div>
 
             <div class="crud-panel" data-crud-panel="read" hidden>
               <div class="crud-heading"><span>02</span><div><h3>Read — rijen ophalen en tonen</h3><p>Een SELECT haalt de studenten op. De foreach-lus maakt voor iedere rij een tabelregel.</p></div></div>
-              <div class="code-block"><div class="code-toolbar"><span>index.php · READ</span><button type="button" data-copy-target="read-code">Kopieer</button></div><pre><code id="read-code">$statement = $db-&gt;query(
-    'SELECT studenten.*, landen.naam AS land_naam
+              <div class="code-block"><div class="code-toolbar"><span>index.php · READ · compleet vervangblok</span><button type="button" data-copy-target="read-code">Kopieer vervangblok</button></div><pre><code id="read-code">$studentStatement = $db-&gt;prepare(
+    'SELECT
+        studenten.*,
+        landen.naam AS land_naam,
+        landen.code AS land_code
      FROM studenten
      JOIN landen ON landen.id = studenten.land_id
-     ORDER BY studenten.id DESC'
+     ' . $whereSql . '
+     ORDER BY ' . $sortOptions[$sort] . '
+     LIMIT ' . $perPage . ' OFFSET ' . $offset
 );
-$students = $statement-&gt;fetchAll();
-
-foreach ($students as $student) {
-    echo e($student['voornaam']);
-}</code></pre></div>
+$studentStatement-&gt;execute($studentParams);
+$students = $studentStatement-&gt;fetchAll();</code></pre></div>
               <div class="why-grid"><div><b>Waarom JOIN?</b><p>De student bewaart alleen <code>land_id</code>; JOIN haalt de landnaam erbij.</p></div><div><b>Waarom <code>e()</code>?</b><p>Het ontsmet tekst voordat die in HTML komt.</p></div><div><b>Waarom ORDER BY?</b><p>Daarmee bepaal jij de volgorde van het overzicht.</p></div></div>
             </div>
 
             <div class="crud-panel" data-crud-panel="update" hidden>
               <div class="crud-heading"><span>03</span><div><h3>Update — één rij wijzigen</h3><p>Laad eerst de bestaande student in het formulier. Bij opslaan bepaalt de verborgen <code>id</code> welke rij verandert.</p></div></div>
-              <div class="code-block"><div class="code-toolbar"><span>index.php · UPDATE</span><button type="button" data-copy-target="update-code">Kopieer</button></div><pre><code id="update-code">$student = student_input($db);
-$student['id'] = positive_id($_POST['id'], 'Student-ID');
+              <div class="code-block"><div class="code-toolbar"><span>index.php · UPDATE · compleet vervangblok</span><button type="button" data-copy-target="update-code">Kopieer vervangblok</button></div><pre><code id="update-code">case 'update_student':
+    $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+    $student = student_input($db);
+    $student['id'] = $id;
+    $statement = $db-&gt;prepare(
+        'UPDATE studenten SET
+            studentnummer = :studentnummer,
+            voornaam = :voornaam,
+            achternaam = :achternaam,
+            email = :email,
+            opleiding = :opleiding,
+            land_id = :land_id,
+            status = :status,
+            updated_at = CURRENT_TIMESTAMP
+         WHERE id = :id'
+    );
+    $statement-&gt;execute($student);
 
-$statement = $db-&gt;prepare(
-    'UPDATE studenten SET
-        voornaam = :voornaam,
-        achternaam = :achternaam,
-        email = :email,
-        opleiding = :opleiding,
-        land_id = :land_id,
-        status = :status
-     WHERE id = :id'
-);
-$statement-&gt;execute($student);</code></pre></div>
+    if ($statement-&gt;rowCount() === 0) {
+        $exists = $db-&gt;prepare('SELECT COUNT(*) FROM studenten WHERE id = ?');
+        $exists-&gt;execute([$id]);
+        if ((int) $exists-&gt;fetchColumn() === 0) {
+            throw new RuntimeException('Student niet gevonden.');
+        }
+    }
+
+    flash('success', 'Student is bijgewerkt.');
+    break;</code></pre></div>
               <div class="why-grid"><div><b>Waarom WHERE?</b><p>Zonder <code>WHERE id = :id</code> wijzig je iedere student.</p></div><div><b>Waarom verborgen ID?</b><p>Het formulier weet zo welke rij je aan het bewerken bent.</p></div><div><b>Zelfde validatie?</b><p>Ja. Create en Update gebruiken allebei <code>student_input()</code>.</p></div></div>
             </div>
 
             <div class="crud-panel" data-crud-panel="delete" hidden>
               <div class="crud-heading"><span>04</span><div><h3>Delete — veilig verwijderen</h3><p>Verwijderen gebruikt ook POST, een CSRF-token en een exact ID. Gebruik hiervoor nooit een simpele GET-link.</p></div></div>
-              <div class="code-block"><div class="code-toolbar"><span>index.php · DELETE</span><button type="button" data-copy-target="delete-code">Kopieer</button></div><pre><code id="delete-code">verify_csrf($_POST['_token'] ?? null);
-$id = positive_id($_POST['id'] ?? null, 'Student-ID');
+              <div class="code-block"><div class="code-toolbar"><span>index.php · DELETE · compleet vervangblok</span><button type="button" data-copy-target="delete-code">Kopieer vervangblok</button></div><pre><code id="delete-code">case 'delete_student':
+    $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+    $statement = $db-&gt;prepare('DELETE FROM studenten WHERE id = ?');
+    $statement-&gt;execute([$id]);
 
-$statement = $db-&gt;prepare('DELETE FROM studenten WHERE id = ?');
-$statement-&gt;execute([$id]);
+    if ($statement-&gt;rowCount() === 0) {
+        throw new RuntimeException('Student niet gevonden.');
+    }
 
-if ($statement-&gt;rowCount() === 0) {
-    throw new RuntimeException('Student niet gevonden.');
-}</code></pre></div>
+    flash('success', 'Student is verwijderd.');
+    break;</code></pre></div>
               <div class="why-grid"><div><b>Waarom CSRF?</b><p>Voorkomt dat een andere site namens jou een verwijderactie stuurt.</p></div><div><b>Waarom <code>?</code>?</b><p>Dat is een positionele placeholder voor het ID.</p></div><div><b>Waarom rowCount?</b><p>Je ontdekt daarmee of er echt een rij is verwijderd.</p></div></div>
             </div>
 
@@ -507,7 +564,19 @@ if ($statement-&gt;rowCount() === 0) {
           <section id="codebank" class="guide-section codebank-section" data-route-section="php-sqlite" data-search-title="Volledige copy-paste bestanden codebank">
             <div class="section-number">PHP + SQLite codebank</div>
             <h2>Complete PHP-bestanden, zonder gaten.</h2>
-            <p class="section-intro">Kies een bestand, kopieer alles en plak het op precies hetzelfde pad in jouw PHP + SQLite-project. Dit is dezelfde code als in de download.</p>
+            <p class="section-intro">Dit is de veiligste manier als je PHP nog niet begrijpt: vervang één heel bestand. Je hoeft dan niet te bepalen waar een functie begint of eindigt.</p>
+
+            <div class="full-file-coach">
+              <div><span>Veilige copy-paste-modus</span><h3>Een compleet bestand vervangen in vijf klikken.</h3></div>
+              <ol>
+                <li><span>1</span><p>Klik links op het bestand dat je wilt vervangen.</p></li>
+                <li><span>2</span><p>Klik rechtsboven op <b>Kopieer bestand</b>.</p></li>
+                <li><span>3</span><p>Open in VS Code exact hetzelfde pad in jouw project.</p></li>
+                <li><span>4</span><p>Druk <kbd>Ctrl A</kbd> en daarna <kbd>Ctrl V</kbd>.</p></li>
+                <li><span>5</span><p>Sla op met <kbd>Ctrl S</kbd> en vernieuw localhost.</p></li>
+              </ol>
+              <p><b>Voorbeeld:</b> kies je links <code>config/database.php</code>, dan open je in VS Code de map <code>config</code> en daarna <code>database.php</code>. Je plakt dus niet in <code>index.php</code>.</p>
+            </div>
 
             <div class="file-viewer" data-file-viewer>
               <div class="file-sidebar" role="tablist" aria-label="Projectbestanden">
@@ -629,7 +698,11 @@ db.exec(`
             </div>
 
             <h3 class="subheading">Volledige JavaScript-codebank</h3>
-            <p>Kopieer bestanden alleen los als je begrijpt in welke map ze horen. Voor de eerste keer is de ZIP veiliger.</p>
+            <p>Ieder tabblad hieronder is één compleet bestand. De naam op de knop is ook het exacte pad waar je het bestand moet vervangen.</p>
+            <div class="full-file-coach full-file-coach--compact">
+              <div><span>Complete bestanden</span><h3>Kies bestand → kopieer → open hetzelfde pad → Ctrl A → Ctrl V.</h3></div>
+              <p><b>Voorbeeld:</b> <code>backend/server.js</code> hoort in de map <code>backend</code>. <code>frontend/app.js</code> hoort in de map <code>frontend</code>. Meng deze twee bestanden nooit.</p>
+            </div>
             <div class="file-viewer" data-file-viewer>
               <div class="file-sidebar" role="tablist" aria-label="JavaScript starterbestanden">
                 <button class="is-active" type="button" data-source="./code/js-server.js.txt"><span>JS</span>backend/server.js</button>
@@ -656,7 +729,7 @@ db.exec(`
           <section id="snippets" class="guide-section snippet-section" data-search-title="Universele snippets login relaties uploads CSV soft delete detailpagina transacties">
             <div class="section-number">Universele snippetbibliotheek</div>
             <h2>Voeg functies toe zonder opnieuw te beginnen.</h2>
-            <p class="section-intro">Deze recepten zijn aanvullingen op de starters. Ieder recept vertelt waar het hoort en welke andere onderdelen nodig zijn. Zoek eerst de functie die je nodig hebt en kopieer daarna het hele blok.</p>
+            <p class="section-intro">Deze recepten zijn aanvullingen op de starters. Een groen label betekent dat je een compleet bestand direct kunt plakken. Een oranje label betekent dat de functie uit meerdere bestanden bestaat; volg dan alle genoemde delen en plak het blok nooit zomaar als geheel.</p>
 
             <div class="scope-banner">
               <div><span>Hiermee bouw je goed</span><b>Administraties, registers, voorraad, reserveringen, catalogi en dashboards</b></div>
