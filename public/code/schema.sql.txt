@@ -1,3 +1,5 @@
+-- BESTANDSKAART: zet relaties aan, maak eerst landen en daarna studenten.
+-- Onderaan staan indexen en veilige voorbeelddata voor de eerste test.
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS landen (
@@ -33,4 +35,3 @@ INSERT OR IGNORE INTO landen (naam, code, regio) VALUES
   ('België', 'BE', 'Europa'),
   ('Guyana', 'GY', 'Zuid-Amerika'),
   ('Curaçao', 'CW', 'Cariben');
-

@@ -1,3 +1,4 @@
+/* CSS-KAART: variabelen → algemene layout → tabellen → formulieren → mobiel. */
 :root {
   --ink: #10233f;
   --muted: #5f6c7e;
@@ -104,4 +105,3 @@ td small { max-width: 250px; overflow: hidden; color: var(--muted); font-size: 1
   .stats article { border-right: 0; border-bottom: 1px solid var(--line); }
   .form-panel { padding: 19px; }
 }
-

@@ -256,13 +256,18 @@
               </div>
 
               <div class="builder-output">
+                <div class="builder-test-guide" data-builder-test-guide>
+                  <div><span>Direct testen · begin hier</span><h3 data-builder-test-title>Complete PHP-app in één bestand</h3><p data-builder-test-intro>Kopieer tab 1 en volg deze stappen.</p></div>
+                  <ol data-builder-test-steps></ol>
+                </div>
                 <div class="builder-tabs" role="tablist" aria-label="Gegenereerde code">
-                  <button type="button" data-builder-tab="sql">1. Database</button>
-                  <button type="button" data-builder-tab="form">2. HTML-pagina</button>
-                  <button type="button" data-builder-tab="css">3. CSS-opmaak</button>
-                  <button type="button" data-builder-tab="backend">4. Opslaan</button>
-                  <button type="button" data-builder-tab="frontend">5. Browser-JS</button>
-                  <button class="is-active" type="button" data-builder-tab="steps">6. Exact plakplan</button>
+                  <button class="is-active" type="button" data-builder-tab="complete">1. Complete app</button>
+                  <button type="button" data-builder-tab="sql">2. Database</button>
+                  <button type="button" data-builder-tab="form">3. HTML-pagina</button>
+                  <button type="button" data-builder-tab="css">4. CSS-opmaak</button>
+                  <button type="button" data-builder-tab="backend">5. PHP / API</button>
+                  <button type="button" data-builder-tab="frontend">6. Browser-JS</button>
+                  <button type="button" data-builder-tab="steps">7. Exact plakplan</button>
                 </div>
                 <div class="code-block builder-code">
                   <div class="code-toolbar"><span data-builder-file>database/schema.sql</span><button type="button" data-copy-builder>Kopieer resultaat</button></div>
@@ -271,7 +276,7 @@
               </div>
             </div>
 
-            <div class="warning-callout"><span>!</span><div><b>De builder maakt een complete extra CRUD, inclusief HTML en CSS.</b><p>Tab 2 bevat de zichtbare pagina. Tab 3 geeft die pagina vorm. Tab 4 verwerkt alle vier CRUD-acties. Begin altijd met tab 6: daar staan de exacte bestanden en zoekankers in de juiste volgorde.</p></div></div>
+            <div class="warning-callout"><span>!</span><div><b>Wil je direct testen? Begin met tab 1.</b><p>Voor PHP maakt <strong>Complete app</strong> één volledig <code>index.php</code>-bestand met database, CRUD, HTML, CSS en uitlegcomments. De andere tabs splitsen dezelfde onderdelen op zodat je ze later in een groter project kunt plaatsen.</p></div></div>
           </section>
 
           <section id="xampp" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="XAMPP installeren en SQLite activeren">
@@ -884,7 +889,15 @@ db.exec(`
           <section id="snippets" class="guide-section snippet-section" data-search-title="Universele snippets login relaties uploads CSV soft delete detailpagina transacties">
             <div class="section-number">Universele snippetbibliotheek</div>
             <h2>Voeg functies toe zonder opnieuw te beginnen.</h2>
-            <p class="section-intro">Deze recepten zijn aanvullingen op de starters. Een groen label betekent dat je een compleet bestand direct kunt plakken. Een oranje label betekent dat de functie uit meerdere bestanden bestaat; volg dan alle genoemde delen en plak het blok nooit zomaar als geheel.</p>
+            <p class="section-intro">Deze recepten zijn aanvullingen op de starters. Ieder recept bevat nu niet alleen de functionaliteit, maar ook het <strong>HTML-deel dat je gebruiker ziet</strong> en de <strong>CSS die daarbij hoort</strong>. Voer de delen altijd in de aangegeven volgorde uit.</p>
+
+            <div class="snippet-three-parts">
+              <div><span>1</span><b>Functionaliteit</b><small>Database, PHP of JavaScript</small></div>
+              <i>→</i>
+              <div><span>2</span><b>HTML</b><small>Formulier, knop of overzicht</small></div>
+              <i>→</i>
+              <div><span>3</span><b>CSS</b><small>De bijpassende vormgeving</small></div>
+            </div>
 
             <div class="scope-banner">
               <div><span>Hiermee bouw je goed</span><b>Administraties, registers, voorraad, reserveringen, catalogi en dashboards</b></div>
@@ -895,13 +908,34 @@ db.exec(`
               <div class="snippet-wizard-heading"><span>Functiekiezer</span><h3>Zeg wat je app moet kunnen.</h3><p>Je hoeft de technische naam niet te kennen. Kies een gewone taak; de juiste uitleg wordt voor je geopend.</p></div>
               <div class="snippet-picks" role="group" aria-label="Kies wat je wilt toevoegen">
                 <button type="button" data-snippet-pick="snippet-one-many">Iets aan een categorie koppelen</button>
+                <button type="button" data-snippet-pick="snippet-many-many">Meerdere items aan elkaar koppelen</button>
                 <button type="button" data-snippet-pick="snippet-detail-php">Een detailpagina maken</button>
+                <button type="button" data-snippet-pick="snippet-detail-js">Een JavaScript detailvenster maken</button>
                 <button type="button" data-snippet-pick="snippet-login">Gebruikers laten inloggen</button>
                 <button type="button" data-snippet-pick="snippet-upload">Een foto uploaden</button>
                 <button type="button" data-snippet-pick="snippet-csv">Gegevens downloaden als CSV</button>
+                <button type="button" data-snippet-pick="snippet-csv-import">Gegevens importeren uit CSV</button>
                 <button type="button" data-snippet-pick="snippet-soft-delete">Een prullenbak maken</button>
+                <button type="button" data-snippet-pick="snippet-transaction">Voorraad en bestelling samen opslaan</button>
+                <button type="button" data-snippet-pick="snippet-user-crud">Gebruikers beheren</button>
+                <button type="button" data-snippet-pick="snippet-role-permissions">Rollen en rechten instellen</button>
+                <button type="button" data-snippet-pick="snippet-profile-settings">Een eigen profiel en wachtwoord wijzigen</button>
+                <button type="button" data-snippet-pick="snippet-search-filter">Zoeken en filteren</button>
+                <button type="button" data-snippet-pick="snippet-pagination">Veel resultaten verdelen</button>
+                <button type="button" data-snippet-pick="snippet-bulk-actions">Meerdere rijen tegelijk aanpassen</button>
+                <button type="button" data-snippet-pick="snippet-audit-log">Bijhouden wie iets veranderde</button>
               </div>
               <div class="snippet-advice" data-snippet-advice aria-live="polite"><span>1</span><p>Kies hierboven één functie. Voeg extra functies pas toe wanneer Create, Read, Update en Delete al werken.</p></div>
+            </div>
+
+            <div class="complete-app-roadmap">
+              <div><span>Complete-app volgorde</span><h3>Voeg niet alles tegelijk toe.</h3><p>Maak na iedere rij hieronder één testaccount of testrecord. Ga pas verder als die stap werkt.</p></div>
+              <ol>
+                <li><b>1. Basis</b><span>Generator: Create, Read, Update en Delete</span></li>
+                <li><b>2. Gebruikers</b><span>Login → gebruikersbeheer → rollen → profiel</span></li>
+                <li><b>3. Overzicht</b><span>Zoeken → filteren → paginering → bulkacties</span></li>
+                <li><b>4. Controle</b><span>Prullenbak → activiteitenlog → CSV export</span></li>
+              </ol>
             </div>
 
             <div class="snippet-filter" role="group" aria-label="Filter snippets">
@@ -909,6 +943,9 @@ db.exec(`
               <button type="button" data-snippet-filter="database">Database</button>
               <button type="button" data-snippet-filter="php">PHP</button>
               <button type="button" data-snippet-filter="javascript">JavaScript</button>
+              <button type="button" data-snippet-filter="html">HTML</button>
+              <button type="button" data-snippet-filter="css">CSS</button>
+              <button type="button" data-snippet-filter="users">Gebruikers</button>
               <button type="button" data-snippet-filter="feature">Extra functies</button>
             </div>
 
@@ -926,7 +963,7 @@ db.exec(`
             </details>
 
             <div class="snippet-list" data-snippet-list>
-              <details class="snippet-item" data-snippet-tags="database feature">
+              <details class="snippet-item" data-snippet-tags="database html css feature">
                 <summary><span class="snippet-index">01</span><span><b>Studenten aan een land koppelen</b><small>Technische naam: one-to-many relatie.</small></span><span class="snippet-stack">Database</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Waar plakken:</strong> in <code>database/schema.sql</code>. Maak altijd eerst de bovenliggende tabel <code>landen</code>.</p>
@@ -940,15 +977,339 @@ db.exec(`
 SELECT studenten.*, landen.naam AS land_naam
 FROM studenten
 JOIN landen ON landen.id = studenten.land_id;</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · laat de gebruiker een land kiezen</b><small>De inputnaam <code>land_id</code> is dezelfde naam die de databasekoppeling gebruikt.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, binnen het studentenformulier op de plek waar het land moet verschijnen.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="relation-select" data-code-file="studenten-crud/index.php" data-code-method="Voeg één compleet formulierveld toe" data-code-start="&lt;form class=&quot;stack-form&quot; method=&quot;post&quot;&gt;" data-code-end="vóór de opslaanknop in hetzelfde formulier" data-code-action="Plak dit label binnen het bestaande studentenformulier. Laat de name land_id exact zo staan, omdat PHP en SQL die naam gebruiken." data-code-check="Vernieuw localhost. Het formulier moet een keuzelijst met landen tonen."><div class="code-toolbar"><span>index.php · HTML-landkeuze</span><button type="button" data-copy-target="snippet-one-many-html">Kopieer HTML</button></div><pre><code id="snippet-one-many-html">&lt;label class="relation-select"&gt;
+    &lt;span&gt;Land&lt;/span&gt;
+    &lt;select name="land_id" required&gt;
+        &lt;option value=""&gt;Kies een land&lt;/option&gt;
+        &lt;?php foreach ($countries as $country): ?&gt;
+            &lt;option value="&lt;?= e($country['id']) ?&gt;"&gt;
+                &lt;?= e($country['naam']) ?&gt;
+            &lt;/option&gt;
+        &lt;?php endforeach; ?&gt;
+    &lt;/select&gt;
+    &lt;small&gt;Dit land wordt aan de student gekoppeld.&lt;/small&gt;
+&lt;/label&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · geef de landkeuze een duidelijke vorm</b><small>De selector <code>.relation-select</code> is gelijk aan de HTML-class hierboven.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="relation-select" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Maak twee lege regels en plak dit hele CSS-blok. Verander relation-select niet zonder dezelfde HTML-class te veranderen." data-code-check="Druk Ctrl+F5. Het landveld moet een label, ruime keuzelijst en kleine uitleg tonen."><div class="code-toolbar"><span>assets/app.css · landkeuze</span><button type="button" data-copy-target="snippet-one-many-css">Kopieer CSS</button></div><pre><code id="snippet-one-many-css">.relation-select {
+  display: grid;
+  gap: 7px;
+}
+
+.relation-select &gt; span {
+  color: #546178;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.relation-select select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cbd2df;
+  background: #ffffff;
+}
+
+.relation-select small {
+  color: #647083;
+  font-size: 11px;
+}</code></pre></div>
+                    </div>
+                  </div>
                   <p class="snippet-note"><b>ON DELETE RESTRICT</b> voorkomt dat je een land verwijdert dat nog in gebruik is.</p>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="database feature">
+              <details class="snippet-item" data-snippet-tags="users database php html css feature">
+                <summary><span class="snippet-index">U1</span><span><b>Complete gebruikersbeheer-CRUD</b><small>Gebruikers toevoegen, bekijken, wijzigen en verwijderen.</small></span><span class="snippet-stack">Users + PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>Wat je krijgt:</strong> een adminscherm met Create, Read, Update en Delete voor gebruikers. Wachtwoorden worden met <code>password_hash()</code> bewaard.</p>
+                  <div class="code-block" data-code-file="studenten-crud/database/schema.sql" data-code-method="Voeg de SQLite-gebruikerstabel onderaan toe" data-code-start="Ctrl+End in database/schema.sql" data-code-end="na de laatste bestaande SQL-regel" data-code-action="Gebruik je PHP + SQLite? Plak dan deze volledige CREATE TABLE onderaan. MySQL-gebruikers nemen het volgende blok." data-code-check="Open de app één keer en controleer of de tabel users bestaat."><div class="code-toolbar"><span>schema.sql · SQLite-gebruikerstabel</span><button type="button" data-copy-target="snippet-user-crud">Kopieer SQLite-SQL</button></div><pre><code id="snippet-user-crud">-- SQLITE · GEBRUIKERS: e-mail is uniek en active bepaalt of iemand mag inloggen.
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'medewerker',
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/database/mysql-schema.sql" data-code-method="Voeg de MySQL-gebruikerstabel onderaan toe" data-code-start="Ctrl+End in database/mysql-schema.sql" data-code-end="na de laatste bestaande SQL-regel" data-code-action="Gebruik je PHP + MySQL? Plak dan dit volledige blok onderaan mysql-schema.sql. Plak niet ook de SQLite-versie." data-code-check="Importeer of herlaad het schema en controleer in phpMyAdmin of users bestaat."><div class="code-toolbar"><span>mysql-schema.sql · MySQL-gebruikerstabel</span><button type="button" data-copy-target="snippet-user-crud-mysql">Kopieer MySQL-SQL</button></div><pre><code id="snippet-user-crud-mysql">-- MYSQL · DEZELFDE VELDEN ALS DE SQLITE-VERSIE HIERBOVEN.
+CREATE TABLE IF NOT EXISTS users (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(30) NOT NULL DEFAULT 'medewerker',
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Voeg de complete gebruikersacties vóór het bestaande POST-blok toe" data-code-start="if ($_SERVER['REQUEST_METHOD'] === 'POST') {" data-code-end="plak dit blok direct boven die regel" data-code-action="Plak het hele blok vóór de bestaande POST-verwerking. De intents beginnen allemaal met user_ en botsen daardoor niet met studentenacties." data-code-check="Maak een testgebruiker, verander diens rol en verwijder daarna alleen die testgebruiker."><div class="code-toolbar"><span>index.php · gebruikers-CRUD in PHP</span><button type="button" data-copy-target="snippet-user-crud-php">Kopieer PHP</button></div><pre><code id="snippet-user-crud-php">// GEBRUIKERS-CRUD: verwerk alleen formulieren met een user_-actie.
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    &amp;&amp; str_starts_with(post_text('intent'), 'user_')
+) {
+    try {
+        verify_csrf($_POST['_token'] ?? null);
+        $intent = post_text('intent');
+
+    if ($intent === 'user_create') {
+        $email = strtolower(required_text('email', 'E-mailadres', 160));
+        $password = required_text('password', 'Wachtwoord', 200);
+        $role = in_array(post_text('role'), ['admin', 'medewerker'], true)
+            ? post_text('role') : 'medewerker';
+        if (strlen($password) &lt; 10) throw new RuntimeException('Gebruik minstens 10 tekens.');
+
+        $statement = $db-&gt;prepare(
+            'INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)'
+        );
+        $statement-&gt;execute([$email, password_hash($password, PASSWORD_DEFAULT), $role]);
+        flash('success', 'Gebruiker is toegevoegd.');
+    }
+
+    if ($intent === 'user_update') {
+        $id = positive_id($_POST['id'] ?? null, 'Gebruiker');
+        $email = strtolower(required_text('email', 'E-mailadres', 160));
+        $role = in_array(post_text('role'), ['admin', 'medewerker'], true)
+            ? post_text('role') : 'medewerker';
+        $active = isset($_POST['active']) ? 1 : 0;
+        if ($id === (int) ($_SESSION['user_id'] ?? 0) &amp;&amp; ($active === 0 || $role !== 'admin')) {
+            throw new RuntimeException('Je kunt je eigen actieve adminrechten niet uitschakelen.');
+        }
+        $db-&gt;prepare('UPDATE users SET email = ?, role = ?, active = ? WHERE id = ?')
+            -&gt;execute([$email, $role, $active, $id]);
+        flash('success', 'Gebruiker is bijgewerkt.');
+    }
+
+    // WACHTWOORD RESETTEN: een admin geeft een tijdelijk wachtwoord op.
+    if ($intent === 'user_reset_password') {
+        $id = positive_id($_POST['id'] ?? null, 'Gebruiker');
+        $password = required_text('password', 'Tijdelijk wachtwoord', 200);
+        if (strlen($password) &lt; 10) throw new RuntimeException('Gebruik minstens 10 tekens.');
+        $db-&gt;prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+            -&gt;execute([password_hash($password, PASSWORD_DEFAULT), $id]);
+        flash('success', 'Tijdelijk wachtwoord is ingesteld.');
+    }
+
+    if ($intent === 'user_delete') {
+        $id = positive_id($_POST['id'] ?? null, 'Gebruiker');
+        if ($id === (int) ($_SESSION['user_id'] ?? 0)) {
+            throw new RuntimeException('Je kunt je eigen ingelogde account niet verwijderen.');
+        }
+        $db-&gt;prepare('DELETE FROM users WHERE id = ?')-&gt;execute([$id]);
+        flash('success', 'Gebruiker is verwijderd.');
+    }
+
+    } catch (Throwable $userError) {
+        // BEGINNERSVRIENDELIJK: toon de fout in de bestaande flashmelding.
+        flash('error', $userError-&gt;getMessage());
+    }
+    redirect('index.php#user-admin');
+}
+
+// READ: laad alle gebruikers voor het overzicht.
+$users = $db-&gt;query(
+    'SELECT id, email, role, active, created_at FROM users ORDER BY id DESC'
+)-&gt;fetchAll();</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · adminformulier en gebruikersoverzicht</b><small>Alle <code>intent</code>- en inputnamen zijn gelijk aan het PHP-blok.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, vóór de footer en alleen op een pagina die voor admins is beschermd.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="user-admin" data-code-file="studenten-crud/index.php" data-code-method="Voeg het complete gebruikersbeheerscherm toe" data-code-start="vóór de footer in het HTML-deel" data-code-end="na het bestaande hoofd-overzicht" data-code-action="Plak dit hele section-blok. $users wordt door het PHP-blok geladen." data-code-check="Je moet een gebruiker kunnen toevoegen, diens rol of actiefstatus aanpassen en een testaccount verwijderen."><div class="code-toolbar"><span>index.php · HTML-gebruikersbeheer</span><button type="button" data-copy-target="snippet-user-crud-html">Kopieer HTML</button></div><pre><code id="snippet-user-crud-html">&lt;section class="user-admin" id="user-admin"&gt;
+  &lt;header&gt;&lt;p&gt;Gebruikersbeheer&lt;/p&gt;&lt;h2&gt;Accounts&lt;/h2&gt;&lt;/header&gt;
+
+  &lt;form class="user-create" method="post"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+    &lt;input type="hidden" name="intent" value="user_create"&gt;
+    &lt;label&gt;&lt;span&gt;E-mail&lt;/span&gt;&lt;input name="email" type="email" required&gt;&lt;/label&gt;
+    &lt;label&gt;&lt;span&gt;Tijdelijk wachtwoord&lt;/span&gt;&lt;input name="password" type="password" minlength="10" required&gt;&lt;/label&gt;
+    &lt;label&gt;&lt;span&gt;Rol&lt;/span&gt;&lt;select name="role"&gt;&lt;option value="medewerker"&gt;Medewerker&lt;/option&gt;&lt;option value="admin"&gt;Admin&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+    &lt;button type="submit"&gt;Gebruiker toevoegen&lt;/button&gt;
+  &lt;/form&gt;
+
+  &lt;div class="user-list"&gt;
+    &lt;?php foreach ($users as $user): ?&gt;
+      &lt;article class="user-row"&gt;
+        &lt;form method="post"&gt;
+          &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+          &lt;input type="hidden" name="intent" value="user_update"&gt;
+          &lt;input type="hidden" name="id" value="&lt;?= e($user['id']) ?&gt;"&gt;
+          &lt;input name="email" type="email" value="&lt;?= e($user['email']) ?&gt;" required&gt;
+          &lt;select name="role"&gt;&lt;option value="medewerker" &lt;?= $user['role'] === 'medewerker' ? 'selected' : '' ?&gt;&gt;Medewerker&lt;/option&gt;&lt;option value="admin" &lt;?= $user['role'] === 'admin' ? 'selected' : '' ?&gt;&gt;Admin&lt;/option&gt;&lt;/select&gt;
+          &lt;label class="user-active"&gt;&lt;input name="active" type="checkbox" value="1" &lt;?= $user['active'] ? 'checked' : '' ?&gt;&gt; Actief&lt;/label&gt;
+          &lt;button type="submit"&gt;Opslaan&lt;/button&gt;
+        &lt;/form&gt;
+        &lt;form class="user-reset" method="post"&gt;
+          &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+          &lt;input type="hidden" name="intent" value="user_reset_password"&gt;
+          &lt;input type="hidden" name="id" value="&lt;?= e($user['id']) ?&gt;"&gt;
+          &lt;input name="password" type="password" minlength="10" placeholder="Nieuw tijdelijk wachtwoord" required&gt;
+          &lt;button type="submit"&gt;Wachtwoord resetten&lt;/button&gt;
+        &lt;/form&gt;
+        &lt;form method="post" onsubmit="return confirm('Gebruiker verwijderen?')"&gt;
+          &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;&lt;input type="hidden" name="intent" value="user_delete"&gt;&lt;input type="hidden" name="id" value="&lt;?= e($user['id']) ?&gt;"&gt;
+          &lt;button class="user-delete" type="submit"&gt;Verwijder&lt;/button&gt;
+        &lt;/form&gt;
+      &lt;/article&gt;
+    &lt;?php endforeach; ?&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · beheerformulier en rijen</b><small>De hoofdclass <code>user-admin</code> staat in de HTML.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="user-admin" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg gebruikersbeheer-CSS toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste }" data-code-action="Plak dit hele blok onderaan." data-code-check="Formulier en gebruikersrijen moeten op mobiel onder elkaar passen."><div class="code-toolbar"><span>assets/app.css · gebruikersbeheer</span><button type="button" data-copy-target="snippet-user-crud-css">Kopieer CSS</button></div><pre><code id="snippet-user-crud-css">/* GEBRUIKERSBEHEER: layout voor Create, Read, Update en Delete. */
+.user-admin { margin-top: 48px; padding: 24px; border: 1px solid #d9dee8; background: #fff; }
+.user-admin header p { margin: 0; color: #1e56dc; font-weight: 700; text-transform: uppercase; }
+.user-admin header h2 { margin: 4px 0 20px; }
+.user-create { display: grid; grid-template-columns: 1fr 1fr 180px auto; gap: 10px; padding: 16px; background: #f5f7fa; }
+.user-create label { display: grid; gap: 5px; font-size: 12px; font-weight: 700; }
+.user-create input, .user-create select, .user-row input, .user-row select { min-height: 42px; padding: 8px 10px; border: 1px solid #cbd2df; }
+.user-create button, .user-row button { min-height: 42px; padding: 0 12px; border: 0; background: #1e56dc; color: #fff; font-weight: 700; }
+.user-row { display: grid; grid-template-columns: 1fr minmax(220px, .55fr) auto; gap: 8px; padding: 14px 0; border-bottom: 1px solid #e6e9ee; }
+.user-row &gt; form:first-child { display: grid; grid-template-columns: 1fr 150px 90px auto; gap: 8px; }
+.user-reset { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.user-active { display: flex; align-items: center; }
+.user-delete { background: #fff0f1 !important; color: #b62935 !important; }
+@media (max-width: 850px) { .user-create, .user-row, .user-row &gt; form:first-child, .user-reset { grid-template-columns: 1fr; } }</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="users php html css feature">
+                <summary><span class="snippet-index">U2</span><span><b>Rollen en rechten toevoegen</b><small>Admins beheren alles; medewerkers krijgen alleen toegestane acties.</small></span><span class="snippet-stack">Users + PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>Voorwaarde:</strong> login bewaart <code>$_SESSION['role']</code>. Controleer rechten altijd in PHP; alleen een knop verbergen is geen beveiliging.</p>
+                  <div class="code-block" data-code-file="studenten-crud/includes/functions.php" data-code-method="Voeg de complete rechtenfuncties onderaan toe" data-code-start="Ctrl+End in includes/functions.php" data-code-end="na de laatste functie" data-code-action="Plak beide functies onderaan functions.php. Roep require_role bovenaan beschermde adminpagina's aan." data-code-check="Log in als medewerker en open een adminpagina rechtstreeks via de URL; PHP moet toegang weigeren."><div class="code-toolbar"><span>functions.php · rollen en rechten</span><button type="button" data-copy-target="snippet-role-permissions">Kopieer PHP</button></div><pre><code id="snippet-role-permissions">// RECHTEN: één centrale lijst voorkomt losse, verschillende controles.
+function can(string $permission): bool
+{
+    $role = (string) ($_SESSION['role'] ?? 'gast');
+    $permissions = [
+        'admin' =&gt; ['view', 'create', 'update', 'delete', 'manage_users'],
+        'medewerker' =&gt; ['view', 'create', 'update'],
+        'gast' =&gt; [],
+    ];
+    return in_array($permission, $permissions[$role] ?? [], true);
+}
+
+function require_permission(string $permission): void
+{
+    if (!can($permission)) {
+        http_response_code(403);
+        exit('Je hebt geen toestemming voor deze actie.');
+    }
+}
+
+// Voorbeeld bovenaan gebruikersbeheer:
+// require_permission('manage_users');
+// Doe óók require_permission('delete') in de delete-actie.</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div><div class="snippet-part-heading"><span>2</span><div><b>HTML · toon alleen toegestane navigatie</b><small>PHP bepaalt wat zichtbaar is; de backendcontrole blijft verplicht.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> de navigatie van <code>index.php</code>.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="role-access" data-code-file="studenten-crud/index.php" data-code-method="Voeg een rechtenbewuste navigatie toe" data-code-start="binnen de bestaande navigatie" data-code-end="op de plek van de beheerlinks" data-code-action="Plak dit nav-blok. can() komt uit functions.php." data-code-check="Een medewerker mag de link Gebruikers niet zien; een admin wel."><div class="code-toolbar"><span>index.php · HTML-rechtenmenu</span><button type="button" data-copy-target="snippet-role-permissions-html">Kopieer HTML</button></div><pre><code id="snippet-role-permissions-html">&lt;nav class="role-access" aria-label="Beheeronderdelen"&gt;
+  &lt;a href="index.php"&gt;Overzicht&lt;/a&gt;
+  &lt;?php if (can('create')): ?&gt;&lt;a href="#student-form"&gt;Toevoegen&lt;/a&gt;&lt;?php endif; ?&gt;
+  &lt;?php if (can('manage_users')): ?&gt;&lt;a href="#user-admin"&gt;Gebruikers&lt;/a&gt;&lt;?php endif; ?&gt;
+  &lt;span class="role-access__badge"&gt;&lt;?= e($_SESSION['role'] ?? 'gast') ?&gt;&lt;/span&gt;
+&lt;/nav&gt;</code></pre></div>
+                    </div>
+                    <div><div class="snippet-part-heading"><span>3</span><div><b>CSS · navigatie en rolbadge</b><small>De class <code>role-access</code> koppelt CSS en HTML.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="role-access" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg menu-CSS onderaan toe" data-code-start="Ctrl+End" data-code-end="na de laatste }" data-code-action="Plak het hele CSS-blok onderaan." data-code-check="Links moeten naast elkaar staan en de rol moet als badge zichtbaar zijn."><div class="code-toolbar"><span>assets/app.css · rechtenmenu</span><button type="button" data-copy-target="snippet-role-permissions-css">Kopieer CSS</button></div><pre><code id="snippet-role-permissions-css">/* RECHTENMENU: zichtbare navigatie voor de huidige rol. */
+.role-access { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 12px; background: #10233f; }
+.role-access a { padding: 8px 11px; color: #fff; font-weight: 700; text-decoration: none; }
+.role-access a:hover { background: #1e56dc; }
+.role-access__badge { margin-left: auto; padding: 5px 9px; background: #dff2e8; color: #12663e; font-size: 11px; font-weight: 700; text-transform: uppercase; }</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="users php html css feature">
+                <summary><span class="snippet-index">U3</span><span><b>Eigen profiel en wachtwoord wijzigen</b><small>Een ingelogde gebruiker beheert veilig het eigen account.</small></span><span class="snippet-stack">Users + PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>Beveiliging:</strong> voor een nieuw wachtwoord moet het huidige wachtwoord eerst kloppen. Het gebruikers-id komt uit de sessie, nooit uit een verborgen formulierinput.</p>
+                  <div class="code-block" data-code-file="studenten-crud/profile.php" data-code-method="Maak een nieuw profile.php-bestand en plak eerst dit PHP-deel" data-code-start="een nieuw leeg profile.php-bestand" data-code-end="plak daarna het HTML-deel eronder" data-code-action="Laad boven dit blok database.php en functions.php en start de sessie, zoals bij login.php. Plak daarna dit PHP-deel." data-code-check="Wijzig de e-mail, log opnieuw in en test daarna een fout én correct huidig wachtwoord."><div class="code-toolbar"><span>profile.php · profielacties</span><button type="button" data-copy-target="snippet-profile-settings">Kopieer PHP</button></div><pre><code id="snippet-profile-settings">// PROFIEL: gebruik altijd het id uit de ingelogde sessie.
+$userId = positive_id($_SESSION['user_id'] ?? null, 'Gebruiker');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf($_POST['_token'] ?? null);
+    $intent = post_text('intent');
+
+    if ($intent === 'profile_update') {
+        $email = strtolower(required_text('email', 'E-mailadres', 160));
+        $db-&gt;prepare('UPDATE users SET email = ? WHERE id = ?')
+            -&gt;execute([$email, $userId]);
+    }
+
+    if ($intent === 'profile_password') {
+        $current = (string) ($_POST['current_password'] ?? '');
+        $new = (string) ($_POST['new_password'] ?? '');
+        $hash = $db-&gt;prepare('SELECT password_hash FROM users WHERE id = ?');
+        $hash-&gt;execute([$userId]);
+        if (!password_verify($current, (string) $hash-&gt;fetchColumn())) {
+            throw new RuntimeException('Het huidige wachtwoord klopt niet.');
+        }
+        if (strlen($new) &lt; 10) throw new RuntimeException('Gebruik minstens 10 tekens.');
+        $db-&gt;prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+            -&gt;execute([password_hash($new, PASSWORD_DEFAULT), $userId]);
+    }
+    redirect('profile.php');
+}
+
+$statement = $db-&gt;prepare('SELECT email, role FROM users WHERE id = ?');
+$statement-&gt;execute([$userId]);
+$profile = $statement-&gt;fetch();</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div><div class="snippet-part-heading"><span>2</span><div><b>HTML · twee duidelijke profiel-formulieren</b><small>Persoonsgegevens en wachtwoord blijven aparte acties.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>profile.php</code>, onder het PHP-deel.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="profile-settings" data-code-file="studenten-crud/profile.php" data-code-method="Plak HTML onder de PHP-verwerking" data-code-start="na de afsluitende ?&gt;" data-code-end="het einde van profile.php" data-code-action="Plak beide formulieren. De intents en inputnamen komen letterlijk terug in PHP." data-code-check="E-mail wijzigen en wachtwoord wijzigen moeten apart kunnen worden getest."><div class="code-toolbar"><span>profile.php · HTML-profiel</span><button type="button" data-copy-target="snippet-profile-settings-html">Kopieer HTML</button></div><pre><code id="snippet-profile-settings-html">&lt;main class="profile-settings"&gt;
+  &lt;header&gt;&lt;p&gt;Mijn account&lt;/p&gt;&lt;h1&gt;Profielinstellingen&lt;/h1&gt;&lt;/header&gt;
+  &lt;form method="post"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;&lt;input type="hidden" name="intent" value="profile_update"&gt;
+    &lt;h2&gt;E-mailadres&lt;/h2&gt;
+    &lt;label&gt;&lt;span&gt;E-mail&lt;/span&gt;&lt;input name="email" type="email" value="&lt;?= e($profile['email']) ?&gt;" required&gt;&lt;/label&gt;
+    &lt;button type="submit"&gt;Profiel opslaan&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;form method="post"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;&lt;input type="hidden" name="intent" value="profile_password"&gt;
+    &lt;h2&gt;Wachtwoord veranderen&lt;/h2&gt;
+    &lt;label&gt;&lt;span&gt;Huidig wachtwoord&lt;/span&gt;&lt;input name="current_password" type="password" required&gt;&lt;/label&gt;
+    &lt;label&gt;&lt;span&gt;Nieuw wachtwoord&lt;/span&gt;&lt;input name="new_password" type="password" minlength="10" required&gt;&lt;/label&gt;
+    &lt;button type="submit"&gt;Wachtwoord wijzigen&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/main&gt;</code></pre></div>
+                    </div>
+                    <div><div class="snippet-part-heading"><span>3</span><div><b>CSS · profielkaarten</b><small>Beide formulieren delen de hoofdclass <code>profile-settings</code>.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="profile-settings" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg profiel-CSS toe" data-code-start="Ctrl+End" data-code-end="na de laatste }" data-code-action="Plak het hele blok onderaan." data-code-check="De twee formulieren moeten naast elkaar staan en op mobiel onder elkaar."><div class="code-toolbar"><span>assets/app.css · profiel</span><button type="button" data-copy-target="snippet-profile-settings-css">Kopieer CSS</button></div><pre><code id="snippet-profile-settings-css">/* PROFIEL: twee losse kaarten voorkomen dat acties door elkaar lopen. */
+.profile-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: min(920px, 92vw); margin: 50px auto; }
+.profile-settings &gt; header { grid-column: 1 / -1; }
+.profile-settings header p { margin: 0; color: #1e56dc; font-weight: 700; text-transform: uppercase; }
+.profile-settings form { display: grid; gap: 14px; padding: 24px; border: 1px solid #d9dee8; background: #fff; }
+.profile-settings label { display: grid; gap: 6px; font-weight: 700; }
+.profile-settings input { min-height: 44px; padding: 10px; border: 1px solid #cbd2df; }
+.profile-settings button { min-height: 44px; border: 0; background: #1e56dc; color: #fff; font-weight: 700; }
+@media (max-width: 700px) { .profile-settings { grid-template-columns: 1fr; } .profile-settings &gt; header { grid-column: auto; } }</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="database php html css feature">
                 <summary><span class="snippet-index">02</span><span><b>Studenten meerdere vakken geven</b><small>Technische naam: many-to-many relatie.</small></span><span class="snippet-stack">Database</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
-                  <p><strong>Waar plakken:</strong> na de tabellen <code>studenten</code> en <code>vakken</code>. De koppeltabel bewaart ieder gekozen paar één keer.</p>
-                  <div class="code-block"><div class="code-toolbar"><span>schema.sql · koppeltabel</span><button type="button" data-copy-target="snippet-many-many">Kopieer</button></div><pre><code id="snippet-many-many">CREATE TABLE student_vakken (
+                  <p><strong>Waar plakken:</strong> onderaan <code>database/schema.sql</code>. Dit maakt zowel de vakkenlijst als de koppeltabel. Daarna zorgt het afzonderlijke PHP-blok voor opslaan en opnieuw laden.</p>
+                  <div class="code-block"><div class="code-toolbar"><span>schema.sql · koppeltabel</span><button type="button" data-copy-target="snippet-many-many">Kopieer</button></div><pre><code id="snippet-many-many">CREATE TABLE IF NOT EXISTS vakken (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  naam TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS student_vakken (
   student_id INTEGER NOT NULL,
   vak_id INTEGER NOT NULL,
   PRIMARY KEY (student_id, vak_id),
@@ -956,16 +1317,117 @@ JOIN landen ON landen.id = studenten.land_id;</code></pre></div>
   FOREIGN KEY (vak_id) REFERENCES vakken(id) ON DELETE CASCADE
 );
 
-INSERT INTO student_vakken (student_id, vak_id) VALUES (?, ?);
+INSERT OR IGNORE INTO vakken (naam) VALUES
+  ('HTML en CSS'),
+  ('PHP'),
+  ('Databases');</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Voeg laden en opslaan vóór het bestaande POST-blok toe" data-code-start="if ($_SERVER['REQUEST_METHOD'] === 'POST') {" data-code-end="plak dit complete blok direct boven die regel" data-code-action="Laat het bestaande POST-blok staan. Plak dit blok erboven; het verwerkt alleen intent assign_subjects en stuurt daarna terug." data-code-check="Koppel twee vakken aan een teststudent, vernieuw de pagina en controleer in student_vakken of beide koppelingen bestaan."><div class="code-toolbar"><span>index.php · PHP-vakken opslaan</span><button type="button" data-copy-target="snippet-many-many-php">Kopieer PHP</button></div><pre><code id="snippet-many-many-php">$vakken = $db-&gt;query('SELECT id, naam FROM vakken ORDER BY naam')-&gt;fetchAll();
 
-SELECT vakken.*
-FROM vakken
-JOIN student_vakken ON student_vakken.vak_id = vakken.id
-WHERE student_vakken.student_id = ?;</code></pre></div>
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    &amp;&amp; post_text('intent') === 'assign_subjects'
+) {
+    verify_csrf($_POST['_token'] ?? null);
+    $studentId = positive_id($_POST['student_id'] ?? null, 'Student');
+    $vakIds = array_values(array_unique(array_map(
+        'intval',
+        $_POST['vak_ids'] ?? []
+    )));
+
+    if ($vakIds === [] || in_array(0, $vakIds, true)) {
+        throw new RuntimeException('Kies minstens één geldig vak.');
+    }
+
+    $db-&gt;beginTransaction();
+    try {
+        $db-&gt;prepare('DELETE FROM student_vakken WHERE student_id = ?')
+            -&gt;execute([$studentId]);
+        $insertVak = $db-&gt;prepare(
+            'INSERT INTO student_vakken (student_id, vak_id) VALUES (?, ?)'
+        );
+        foreach ($vakIds as $vakId) {
+            $insertVak-&gt;execute([$studentId, $vakId]);
+        }
+        $db-&gt;commit();
+        redirect('index.php');
+    } catch (Throwable $error) {
+        $db-&gt;rollBack();
+        throw $error;
+    }
+}</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · laat meerdere vakken aanvinken</b><small><code>vak_ids[]</code> stuurt alle gekozen ids als één lijst naar PHP.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, in het zichtbare HTML-deel vóór de footer.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="subject-picker" data-code-file="studenten-crud/index.php" data-code-method="Voeg één compleet koppel-formulier toe" data-code-start="zoek de footer onderaan index.php" data-code-end="plak dit formulier direct boven de footer" data-code-action="Plak het complete formulier boven de footer. $students bestaat al in de starter en $vakken komt uit het PHP-blok hierboven." data-code-check="Vernieuw localhost. Kies een student, vink meerdere vakken aan en klik op Vakken opslaan."><div class="code-toolbar"><span>index.php · HTML-vakkenkiezer</span><button type="button" data-copy-target="snippet-many-many-html">Kopieer HTML</button></div><pre><code id="snippet-many-many-html">&lt;form class="subject-picker" method="post"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+    &lt;input type="hidden" name="intent" value="assign_subjects"&gt;
+    &lt;h3&gt;Vakken aan een student koppelen&lt;/h3&gt;
+
+    &lt;label class="subject-picker__student"&gt;
+        &lt;span&gt;Student&lt;/span&gt;
+        &lt;select name="student_id" required&gt;
+            &lt;?php foreach ($students as $student): ?&gt;
+                &lt;option value="&lt;?= e($student['id']) ?&gt;"&gt;
+                    &lt;?= e($student['voornaam'] . ' ' . $student['achternaam']) ?&gt;
+                &lt;/option&gt;
+            &lt;?php endforeach; ?&gt;
+        &lt;/select&gt;
+    &lt;/label&gt;
+
+    &lt;fieldset&gt;
+    &lt;legend&gt;Kies één of meer vakken&lt;/legend&gt;
+    &lt;div class="subject-picker__options"&gt;
+        &lt;?php foreach ($vakken as $vak): ?&gt;
+            &lt;label&gt;
+                &lt;input type="checkbox" name="vak_ids[]" value="&lt;?= e($vak['id']) ?&gt;"&gt;
+                &lt;span&gt;&lt;?= e($vak['naam']) ?&gt;&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;?php endforeach; ?&gt;
+    &lt;/div&gt;
+    &lt;/fieldset&gt;
+    &lt;button class="subject-picker__submit" type="submit"&gt;Vakken opslaan&lt;/button&gt;
+&lt;/form&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · maak van ieder vak een aanklikbare kaart</b><small>Alle selectors beginnen met dezelfde HTML-class <code>subject-picker</code>.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="subject-picker" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak het volledige blok onderaan. Dit verandert alleen onderdelen binnen .subject-picker." data-code-check="De vakken moeten als nette kaarten naast elkaar staan en op mobiel onder elkaar lopen."><div class="code-toolbar"><span>assets/app.css · vakkenkiezer</span><button type="button" data-copy-target="snippet-many-many-css">Kopieer CSS</button></div><pre><code id="snippet-many-many-css">.subject-picker {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid #d9dee8;
+}
+
+.subject-picker legend {
+  padding: 0 7px;
+  font-weight: 700;
+}
+
+.subject-picker__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.subject-picker__options label {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 11px;
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.subject-picker__options input {
+  width: 18px;
+  height: 18px;
+}</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="php feature">
+              <details class="snippet-item" data-snippet-tags="php html css feature">
                 <summary><span class="snippet-index">03</span><span><b>Een pagina voor één student maken</b><small>Bijvoorbeeld: open student 12 op een eigen detailpagina.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Nieuw bestand:</strong> <code>detail.php</code>. De functie <code>positive_id()</code> en <code>e()</code> staan al in de PHP-starter.</p>
@@ -984,20 +1446,92 @@ if (!$student) {
     http_response_code(404);
     exit('Student niet gevonden.');
 }
-?&gt;
-&lt;h1&gt;&lt;?= e($student['voornaam'] . ' ' . $student['achternaam']) ?&gt;&lt;/h1&gt;
-&lt;p&gt;&lt;?= e($student['email']) ?&gt;&lt;/p&gt;
-&lt;a href="index.php"&gt;Terug naar overzicht&lt;/a&gt;</code></pre></div>
+?&gt;</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · bouw de zichtbare detailpagina</b><small>Dit deel gebruikt precies de variabele <code>$student</code> uit het PHP-blok.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> hetzelfde nieuwe bestand <code>detail.php</code>, direct onder de afsluitende <code>?&gt;</code>.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="student-detail" data-code-file="studenten-crud/detail.php" data-code-method="Plak HTML onder het PHP-deel" data-code-start="direct onder de afsluitende ?&gt;" data-code-end="het einde van detail.php" data-code-action="Plak dit complete HTML-document onder het PHP-blok. Plak het niet in index.php." data-code-check="Open detail.php?id=1. Je moet een kaart zien met naam, e-mail en opleiding."><div class="code-toolbar"><span>detail.php · volledige HTML</span><button type="button" data-copy-target="snippet-detail-php-html">Kopieer HTML</button></div><pre><code id="snippet-detail-php-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="nl"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;Studentdetails&lt;/title&gt;
+    &lt;link rel="stylesheet" href="assets/app.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;main class="student-detail"&gt;
+        &lt;a class="student-detail__back" href="index.php"&gt;← Terug naar overzicht&lt;/a&gt;
+        &lt;article class="student-detail__card"&gt;
+            &lt;p class="student-detail__label"&gt;Student&lt;/p&gt;
+            &lt;h1&gt;&lt;?= e($student['voornaam'] . ' ' . $student['achternaam']) ?&gt;&lt;/h1&gt;
+            &lt;dl&gt;
+                &lt;div&gt;&lt;dt&gt;E-mail&lt;/dt&gt;&lt;dd&gt;&lt;?= e($student['email']) ?&gt;&lt;/dd&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;dt&gt;Opleiding&lt;/dt&gt;&lt;dd&gt;&lt;?= e($student['opleiding']) ?&gt;&lt;/dd&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;dt&gt;Status&lt;/dt&gt;&lt;dd&gt;&lt;?= e($student['status']) ?&gt;&lt;/dd&gt;&lt;/div&gt;
+            &lt;/dl&gt;
+        &lt;/article&gt;
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · maak een rustige detailkaart</b><small><code>detail.php</code> laadt hetzelfde <code>assets/app.css</code>-bestand als de hoofdapp.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="student-detail" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg detailpagina-CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak dit hele blok onderaan. Alle selectors beginnen met student-detail en raken de bestaande pagina niet." data-code-check="Druk Ctrl+F5 op detail.php?id=1. De gegevens moeten in een witte kaart staan."><div class="code-toolbar"><span>assets/app.css · studentdetail</span><button type="button" data-copy-target="snippet-detail-php-css">Kopieer CSS</button></div><pre><code id="snippet-detail-php-css">.student-detail {
+  width: min(720px, 92vw);
+  margin: 0 auto;
+  padding: 70px 0;
+}
+
+.student-detail__back {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #1e56dc;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.student-detail__card {
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(16, 35, 63, 0.08);
+}
+
+.student-detail__label {
+  color: #1e56dc;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.student-detail h1 { margin: 0 0 28px; }
+.student-detail dl { margin: 0; }
+.student-detail dl div { padding: 14px 0; border-top: 1px solid #d9dee8; }
+.student-detail dt { color: #647083; font-size: 12px; }
+.student-detail dd { margin: 3px 0 0; font-weight: 700; }</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="javascript feature">
+              <details class="snippet-item" data-snippet-tags="javascript html css feature">
                 <summary><span class="snippet-index">04</span><span><b>Één student ophalen met JavaScript</b><small>De browser vraagt één student aan de API.</small></span><span class="snippet-stack">JavaScript</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
-                  <p><strong>Backend:</strong> voeg de GET-route vóór <code>/api/students/:id</code>-conflicten toe. <strong>Frontend:</strong> roep <code>loadStudent(id)</code> aan vanuit een detailknop.</p>
+                  <p><strong>Gebruik je de downloadstarter?</strong> Dan bestaat <code>GET /api/students/:id</code> al en sla je het eerste backenddeel over. Voeg de route alleen toe wanneer jouw eigen server hem nog niet heeft. De HTML, CSS en browsercode hieronder heb je wel nodig voor het zichtbare detailscherm.</p>
                   <div class="code-block"><div class="code-toolbar"><span>Express + browser</span><button type="button" data-copy-target="snippet-detail-js">Kopieer</button></div><pre><code id="snippet-detail-js">// backend/server.js
 app.get('/api/students/:id', (req, res) =&gt; {
-  const student = db.prepare('SELECT * FROM students WHERE id = ?')
+  const student = db.prepare(`
+    SELECT
+      id,
+      first_name AS firstName,
+      last_name AS lastName,
+      email,
+      education
+    FROM students
+    WHERE id = ?
+  `)
     .get(readId(req.params.id));
 
   if (!student) throw httpError(404, 'Student niet gevonden.');
@@ -1010,49 +1544,242 @@ async function loadStudent(id) {
   const student = await response.json();
   if (!response.ok) throw new Error(student.error);
   return student;
-}</code></pre></div>
-                </div>
-              </details>
-
-              <details class="snippet-item" data-snippet-tags="php database feature">
-                <summary><span class="snippet-index">05</span><span><b>Gebruikers laten inloggen</b><small>Wachtwoorden veilig bewaren en ingelogd blijven.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
-                <div class="snippet-body">
-                  <p><strong>Nodig:</strong> een <code>users</code>-tabel, <code>session_start()</code> bovenaan iedere beschermde pagina en HTTPS wanneer de app online gaat.</p>
-                  <div class="code-block"><div class="code-toolbar"><span>schema.sql + login.php</span><button type="button" data-copy-target="snippet-login">Kopieer</button></div><pre><code id="snippet-login">-- schema.sql
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  email TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'medewerker'
-);
-
-&lt;?php
-// login.php - sla nooit een gewoon wachtwoord op
-session_start();
-$db = database();
-$email = strtolower(trim($_POST['email'] ?? ''));
-$password = (string) ($_POST['password'] ?? '');
-
-$statement = $db-&gt;prepare('SELECT * FROM users WHERE email = ?');
-$statement-&gt;execute([$email]);
-$user = $statement-&gt;fetch();
-
-if (!$user || !password_verify($password, $user['password_hash'])) {
-    throw new RuntimeException('E-mail of wachtwoord klopt niet.');
 }
 
-session_regenerate_id(true);
-$_SESSION['user_id'] = (int) $user['id'];
-$_SESSION['role'] = $user['role'];
-redirect('index.php');
+async function openStudentDetail(id) {
+  const student = await loadStudent(id);
+  document.querySelector('#detail-name').textContent =
+    `${student.firstName} ${student.lastName}`;
+  document.querySelector('#detail-email').textContent = student.email;
+  document.querySelector('#detail-education').textContent = student.education;
+  document.querySelector('#student-detail-dialog').showModal();
+}
 
-// Eenmalig een hash maken bij registratie:
-$hash = password_hash($_POST['password'], PASSWORD_DEFAULT);</code></pre></div>
-                  <p class="snippet-note">Bescherm een pagina met: <code>if (empty($_SESSION['user_id'])) redirect('login.php');</code></p>
+document.addEventListener('click', (event) =&gt; {
+  const openButton = event.target.closest('[data-show-student]');
+  if (openButton) openStudentDetail(Number(openButton.dataset.showStudent));
+
+  if (event.target.matches('[data-close-detail]')) {
+    document.querySelector('#student-detail-dialog').close();
+  }
+});</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · voeg een detailknop en dialoog toe</b><small>De ids <code>detail-name</code>, <code>detail-email</code> en <code>detail-education</code> zijn gelijk aan de JavaScript-selectors.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> de knop in je rijtemplate in <code>frontend/app.js</code>; de <code>&lt;dialog&gt;</code> direct boven <code>&lt;/main&gt;</code> in <code>frontend/index.html</code>.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="student-dialog" data-code-file="javascript-sqlite-crud/frontend/index.html + de rijtemplate in frontend/app.js" data-code-method="Plaats knop en dialoog afzonderlijk" data-code-start="knop in iedere studentenrij; dialog vóór &lt;/main&gt;" data-code-end="voer beide gemarkeerde delen uit" data-code-action="Gebruik in de echte rijtemplate item.id in plaats van het voorbeeldgetal 1. Plak de dialog één keer vóór </main>." data-code-check="Klik op Bekijk. De dialoog moet openen en de gegevens van die student tonen."><div class="code-toolbar"><span>frontend · HTML-detaildialoog</span><button type="button" data-copy-target="snippet-detail-js-html">Kopieer HTML</button></div><pre><code id="snippet-detail-js-html">&lt;!-- In de HTML die je per studentenrij maakt: --&gt;
+&lt;button class="detail-open" type="button" data-show-student="1"&gt;
+  Bekijk
+&lt;/button&gt;
+
+&lt;!-- Eén keer vóór &lt;/main&gt; in frontend/index.html: --&gt;
+&lt;dialog class="student-dialog" id="student-detail-dialog"&gt;
+  &lt;button class="student-dialog__close" type="button" data-close-detail aria-label="Sluiten"&gt;×&lt;/button&gt;
+  &lt;p class="student-dialog__label"&gt;Studentdetails&lt;/p&gt;
+  &lt;h2 id="detail-name"&gt;Studentnaam&lt;/h2&gt;
+  &lt;dl&gt;
+    &lt;div&gt;&lt;dt&gt;E-mail&lt;/dt&gt;&lt;dd id="detail-email"&gt;—&lt;/dd&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;dt&gt;Opleiding&lt;/dt&gt;&lt;dd id="detail-education"&gt;—&lt;/dd&gt;&lt;/div&gt;
+  &lt;/dl&gt;
+&lt;/dialog&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · vorm de knop en detaildialoog</b><small>De CSS gebruikt dezelfde classes als het HTML-blok.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>frontend/style.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="student-dialog" data-code-file="javascript-sqlite-crud/frontend/style.css" data-code-method="Voeg dialoog-CSS onderaan toe" data-code-start="Ctrl+End in frontend/style.css" data-code-end="na de laatste bestaande }" data-code-action="Plak dit complete CSS-blok onderaan. Laat student-dialog gelijk aan de class van de dialog." data-code-check="De dialoog moet gecentreerd openen met een donkere achtergrond erachter."><div class="code-toolbar"><span>frontend/style.css · detaildialoog</span><button type="button" data-copy-target="snippet-detail-js-css">Kopieer CSS</button></div><pre><code id="snippet-detail-js-css">.detail-open {
+  border: 0;
+  background: transparent;
+  color: #1e56dc;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.student-dialog {
+  width: min(520px, 90vw);
+  padding: 30px;
+  border: 0;
+  background: #ffffff;
+  color: #10233f;
+  box-shadow: 0 24px 70px rgba(16, 35, 63, 0.28);
+}
+
+.student-dialog::backdrop {
+  background: rgba(16, 35, 63, 0.65);
+}
+
+.student-dialog__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.student-dialog__label { color: #1e56dc; font-weight: 700; }
+.student-dialog dl div { padding: 12px 0; border-top: 1px solid #d9dee8; }
+.student-dialog dt { color: #647083; font-size: 12px; }
+.student-dialog dd { margin: 3px 0 0; font-weight: 700; }</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="php feature">
+              <details class="snippet-item" data-snippet-tags="users php database html css feature">
+                <summary><span class="snippet-index">05</span><span><b>Gebruikers laten inloggen</b><small>Wachtwoorden veilig bewaren en ingelogd blijven.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>Eerst doen:</strong> voer bij recept U1 precies één users-tabel uit: SQLite óf MySQL. Maak daarna met het eerste blok hieronder één adminaccount. Het inloggen, blokkeren van inactieve accounts en uitloggen zijn daarna compleet.</p>
+                  <div class="code-block" data-code-file="studenten-crud/maak-admin.php" data-code-method="Maak een tijdelijk volledig PHP-bestand" data-code-start="een nieuw leeg bestand naast index.php" data-code-end="het einde van maak-admin.php" data-code-action="Plak alles, wijzig alleen e-mail en wachtwoord, open maak-admin.php één keer via localhost en verwijder het bestand daarna direct." data-code-check="Je ziet ‘Admin is aangemaakt’. Verwijder maak-admin.php voordat je verdergaat."><div class="code-toolbar"><span>maak-admin.php · eenmalig eerste account</span><button type="button" data-copy-target="snippet-first-admin">Kopieer eerste-adminbestand</button></div><pre><code id="snippet-first-admin">&lt;?php
+
+declare(strict_types=1);
+
+// EENMALIG: maak het allereerste adminaccount en verwijder dit bestand daarna.
+require __DIR__ . '/config/database.php';
+$db = database();
+
+// WIJZIG ALLEEN DEZE TWEE WAARDEN.
+$email = 'admin@voorbeeld.nl';
+$password = 'VeranderDit123!';
+
+if ((int) $db-&gt;query('SELECT COUNT(*) FROM users')-&gt;fetchColumn() &gt; 0) {
+    exit('Er bestaat al een gebruiker. Verwijder maak-admin.php nu.');
+}
+
+$statement = $db-&gt;prepare(
+    'INSERT INTO users (email, password_hash, role, active) VALUES (?, ?, ?, 1)'
+);
+$statement-&gt;execute([
+    strtolower($email),
+    password_hash($password, PASSWORD_DEFAULT),
+    'admin',
+]);
+
+echo 'Admin is aangemaakt. Verwijder maak-admin.php nu.';</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/login.php" data-code-method="Maak login.php en plak dit PHP-deel bovenaan" data-code-start="regel 1 van een nieuw leeg login.php-bestand" data-code-end="vóór de HTML uit deel 2" data-code-action="Plak dit volledige PHP-blok bovenaan login.php. Plak daarna het HTML-deel uit stap 2 er direct onder." data-code-check="Een fout wachtwoord en een inactief account moeten beide worden geweigerd; het eerste adminaccount moet naar index.php gaan."><div class="code-toolbar"><span>login.php · complete inlogverwerking</span><button type="button" data-copy-target="snippet-login">Kopieer login-PHP</button></div><pre><code id="snippet-login">&lt;?php
+
+declare(strict_types=1);
+
+// LOGIN: start de sessie voordat er HTML wordt getoond.
+session_start();
+require __DIR__ . '/config/database.php';
+require __DIR__ . '/includes/functions.php';
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        verify_csrf($_POST['_token'] ?? null);
+        $db = database();
+        $email = strtolower(trim($_POST['email'] ?? ''));
+        $password = (string) ($_POST['password'] ?? '');
+
+        $statement = $db-&gt;prepare('SELECT * FROM users WHERE email = ?');
+        $statement-&gt;execute([$email]);
+        $user = $statement-&gt;fetch();
+
+        // Geef bewust dezelfde fout bij een onbekend, inactief of fout account.
+        if (!$user || !(bool) $user['active'] || !password_verify($password, $user['password_hash'])) {
+            throw new RuntimeException('E-mail of wachtwoord klopt niet.');
+        }
+
+        session_regenerate_id(true);
+        $_SESSION['user_id'] = (int) $user['id'];
+        $_SESSION['role'] = $user['role'];
+        redirect('index.php');
+    } catch (Throwable $loginError) {
+        $error = $loginError-&gt;getMessage();
+    }
+}
+
+?&gt;</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/logout.php" data-code-method="Maak een compleet uitlogbestand" data-code-start="regel 1 van een nieuw leeg logout.php-bestand" data-code-end="het einde van logout.php" data-code-action="Plak dit hele bestand. Laat de redirect naar login.php staan." data-code-check="Log in, open logout.php en probeer daarna index.php opnieuw; de beschermde pagina moet je terugsturen naar login.php."><div class="code-toolbar"><span>logout.php · veilig uitloggen</span><button type="button" data-copy-target="snippet-logout">Kopieer logout.php</button></div><pre><code id="snippet-logout">&lt;?php
+
+declare(strict_types=1);
+
+// UITLOGGEN: verwijder sessiegegevens, sessiecookie en de serversessie.
+session_start();
+$_SESSION = [];
+
+if (ini_get('session.use_cookies')) {
+    $cookie = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000, $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
+}
+
+session_destroy();
+header('Location: login.php');
+exit;</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · maak het inlogscherm</b><small>De formuliervelden <code>email</code> en <code>password</code> zijn gelijk aan de namen in het PHP-deel.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>login.php</code>, direct onder de afsluitende <code>?&gt;</code> van het PHP-blok.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="login-page" data-code-file="studenten-crud/login.php" data-code-method="Plak het complete HTML-document onder PHP" data-code-start="direct onder de afsluitende ?&gt;" data-code-end="het einde van login.php" data-code-action="Plak dit hele HTML-deel onder het PHP-deel. Laat method post en de inputnamen email en password ongewijzigd." data-code-check="Open login.php. Je moet een inlogkaart zien; een fout wachtwoord moet een melding in de kaart geven."><div class="code-toolbar"><span>login.php · volledige HTML</span><button type="button" data-copy-target="snippet-login-html">Kopieer HTML</button></div><pre><code id="snippet-login-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="nl"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;Inloggen&lt;/title&gt;
+    &lt;link rel="stylesheet" href="assets/app.css"&gt;
+&lt;/head&gt;
+&lt;body class="login-page"&gt;
+    &lt;main class="login-card"&gt;
+        &lt;p class="login-card__label"&gt;Beveiligde administratie&lt;/p&gt;
+        &lt;h1&gt;Welkom terug&lt;/h1&gt;
+        &lt;p&gt;Log in om de administratie te openen.&lt;/p&gt;
+
+        &lt;?php if ($error !== ''): ?&gt;
+            &lt;div class="login-error" role="alert"&gt;&lt;?= e($error) ?&gt;&lt;/div&gt;
+        &lt;?php endif; ?&gt;
+
+        &lt;form class="login-form" method="post"&gt;
+            &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+            &lt;label&gt;&lt;span&gt;E-mailadres&lt;/span&gt;&lt;input name="email" type="email" autocomplete="email" required&gt;&lt;/label&gt;
+            &lt;label&gt;&lt;span&gt;Wachtwoord&lt;/span&gt;&lt;input name="password" type="password" autocomplete="current-password" required&gt;&lt;/label&gt;
+            &lt;button type="submit"&gt;Inloggen&lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+                      <p class="snippet-file-rule"><b>Daarna in iedere beschermde pagina:</b> zet deze link bijvoorbeeld in de navigatie.</p>
+                      <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Voeg een zichtbare uitloglink toe" data-code-start="in de navigatie of header" data-code-end="vóór het einde van de navigatie" data-code-action="Plak deze link op iedere ingelogde pagina. Hij opent het complete logout.php-bestand hierboven." data-code-check="Klik op Uitloggen; je moet terugkomen op login.php."><div class="code-toolbar"><span>index.php · HTML-uitloglink</span><button type="button" data-copy-target="snippet-logout-link">Kopieer uitloglink</button></div><pre><code id="snippet-logout-link">&lt;a class="logout-link" href="logout.php"&gt;Uitloggen&lt;/a&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · centreer een professioneel inlogscherm</b><small>De classes komen letterlijk uit de HTML hierboven.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="login-page" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg login-CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak het hele blok onderaan. Deze regels gelden alleen op body.login-page en in .login-card." data-code-check="Het formulier moet in het midden staan en op een smal scherm binnen de schermranden blijven."><div class="code-toolbar"><span>assets/app.css · inlogscherm</span><button type="button" data-copy-target="snippet-login-css">Kopieer CSS</button></div><pre><code id="snippet-login-css">.login-page {
+  display: grid;
+  min-height: 100vh;
+  margin: 0;
+  padding: 24px;
+  place-items: center;
+  background: #f5f3ed;
+}
+
+.login-card {
+  width: min(430px, 100%);
+  padding: clamp(24px, 6vw, 42px);
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+  box-shadow: 0 20px 55px rgba(16, 35, 63, 0.12);
+}
+
+.login-card__label { color: #1e56dc; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.login-card h1 { margin: 0; }
+.login-card &gt; p:not(.login-card__label) { color: #647083; }
+.login-form { display: grid; gap: 15px; margin-top: 24px; }
+.login-form label { display: grid; gap: 6px; font-size: 12px; font-weight: 700; }
+.login-form input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #cbd2df; }
+.login-form button { min-height: 46px; border: 0; background: #1e56dc; color: #ffffff; font-weight: 700; cursor: pointer; }
+.login-error { margin-top: 18px; padding: 12px; border-left: 4px solid #bf2c35; background: #fff0f1; color: #8f2029; }
+.logout-link { display: inline-grid; min-height: 40px; padding: 0 14px; place-items: center; border: 1px solid #cbd2df; background: #fff; color: #10233f; font-weight: 700; text-decoration: none; }</code></pre></div>
+                    </div>
+                  </div>
+                  <p class="snippet-note"><b>Bescherm iedere pagina:</b> zet direct na <code>session_start()</code>: <code>if (empty($_SESSION['user_id'])) redirect('login.php');</code></p>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="php html css feature">
                 <summary><span class="snippet-index">06</span><span><b>Een foto laten uploaden</b><small>Alleen geldige JPG- en PNG-bestanden tot 2 MB.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Formulier:</strong> voeg <code>enctype="multipart/form-data"</code> toe en gebruik <code>&lt;input type="file" name="foto" accept="image/png,image/jpeg"&gt;</code>.</p>
@@ -1081,10 +1808,59 @@ if (!move_uploaded_file($file['tmp_name'], $destination)) {
 }
 
 // Bewaar alleen $filename in de database.</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · maak een echt uploadformulier</b><small><code>name="foto"</code> is exact dezelfde naam als <code>$_FILES['foto']</code> in PHP.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, op de plek waar de gebruiker een foto mag kiezen.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="upload-card" data-code-file="studenten-crud/index.php" data-code-method="Voeg een compleet uploadformulier toe" data-code-start="in het zichtbare HTML-deel van index.php" data-code-end="vóór de afsluitende &lt;/main&gt;" data-code-action="Plak dit formulier in de pagina. enctype multipart/form-data en name foto zijn verplicht voor $_FILES['foto']." data-code-check="Kies een kleine JPG of PNG. De bestandsnaam moet naast de kiesknop verschijnen en verzenden moet PHP bereiken."><div class="code-toolbar"><span>index.php · HTML-uploadformulier</span><button type="button" data-copy-target="snippet-upload-html">Kopieer HTML</button></div><pre><code id="snippet-upload-html">&lt;form class="upload-card" method="post" enctype="multipart/form-data"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+    &lt;input type="hidden" name="intent" value="upload_photo"&gt;
+
+    &lt;div&gt;
+        &lt;p class="upload-card__label"&gt;Profielfoto&lt;/p&gt;
+        &lt;h3&gt;Kies een JPG- of PNG-afbeelding&lt;/h3&gt;
+        &lt;p&gt;Maximaal 2 MB.&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;label class="upload-card__field"&gt;
+        &lt;span&gt;Afbeelding kiezen&lt;/span&gt;
+        &lt;input type="file" name="foto" accept="image/png,image/jpeg" required&gt;
+    &lt;/label&gt;
+
+    &lt;button type="submit"&gt;Foto uploaden&lt;/button&gt;
+&lt;/form&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · maak de uploadzone herkenbaar</b><small>De class <code>upload-card</code> koppelt dit blok rechtstreeks aan de HTML.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="upload-card" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg upload-CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak dit hele blok onderaan. Het inputveld blijft een echt toegankelijk file-input." data-code-check="De uploadzone moet een gestippelde rand en een duidelijke blauwe knop hebben."><div class="code-toolbar"><span>assets/app.css · uploadformulier</span><button type="button" data-copy-target="snippet-upload-css">Kopieer CSS</button></div><pre><code id="snippet-upload-css">.upload-card {
+  display: grid;
+  gap: 18px;
+  max-width: 620px;
+  padding: 24px;
+  border: 1px dashed #91a3bc;
+  background: #ffffff;
+}
+
+.upload-card__label {
+  margin: 0;
+  color: #1e56dc;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.upload-card h3 { margin: 4px 0; }
+.upload-card p { color: #647083; }
+.upload-card__field { display: grid; gap: 7px; font-weight: 700; }
+.upload-card__field input { padding: 12px; border: 1px solid #d9dee8; background: #f7f8fa; }
+.upload-card button { min-height: 44px; border: 0; background: #1e56dc; color: #ffffff; font-weight: 700; cursor: pointer; }</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="php feature">
+              <details class="snippet-item" data-snippet-tags="php html css feature">
                 <summary><span class="snippet-index">07</span><span><b>Gegevens downloaden voor Excel</b><small>Download het huidige overzicht als CSV-bestand.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Nieuw bestand:</strong> <code>export.php</code>. Dit bestand mag vóór de headers geen HTML of spaties uitvoeren.</p>
@@ -1107,10 +1883,42 @@ foreach ($rows as $row) {
 
 fclose($output);
 exit;</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · voeg een duidelijke downloadactie toe</b><small>Een gewone link naar <code>export.php</code> start de download; hiervoor is geen formulier nodig.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, bijvoorbeeld naast de knop “Nieuwe student”.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="export-action" data-code-file="studenten-crud/index.php" data-code-method="Voeg één downloadlink toe" data-code-start="zoek de page-heading met Nieuwe student" data-code-end="binnen dezelfde knopgroep" data-code-action="Plak deze link op de plek waar je de downloadknop wilt tonen. export.php moet naast index.php staan." data-code-check="Klik op Download CSV. De browser moet studenten.csv downloaden zonder naar een lege pagina te gaan."><div class="code-toolbar"><span>index.php · HTML-downloadknop</span><button type="button" data-copy-target="snippet-csv-html">Kopieer HTML</button></div><pre><code id="snippet-csv-html">&lt;a class="export-action" href="export.php" download&gt;
+    &lt;span aria-hidden="true"&gt;↓&lt;/span&gt;
+    Download studenten als CSV
+&lt;/a&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · laat de downloadactie bij je applicatie passen</b><small>De CSS-selector <code>.export-action</code> is gelijk aan de linkclass.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="export-action" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg knop-CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak het complete blok onderaan. Dit verandert alleen links met class export-action." data-code-check="De CSV-link moet als een lichte knop verschijnen en bij hover blauw worden."><div class="code-toolbar"><span>assets/app.css · CSV-download</span><button type="button" data-copy-target="snippet-csv-css">Kopieer CSS</button></div><pre><code id="snippet-csv-css">.export-action {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 15px;
+  border: 1px solid #1e56dc;
+  background: #ffffff;
+  color: #1e56dc;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.export-action:hover {
+  background: #1e56dc;
+  color: #ffffff;
+}</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="php feature">
+              <details class="snippet-item" data-snippet-tags="php html css feature">
                 <summary><span class="snippet-index">08</span><span><b>Een lijst uit Excel toevoegen</b><small>Importeer meerdere gecontroleerde CSV-rijen tegelijk.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Formulier:</strong> gebruik <code>method="post" enctype="multipart/form-data"</code>, een CSRF-token en een input met <code>name="csv_bestand"</code>. De kolomvolgorde moet exact overeenkomen.</p>
@@ -1151,11 +1959,63 @@ try {
 } finally {
     fclose($handle);
 }</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · maak het CSV-importformulier</b><small><code>csv_bestand</code> is exact gelijk aan <code>$_FILES['csv_bestand']</code> in PHP.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> het nieuwe bestand <code>import.php</code>, onder het PHP-verwerkingsdeel.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="import-card" data-code-file="studenten-crud/import.php" data-code-method="Plak HTML onder de PHP-verwerking" data-code-start="na de afsluitende ?&gt; van het PHP-deel" data-code-end="het einde van import.php" data-code-action="Plak dit complete HTML-document onder PHP. Laat enctype, method en name csv_bestand exact staan." data-code-check="Open import.php. Kies een CSV en verzend; PHP moet het bestand ontvangen in $_FILES['csv_bestand']."><div class="code-toolbar"><span>import.php · volledige HTML</span><button type="button" data-copy-target="snippet-csv-import-html">Kopieer HTML</button></div><pre><code id="snippet-csv-import-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="nl"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;title&gt;Studenten importeren&lt;/title&gt;
+    &lt;link rel="stylesheet" href="assets/app.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;main class="import-card"&gt;
+        &lt;p class="import-card__label"&gt;CSV-import&lt;/p&gt;
+        &lt;h1&gt;Meerdere studenten toevoegen&lt;/h1&gt;
+        &lt;p&gt;Kolommen: studentnummer, voornaam, achternaam, email, opleiding en status.&lt;/p&gt;
+
+        &lt;form class="import-form" method="post" enctype="multipart/form-data"&gt;
+            &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+            &lt;label&gt;
+                &lt;span&gt;CSV-bestand&lt;/span&gt;
+                &lt;input type="file" name="csv_bestand" accept=".csv,text/csv" required&gt;
+            &lt;/label&gt;
+            &lt;button type="submit"&gt;CSV controleren en importeren&lt;/button&gt;
+        &lt;/form&gt;
+        &lt;a href="index.php"&gt;Terug naar het overzicht&lt;/a&gt;
+    &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · maak de importstap rustig en duidelijk</b><small>De hoofdclass <code>import-card</code> staat ook in de HTML.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="import-card" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg import-CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak dit hele CSS-blok onderaan. De maximale breedte voorkomt een onnodig breed uploadformulier." data-code-check="Open import.php en druk Ctrl+F5. Het importformulier moet in een witte kaart staan."><div class="code-toolbar"><span>assets/app.css · CSV-import</span><button type="button" data-copy-target="snippet-csv-import-css">Kopieer CSS</button></div><pre><code id="snippet-csv-import-css">.import-card {
+  width: min(680px, 92vw);
+  margin: 60px auto;
+  padding: clamp(22px, 5vw, 40px);
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(16, 35, 63, 0.08);
+}
+
+.import-card__label { margin: 0; color: #1e56dc; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.import-card h1 { margin: 5px 0 10px; }
+.import-card &gt; p { color: #647083; }
+.import-form { display: grid; gap: 16px; margin: 25px 0 18px; }
+.import-form label { display: grid; gap: 7px; font-weight: 700; }
+.import-form input { padding: 12px; border: 1px solid #d9dee8; background: #f7f8fa; }
+.import-form button { min-height: 46px; border: 0; background: #1e56dc; color: #ffffff; font-weight: 700; cursor: pointer; }</code></pre></div>
+                    </div>
+                  </div>
                   <p class="snippet-note">Bepaal vóór dit blok een geldige <code>$standaardLandId</code>. Bij één fout wordt de hele import teruggedraaid.</p>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="database php javascript feature">
+              <details class="snippet-item" data-snippet-tags="database php html css feature">
                 <summary><span class="snippet-index">09</span><span><b>Een prullenbak maken</b><small>Verberg gegevens en zet ze later eventueel terug.</small></span><span class="snippet-stack">Database</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Gebruik dit voor:</strong> archiveren, prullenbakken en gegevens die je later wilt terugzetten.</p>
@@ -1176,34 +2036,477 @@ UPDATE studenten SET deleted_at = NULL WHERE id = ?;
 
 -- Definitief verwijderen:
 DELETE FROM studenten WHERE id = ? AND deleted_at IS NOT NULL;</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Voeg complete prullenbakacties vóór het bestaande POST-blok toe" data-code-start="if ($_SERVER['REQUEST_METHOD'] === 'POST') {" data-code-end="plak dit nieuwe blok direct boven die regel" data-code-action="Laat het bestaande POST-blok staan. Plak dit complete blok erboven; de redirect stopt verdere verwerking na een prullenbakactie." data-code-check="Verplaats één teststudent, herstel hem, verplaats hem opnieuw en verwijder hem daarna definitief."><div class="code-toolbar"><span>index.php · PHP-prullenbakacties</span><button type="button" data-copy-target="snippet-soft-delete-php">Kopieer PHP</button></div><pre><code id="snippet-soft-delete-php">$trashIntents = [
+    'soft_delete_student',
+    'restore_student',
+    'delete_student_permanent',
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    &amp;&amp; in_array(post_text('intent'), $trashIntents, true)
+) {
+    verify_csrf($_POST['_token'] ?? null);
+    $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+    $intent = post_text('intent');
+
+    if ($intent === 'soft_delete_student') {
+        $statement = $db-&gt;prepare(
+            'UPDATE studenten SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?'
+        );
+    } elseif ($intent === 'restore_student') {
+        $statement = $db-&gt;prepare(
+            'UPDATE studenten SET deleted_at = NULL WHERE id = ?'
+        );
+    } else {
+        $statement = $db-&gt;prepare(
+            'DELETE FROM studenten WHERE id = ? AND deleted_at IS NOT NULL'
+        );
+    }
+
+    $statement-&gt;execute([$id]);
+    redirect('index.php#trash');
+}
+
+$trashedStudents = $db-&gt;query(
+    'SELECT * FROM studenten
+     WHERE deleted_at IS NOT NULL
+     ORDER BY deleted_at DESC'
+)-&gt;fetchAll();</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · voeg “Naar prullenbak” en het prullenbakoverzicht toe</b><small>De drie <code>intent</code>-waarden zijn exact gelijk aan de PHP-acties hierboven.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> het eerste formulier in iedere normale studentenrij; de sectie één keer vóór de footer in <code>index.php</code>.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="trash-panel" data-code-file="studenten-crud/index.php" data-code-method="Plaats rijactie en prullenbaksectie afzonderlijk" data-code-start="formulier in de studenten-foreach; section vóór de footer" data-code-end="voer beide gemarkeerde delen uit" data-code-action="Vervang de huidige definitieve verwijderactie in de normale rij door het eerste formulier. Plak de trash-panel daarna één keer vóór de footer." data-code-check="De student moet uit de normale lijst verdwijnen, in de prullenbak verschijnen en herstelbaar zijn."><div class="code-toolbar"><span>index.php · HTML-prullenbak</span><button type="button" data-copy-target="snippet-soft-delete-html">Kopieer HTML</button></div><pre><code id="snippet-soft-delete-html">&lt;!-- In iedere normale studentenrij: --&gt;
+&lt;form method="post"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+    &lt;input type="hidden" name="intent" value="soft_delete_student"&gt;
+    &lt;input type="hidden" name="id" value="&lt;?= e($student['id']) ?&gt;"&gt;
+    &lt;button class="trash-move" type="submit"&gt;Naar prullenbak&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- Eén keer vóór de footer: --&gt;
+&lt;section class="trash-panel" id="trash"&gt;
+    &lt;div class="trash-panel__heading"&gt;
+        &lt;p&gt;Prullenbak&lt;/p&gt;
+        &lt;h2&gt;Verwijderde studenten&lt;/h2&gt;
+    &lt;/div&gt;
+
+    &lt;?php foreach ($trashedStudents as $student): ?&gt;
+        &lt;article class="trash-row"&gt;
+            &lt;div&gt;
+                &lt;b&gt;&lt;?= e($student['voornaam'] . ' ' . $student['achternaam']) ?&gt;&lt;/b&gt;
+                &lt;small&gt;&lt;?= e($student['email']) ?&gt;&lt;/small&gt;
+            &lt;/div&gt;
+            &lt;div class="trash-row__actions"&gt;
+                &lt;form method="post"&gt;
+                    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+                    &lt;input type="hidden" name="intent" value="restore_student"&gt;
+                    &lt;input type="hidden" name="id" value="&lt;?= e($student['id']) ?&gt;"&gt;
+                    &lt;button type="submit"&gt;Herstellen&lt;/button&gt;
+                &lt;/form&gt;
+                &lt;form method="post" onsubmit="return confirm('Definitief verwijderen?')"&gt;
+                    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+                    &lt;input type="hidden" name="intent" value="delete_student_permanent"&gt;
+                    &lt;input type="hidden" name="id" value="&lt;?= e($student['id']) ?&gt;"&gt;
+                    &lt;button class="is-danger" type="submit"&gt;Definitief verwijderen&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/article&gt;
+    &lt;?php endforeach; ?&gt;
+&lt;/section&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · maak herstel en definitief verwijderen duidelijk verschillend</b><small>De prullenbak gebruikt uitsluitend classes uit het HTML-blok.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, helemaal onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="trash-panel" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg prullenbak-CSS onderaan toe" data-code-start="Ctrl+End in assets/app.css" data-code-end="na de laatste bestaande }" data-code-action="Plak dit complete blok onderaan. De rode stijl geldt alleen voor .is-danger binnen de prullenbak." data-code-check="Op desktop staan naam en acties naast elkaar; op mobiel moeten ze onder elkaar passen."><div class="code-toolbar"><span>assets/app.css · prullenbak</span><button type="button" data-copy-target="snippet-soft-delete-css">Kopieer CSS</button></div><pre><code id="snippet-soft-delete-css">.trash-panel {
+  margin-top: 48px;
+  padding: 24px;
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+}
+
+.trash-panel__heading p { margin: 0; color: #1e56dc; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.trash-panel__heading h2 { margin: 4px 0 20px; }
+.trash-row { display: flex; gap: 18px; align-items: center; justify-content: space-between; padding: 15px 0; border-top: 1px solid #e6e9ee; }
+.trash-row &gt; div:first-child { display: grid; }
+.trash-row small { color: #647083; }
+.trash-row__actions { display: flex; gap: 8px; }
+.trash-row__actions button, .trash-move { min-height: 38px; padding: 0 12px; border: 1px solid #1e56dc; background: #ffffff; color: #1e56dc; font-weight: 700; cursor: pointer; }
+.trash-row__actions .is-danger { border-color: #bf2c35; color: #bf2c35; }
+
+@media (max-width: 620px) {
+  .trash-row, .trash-row__actions { align-items: stretch; flex-direction: column; }
+}</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
 
-              <details class="snippet-item" data-snippet-tags="database php feature">
+              <details class="snippet-item" data-snippet-tags="database php html css feature">
                 <summary><span class="snippet-index">10</span><span><b>Meerdere wijzigingen samen veilig opslaan</b><small>Alles lukt, of alles wordt automatisch teruggedraaid.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Gebruik dit voor:</strong> bestellingen + voorraad, inschrijving + vakken of uitleen + beschikbaar aantal.</p>
-                  <div class="code-block"><div class="code-toolbar"><span>PHP · database transaction</span><button type="button" data-copy-target="snippet-transaction">Kopieer</button></div><pre><code id="snippet-transaction">$db-&gt;beginTransaction();
+                  <div class="code-block"><div class="code-toolbar"><span>index.php · PHP-databasetransactie</span><button type="button" data-copy-target="snippet-transaction">Kopieer</button></div><pre><code id="snippet-transaction">// Laad de twee keuzelijsten voor het HTML-formulier.
+$klanten = $db-&gt;query('SELECT id, naam FROM klanten ORDER BY naam')-&gt;fetchAll();
+$producten = $db-&gt;query(
+    'SELECT id, naam, prijs FROM producten ORDER BY naam'
+)-&gt;fetchAll();
 
-try {
-    $order = $db-&gt;prepare('INSERT INTO bestellingen (klant_id, totaal) VALUES (?, ?)');
-    $order-&gt;execute([$klantId, $totaal]);
+// Verwerk alleen het bestelformulier uit dit recept.
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    &amp;&amp; post_text('intent') === 'create_order'
+) {
+    verify_csrf($_POST['_token'] ?? null);
+    $klantId = positive_id($_POST['klant_id'] ?? null, 'Klant');
+    $productId = positive_id($_POST['product_id'] ?? null, 'Product');
+    $aantal = positive_id($_POST['aantal'] ?? null, 'Aantal');
 
-    $stock = $db-&gt;prepare(
-        'UPDATE producten SET voorraad = voorraad - ?
-         WHERE id = ? AND voorraad &gt;= ?'
-    );
-    $stock-&gt;execute([$aantal, $productId, $aantal]);
+    $product = $db-&gt;prepare('SELECT prijs FROM producten WHERE id = ?');
+    $product-&gt;execute([$productId]);
+    $prijs = $product-&gt;fetchColumn();
 
-    if ($stock-&gt;rowCount() !== 1) {
-        throw new RuntimeException('Niet genoeg voorraad.');
+    if ($prijs === false) {
+        throw new RuntimeException('Product niet gevonden.');
     }
 
-    $db-&gt;commit();
-} catch (Throwable $error) {
-    $db-&gt;rollBack();
-    throw $error;
+    $totaal = (float) $prijs * $aantal;
+    $db-&gt;beginTransaction();
+
+    try {
+        $order = $db-&gt;prepare(
+            'INSERT INTO bestellingen (klant_id, totaal) VALUES (?, ?)'
+        );
+        $order-&gt;execute([$klantId, $totaal]);
+
+        $stock = $db-&gt;prepare(
+            'UPDATE producten SET voorraad = voorraad - ?
+             WHERE id = ? AND voorraad &gt;= ?'
+        );
+        $stock-&gt;execute([$aantal, $productId, $aantal]);
+
+        if ($stock-&gt;rowCount() !== 1) {
+            throw new RuntimeException('Niet genoeg voorraad.');
+        }
+
+        $db-&gt;commit();
+        redirect('index.php');
+    } catch (Throwable $error) {
+        $db-&gt;rollBack();
+        throw $error;
+    }
 }</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div>
+                      <div class="snippet-part-heading"><span>2</span><div><b>HTML · laat klant, product en aantal kiezen</b><small>Alle inputnamen komen letterlijk terug in <code>$_POST</code> in het PHP-blok.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, in het zichtbare HTML-deel waar je een bestelling wilt invoeren.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="order-card" data-code-file="jouw-project/index.php" data-code-method="Voeg een compleet bestelformulier toe" data-code-start="in het zichtbare HTML-deel" data-code-end="vóór de afsluitende &lt;/main&gt;" data-code-action="Laad $klanten en $producten eerst uit de database. Plak daarna dit formulier; verander de namen klant_id, product_id en aantal niet los." data-code-check="Kies een klant, product en aantal. Na verzenden moeten bestelling en voorraad samen veranderen."><div class="code-toolbar"><span>index.php · HTML-bestelformulier</span><button type="button" data-copy-target="snippet-transaction-html">Kopieer HTML</button></div><pre><code id="snippet-transaction-html">&lt;section class="order-card"&gt;
+    &lt;div class="order-card__heading"&gt;
+        &lt;p&gt;Nieuwe bestelling&lt;/p&gt;
+        &lt;h2&gt;Product reserveren&lt;/h2&gt;
+    &lt;/div&gt;
+
+    &lt;form class="order-form" method="post"&gt;
+        &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+        &lt;input type="hidden" name="intent" value="create_order"&gt;
+
+        &lt;label&gt;&lt;span&gt;Klant&lt;/span&gt;
+            &lt;select name="klant_id" required&gt;
+                &lt;?php foreach ($klanten as $klant): ?&gt;
+                    &lt;option value="&lt;?= e($klant['id']) ?&gt;"&gt;&lt;?= e($klant['naam']) ?&gt;&lt;/option&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;/select&gt;
+        &lt;/label&gt;
+
+        &lt;label&gt;&lt;span&gt;Product&lt;/span&gt;
+            &lt;select name="product_id" required&gt;
+                &lt;?php foreach ($producten as $product): ?&gt;
+                    &lt;option value="&lt;?= e($product['id']) ?&gt;"&gt;&lt;?= e($product['naam']) ?&gt;&lt;/option&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;/select&gt;
+        &lt;/label&gt;
+
+        &lt;label&gt;&lt;span&gt;Aantal&lt;/span&gt;&lt;input name="aantal" type="number" min="1" value="1" required&gt;&lt;/label&gt;
+        &lt;button type="submit"&gt;Bestelling opslaan&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/section&gt;</code></pre></div>
+                    </div>
+                    <div>
+                      <div class="snippet-part-heading"><span>3</span><div><b>CSS · maak van het formulier een duidelijke werkkaart</b><small><code>order-card</code> en <code>order-form</code> komen uit de HTML hierboven.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> jouw gekoppelde CSS-bestand, bijvoorbeeld <code>assets/app.css</code>.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="order-card" data-code-file="jouw-project/assets/app.css" data-code-method="Voeg formulier-CSS onderaan toe" data-code-start="Ctrl+End in het gekoppelde CSS-bestand" data-code-end="na de laatste bestaande }" data-code-action="Plak dit complete blok onderaan. Gebruik dezelfde order-card-class als in het HTML-blok." data-code-check="De drie velden moeten in één nette kaart staan en op mobiel de volledige breedte gebruiken."><div class="code-toolbar"><span>assets/app.css · bestelformulier</span><button type="button" data-copy-target="snippet-transaction-css">Kopieer CSS</button></div><pre><code id="snippet-transaction-css">.order-card {
+  max-width: 720px;
+  padding: 26px;
+  border: 1px solid #d9dee8;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(16, 35, 63, 0.08);
+}
+
+.order-card__heading p { margin: 0; color: #1e56dc; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.order-card__heading h2 { margin: 4px 0 22px; }
+.order-form { display: grid; gap: 15px; }
+.order-form label { display: grid; gap: 7px; color: #546178; font-size: 12px; font-weight: 700; }
+.order-form input, .order-form select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #cbd2df; background: #ffffff; }
+.order-form button { min-height: 46px; border: 0; background: #1e56dc; color: #ffffff; font-weight: 700; cursor: pointer; }
+
+@media (max-width: 620px) {
+.order-card { padding: 18px; }
+}</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="php html css feature">
+                <summary><span class="snippet-index">F1</span><span><b>Zoeken en filteren in een overzicht</b><small>Combineer een zoekwoord en status zonder onveilige SQL.</small></span><span class="snippet-stack">CRUD + PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>CRUD-functie:</strong> dit breidt Read uit. Prepared parameters houden de zoekterm buiten de SQL-code.</p>
+                  <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Voeg dit volledige READ-blok vóór de HTML toe" data-code-start="vóór &lt;!DOCTYPE html&gt;" data-code-end="na de andere SELECT-query's" data-code-action="Plak het blok vóór de HTML. Gebruik in het nieuwe HTML-overzicht $filteredStudents." data-code-check="Zoek op een deel van een naam en combineer dit met iedere status."><div class="code-toolbar"><span>index.php · zoeken en filteren</span><button type="button" data-copy-target="snippet-search-filter">Kopieer PHP</button></div><pre><code id="snippet-search-filter">// FILTERS: lees alleen bekende waarden uit de URL.
+$search = trim((string) ($_GET['search'] ?? ''));
+$status = (string) ($_GET['status'] ?? 'all');
+$allowedStatuses = ['all', 'actief', 'inactief', 'afgestudeerd'];
+if (!in_array($status, $allowedStatuses, true)) $status = 'all';
+
+$where = [];
+$parameters = [];
+if ($search !== '') {
+    $where[] = '(voornaam LIKE :search OR achternaam LIKE :search OR email LIKE :search)';
+    $parameters['search'] = '%' . $search . '%';
+}
+if ($status !== 'all') {
+    $where[] = 'status = :status';
+    $parameters['status'] = $status;
+}
+
+$sql = 'SELECT * FROM studenten';
+if ($where !== []) $sql .= ' WHERE ' . implode(' AND ', $where);
+$sql .= ' ORDER BY achternaam, voornaam';
+$statement = $db-&gt;prepare($sql);
+$statement-&gt;execute($parameters);
+$filteredStudents = $statement-&gt;fetchAll();</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div><div class="snippet-part-heading"><span>2</span><div><b>HTML · filters en resultaten</b><small>De GET-namen <code>search</code> en <code>status</code> zijn gelijk aan PHP.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>index.php</code>, boven het studentenoverzicht.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="list-tools" data-code-file="studenten-crud/index.php" data-code-method="Voeg filterbalk en resultaten toe" data-code-start="boven de bestaande tabel" data-code-end="vervang de gebruikte studenten-foreach door filteredStudents" data-code-action="Plak het filterformulier en gebruik $filteredStudents voor de rijlus." data-code-check="Filters moeten in de URL verschijnen en na vernieuwen geselecteerd blijven."><div class="code-toolbar"><span>index.php · HTML-filterbalk</span><button type="button" data-copy-target="snippet-search-filter-html">Kopieer HTML</button></div><pre><code id="snippet-search-filter-html">&lt;form class="list-tools" method="get"&gt;
+  &lt;label&gt;&lt;span&gt;Zoeken&lt;/span&gt;&lt;input name="search" type="search" value="&lt;?= e($search) ?&gt;" placeholder="Naam of e-mail"&gt;&lt;/label&gt;
+  &lt;label&gt;&lt;span&gt;Status&lt;/span&gt;&lt;select name="status"&gt;
+    &lt;option value="all"&gt;Alle statussen&lt;/option&gt;
+    &lt;option value="actief" &lt;?= $status === 'actief' ? 'selected' : '' ?&gt;&gt;Actief&lt;/option&gt;
+    &lt;option value="inactief" &lt;?= $status === 'inactief' ? 'selected' : '' ?&gt;&gt;Inactief&lt;/option&gt;
+    &lt;option value="afgestudeerd" &lt;?= $status === 'afgestudeerd' ? 'selected' : '' ?&gt;&gt;Afgestudeerd&lt;/option&gt;
+  &lt;/select&gt;&lt;/label&gt;
+  &lt;button type="submit"&gt;Toepassen&lt;/button&gt;&lt;a href="index.php"&gt;Wissen&lt;/a&gt;
+&lt;/form&gt;
+&lt;p class="list-tools__count"&gt;&lt;?= count($filteredStudents) ?&gt; resultaten&lt;/p&gt;</code></pre></div>
+                    </div>
+                    <div><div class="snippet-part-heading"><span>3</span><div><b>CSS · compacte filterbalk</b><small>De hoofdclass is <code>list-tools</code>.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="list-tools" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg filter-CSS toe" data-code-start="Ctrl+End" data-code-end="na de laatste }" data-code-action="Plak onderaan; de mediaquery maakt de filterbalk mobiel." data-code-check="Op mobiel moeten alle velden onder elkaar staan."><div class="code-toolbar"><span>assets/app.css · filterbalk</span><button type="button" data-copy-target="snippet-search-filter-css">Kopieer CSS</button></div><pre><code id="snippet-search-filter-css">/* FILTERBALK: zoeken, status en acties op één regel. */
+.list-tools { display: grid; grid-template-columns: 1fr 220px auto auto; gap: 10px; align-items: end; padding: 16px; border: 1px solid #d9dee8; background: #fff; }
+.list-tools label { display: grid; gap: 5px; font-size: 12px; font-weight: 700; }
+.list-tools input, .list-tools select { min-height: 42px; padding: 9px 11px; border: 1px solid #cbd2df; }
+.list-tools button, .list-tools a { display: grid; min-height: 42px; padding: 0 13px; place-items: center; border: 1px solid #1e56dc; background: #1e56dc; color: #fff; font-weight: 700; text-decoration: none; }
+.list-tools__count { color: #647083; font-weight: 700; }
+@media (max-width: 720px) { .list-tools { grid-template-columns: 1fr; align-items: stretch; } }</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="php html css feature">
+                <summary><span class="snippet-index">F2</span><span><b>Paginering voor grote overzichten</b><small>Toon bijvoorbeeld twintig rijen per pagina.</small></span><span class="snippet-stack">CRUD + PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>CRUD-functie:</strong> Read blijft snel doordat SQL alleen de huidige pagina ophaalt.</p>
+                  <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Vervang de SELECT die alle rijen ophaalt" data-code-start="$students = ... fetchAll()" data-code-end="het volledige bestaande overzichtsqueryblok" data-code-action="Vervang de query die alle studenten laadt door dit count-, limit- en offsetblok." data-code-check="Maak meer dan twintig testrijen en controleer pagina 1, 2 en een te hoog paginanummer."><div class="code-toolbar"><span>index.php · PHP-paginering</span><button type="button" data-copy-target="snippet-pagination">Kopieer PHP</button></div><pre><code id="snippet-pagination">// PAGINERING: bereken eerst veilige grenzen.
+$perPage = 20;
+$totalRows = (int) $db-&gt;query('SELECT COUNT(*) FROM studenten')-&gt;fetchColumn();
+$pageCount = max(1, (int) ceil($totalRows / $perPage));
+$currentPage = filter_var($_GET['p'] ?? 1, FILTER_VALIDATE_INT) ?: 1;
+$currentPage = min(max(1, $currentPage), $pageCount);
+$offset = ($currentPage - 1) * $perPage;
+
+$statement = $db-&gt;prepare(
+    'SELECT * FROM studenten ORDER BY id DESC LIMIT :limit OFFSET :offset'
+);
+$statement-&gt;bindValue('limit', $perPage, PDO::PARAM_INT);
+$statement-&gt;bindValue('offset', $offset, PDO::PARAM_INT);
+$statement-&gt;execute();
+$students = $statement-&gt;fetchAll();</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div><div class="snippet-part-heading"><span>2</span><div><b>HTML · paginanummers onder de tabel</b><small>De URL-parameter <code>p</code> wordt door PHP begrensd.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> direct onder de studententabel.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="pagination-bar" data-code-file="studenten-crud/index.php" data-code-method="Voeg navigatie onder het overzicht toe" data-code-start="direct na de afsluitende &lt;/table&gt;" data-code-end="vóór het volgende onderdeel" data-code-action="Plak de nav direct onder de tabel. De variabelen komen uit het PHP-blok." data-code-check="De actieve pagina moet gemarkeerd zijn en ieder nummer moet de juiste rijen tonen."><div class="code-toolbar"><span>index.php · HTML-paginering</span><button type="button" data-copy-target="snippet-pagination-html">Kopieer HTML</button></div><pre><code id="snippet-pagination-html">&lt;nav class="pagination-bar" aria-label="Resultaatpagina's"&gt;
+  &lt;span&gt;Pagina &lt;?= $currentPage ?&gt; van &lt;?= $pageCount ?&gt;&lt;/span&gt;
+  &lt;div&gt;
+    &lt;?php for ($page = 1; $page &lt;= $pageCount; $page++): ?&gt;
+      &lt;a class="&lt;?= $page === $currentPage ? 'is-current' : '' ?&gt;" href="?p=&lt;?= $page ?&gt;"&gt;&lt;?= $page ?&gt;&lt;/a&gt;
+    &lt;?php endfor; ?&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</code></pre></div>
+                    </div>
+                    <div><div class="snippet-part-heading"><span>3</span><div><b>CSS · leesbare paginanummers</b><small>De hoofdclass <code>pagination-bar</code> staat in de HTML.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="pagination-bar" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg paginering-CSS toe" data-code-start="Ctrl+End" data-code-end="na de laatste }" data-code-action="Plak het blok onderaan." data-code-check="De huidige pagina moet blauw zijn; lange reeksen mogen naar een volgende regel lopen."><div class="code-toolbar"><span>assets/app.css · paginering</span><button type="button" data-copy-target="snippet-pagination-css">Kopieer CSS</button></div><pre><code id="snippet-pagination-css">/* PAGINERING: status links, aanklikbare pagina's rechts. */
+.pagination-bar { display: flex; gap: 16px; align-items: center; justify-content: space-between; margin-top: 18px; }
+.pagination-bar &gt; span { color: #647083; font-size: 12px; font-weight: 700; }
+.pagination-bar &gt; div { display: flex; gap: 6px; flex-wrap: wrap; }
+.pagination-bar a { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid #cbd2df; background: #fff; text-decoration: none; }
+.pagination-bar a.is-current { border-color: #1e56dc; background: #1e56dc; color: #fff; }
+@media (max-width: 560px) { .pagination-bar { align-items: flex-start; flex-direction: column; } }</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="php html css feature">
+                <summary><span class="snippet-index">F3</span><span><b>Status en bulkacties</b><small>Wijzig meerdere gekozen rijen tegelijk.</small></span><span class="snippet-stack">CRUD + PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>CRUD-functie:</strong> Update of Delete voor meerdere ids. De backend accepteert maximaal honderd geldige positieve ids.</p>
+                  <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Voeg bulkverwerking vóór het bestaande POST-blok toe" data-code-start="if ($_SERVER['REQUEST_METHOD'] === 'POST') {" data-code-end="plak dit blok direct boven die regel" data-code-action="Plak het hele blok vóór de gewone POST-switch. De redirect stopt daarna verdere verwerking." data-code-check="Selecteer twee teststudenten, wijzig hun status samen en test verwijderen alleen met testdata."><div class="code-toolbar"><span>index.php · PHP-bulkacties</span><button type="button" data-copy-target="snippet-bulk-actions">Kopieer PHP</button></div><pre><code id="snippet-bulk-actions">// BULKACTIES: valideer ieder gekozen id en bouw veilige placeholders.
+$bulkIntents = ['bulk_activate', 'bulk_deactivate', 'bulk_delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    &amp;&amp; in_array(post_text('intent'), $bulkIntents, true)
+) {
+    verify_csrf($_POST['_token'] ?? null);
+    $ids = array_values(array_unique(array_filter(
+        array_map('intval', $_POST['selected_ids'] ?? []),
+        fn (int $id): bool =&gt; $id &gt; 0
+    )));
+    if ($ids === [] || count($ids) &gt; 100) {
+        throw new RuntimeException('Kies tussen één en honderd geldige rijen.');
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $intent = post_text('intent');
+    if ($intent === 'bulk_delete') {
+        $sql = "DELETE FROM studenten WHERE id IN ($placeholders)";
+        $parameters = $ids;
+    } else {
+        $status = $intent === 'bulk_activate' ? 'actief' : 'inactief';
+        $sql = "UPDATE studenten SET status = ? WHERE id IN ($placeholders)";
+        $parameters = [$status, ...$ids];
+    }
+    $db-&gt;prepare($sql)-&gt;execute($parameters);
+    redirect('index.php');
+}</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div><div class="snippet-part-heading"><span>2</span><div><b>HTML · selectievakjes en actiebalk</b><small><code>selected_ids[]</code> stuurt een lijst naar PHP.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> als alternatief overzicht in <code>index.php</code>; plaats geen andere formulieren binnen dit formulier.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="bulk-tools" data-code-file="studenten-crud/index.php" data-code-method="Voeg één compleet bulkformulier toe" data-code-start="op de plek van het gewenste overzicht" data-code-end="na de laatste bulkrij" data-code-action="Plak dit als één formulier. Voeg geen bewerk- of verwijderformulieren binnen de bulk-foreach toe, want formulieren mogen niet genest worden." data-code-check="Vink twee rijen aan en test iedere knop; zonder selectie moet PHP een melding geven."><div class="code-toolbar"><span>index.php · HTML-bulkoverzicht</span><button type="button" data-copy-target="snippet-bulk-actions-html">Kopieer HTML</button></div><pre><code id="snippet-bulk-actions-html">&lt;form class="bulk-tools" method="post"&gt;
+  &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+  &lt;div class="bulk-tools__bar"&gt;
+    &lt;b&gt;Met geselecteerde rijen:&lt;/b&gt;
+    &lt;button name="intent" value="bulk_activate" type="submit"&gt;Actief maken&lt;/button&gt;
+    &lt;button name="intent" value="bulk_deactivate" type="submit"&gt;Inactief maken&lt;/button&gt;
+    &lt;button class="is-danger" name="intent" value="bulk_delete" type="submit" onclick="return confirm('Geselecteerde rijen verwijderen?')"&gt;Verwijderen&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="bulk-tools__rows"&gt;
+    &lt;?php foreach ($students as $student): ?&gt;
+      &lt;label&gt;&lt;input type="checkbox" name="selected_ids[]" value="&lt;?= e($student['id']) ?&gt;"&gt;&lt;span&gt;&lt;b&gt;&lt;?= e($student['voornaam'] . ' ' . $student['achternaam']) ?&gt;&lt;/b&gt;&lt;small&gt;&lt;?= e($student['status']) ?&gt;&lt;/small&gt;&lt;/span&gt;&lt;/label&gt;
+    &lt;?php endforeach; ?&gt;
+  &lt;/div&gt;
+&lt;/form&gt;</code></pre></div>
+                    </div>
+                    <div><div class="snippet-part-heading"><span>3</span><div><b>CSS · vaste actiebalk en selecteerbare rijen</b><small>De hoofdclass is <code>bulk-tools</code>.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="bulk-tools" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg bulk-CSS toe" data-code-start="Ctrl+End" data-code-end="na de laatste }" data-code-action="Plak het complete blok onderaan." data-code-check="Geselecteerde rijen moeten herkenbaar zijn en knoppen moeten mobiel doorlopen."><div class="code-toolbar"><span>assets/app.css · bulkacties</span><button type="button" data-copy-target="snippet-bulk-actions-css">Kopieer CSS</button></div><pre><code id="snippet-bulk-actions-css">/* BULKACTIES: actiebalk boven een lijst met selectievakjes. */
+.bulk-tools { border: 1px solid #d9dee8; background: #fff; }
+.bulk-tools__bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 14px; background: #f5f7fa; }
+.bulk-tools__bar button { min-height: 38px; padding: 0 11px; border: 1px solid #1e56dc; background: #fff; color: #1e56dc; font-weight: 700; }
+.bulk-tools__bar .is-danger { border-color: #b62935; color: #b62935; }
+.bulk-tools__rows label { display: flex; gap: 12px; align-items: center; padding: 13px 16px; border-top: 1px solid #e6e9ee; cursor: pointer; }
+.bulk-tools__rows label:has(input:checked) { background: #edf2ff; }
+.bulk-tools__rows input { width: 18px; height: 18px; }
+.bulk-tools__rows span { display: grid; }
+.bulk-tools__rows small { color: #647083; }</code></pre></div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="snippet-item" data-snippet-tags="users database php html css feature">
+                <summary><span class="snippet-index">F4</span><span><b>Activiteitenlog en wijzigingsgeschiedenis</b><small>Bewaar wie wat heeft toegevoegd, gewijzigd of verwijderd.</small></span><span class="snippet-stack">Users + DB</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <div class="snippet-body">
+                  <p><strong>Voor een complete applicatie:</strong> schrijf na iedere geslaagde CRUD-actie één logregel. Bewaar nooit wachtwoorden of volledige gevoelige records in <code>details</code>.</p>
+                  <div class="code-block" data-code-file="studenten-crud/database/schema.sql" data-code-method="Voeg de logtabel onderaan het schema toe" data-code-start="Ctrl+End in database/schema.sql" data-code-end="na de laatste SQL-regel" data-code-action="Plak deze tabel onderaan nadat users bestaat." data-code-check="Open de app en controleer of audit_log als lege tabel bestaat."><div class="code-toolbar"><span>schema.sql · activiteitenlog</span><button type="button" data-copy-target="snippet-audit-log">Kopieer SQL</button></div><pre><code id="snippet-audit-log">-- ACTIVITEITENLOG: één rij per geslaagde wijziging.
+CREATE TABLE IF NOT EXISTS audit_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  action TEXT NOT NULL,
+  entity TEXT NOT NULL,
+  entity_id INTEGER,
+  details TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/database/mysql-schema.sql" data-code-method="Voeg de MySQL-logtabel onderaan toe" data-code-start="na de MySQL-users-tabel" data-code-end="na de laatste SQL-regel" data-code-action="Gebruik dit blok alleen bij PHP + MySQL. Plak niet ook de SQLite-versie hierboven." data-code-check="Open phpMyAdmin en controleer of audit_log een foreign key naar users heeft."><div class="code-toolbar"><span>mysql-schema.sql · MySQL-activiteitenlog</span><button type="button" data-copy-target="snippet-audit-log-mysql">Kopieer MySQL-SQL</button></div><pre><code id="snippet-audit-log-mysql">-- MYSQL · ACTIVITEITENLOG MET DEZELFDE VELDEN.
+CREATE TABLE IF NOT EXISTS audit_log (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NULL,
+  action VARCHAR(40) NOT NULL,
+  entity VARCHAR(80) NOT NULL,
+  entity_id INT UNSIGNED NULL,
+  details LONGTEXT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_audit_created (created_at),
+  INDEX idx_audit_entity (entity, entity_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;</code></pre></div>
+                  <div class="code-block" data-code-file="studenten-crud/includes/functions.php + index.php" data-code-method="Voeg helper, aanroepen en READ-query afzonderlijk toe" data-code-start="helper onderaan functions.php; aanroep na een geslaagde CRUD-query" data-code-end="query vóór de HTML" data-code-action="Plak de functie in functions.php. Roep hem pas na een geslaagde INSERT/UPDATE/DELETE aan en laad daarna $auditRows vóór de HTML." data-code-check="Voeg een teststudent toe en controleer of één logregel met actie create verschijnt."><div class="code-toolbar"><span>functions.php + index.php · logboek</span><button type="button" data-copy-target="snippet-audit-log-php">Kopieer PHP</button></div><pre><code id="snippet-audit-log-php">// In includes/functions.php:
+function audit_log(PDO $db, string $action, string $entity, ?int $entityId, array $details = []): void
+{
+    $statement = $db-&gt;prepare(
+        'INSERT INTO audit_log (user_id, action, entity, entity_id, details)
+         VALUES (?, ?, ?, ?, ?)'
+    );
+    $statement-&gt;execute([
+        $_SESSION['user_id'] ?? null,
+        $action,
+        $entity,
+        $entityId,
+        $details === [] ? null : json_encode($details, JSON_UNESCAPED_UNICODE),
+    ]);
+}
+
+// Voorbeeld direct na een geslaagde UPDATE in index.php:
+audit_log($db, 'update', 'student', $id, ['gewijzigd' =&gt; ['email', 'status']]);
+
+// READ: laad de nieuwste honderd regels vóór de HTML:
+$auditRows = $db-&gt;query(
+    'SELECT audit_log.*, users.email AS user_email
+     FROM audit_log
+     LEFT JOIN users ON users.id = audit_log.user_id
+     ORDER BY audit_log.id DESC LIMIT 100'
+)-&gt;fetchAll();</code></pre></div>
+                  <div class="snippet-frontend-pair">
+                    <div><div class="snippet-part-heading"><span>2</span><div><b>HTML · leesbare tijdlijn</b><small>De tijdlijn gebruikt de velden uit <code>$auditRows</code>.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> een adminpagina of onderaan <code>index.php</code>.</p>
+                      <div class="code-block" data-snippet-part="html" data-snippet-root="audit-log" data-code-file="studenten-crud/index.php" data-code-method="Voeg het complete logboekoverzicht toe" data-code-start="in het admin-gedeelte" data-code-end="vóór de footer" data-code-action="Plak de section nadat $auditRows is geladen. Bescherm dit onderdeel met require_permission('manage_users')." data-code-check="De nieuwste wijziging moet bovenaan staan met gebruiker, actie en tijdstip."><div class="code-toolbar"><span>index.php · HTML-activiteitenlog</span><button type="button" data-copy-target="snippet-audit-log-html">Kopieer HTML</button></div><pre><code id="snippet-audit-log-html">&lt;section class="audit-log"&gt;
+  &lt;header&gt;&lt;p&gt;Controle&lt;/p&gt;&lt;h2&gt;Activiteitenlog&lt;/h2&gt;&lt;/header&gt;
+  &lt;ol&gt;
+    &lt;?php foreach ($auditRows as $log): ?&gt;
+      &lt;li&gt;
+        &lt;span class="audit-log__action"&gt;&lt;?= e($log['action']) ?&gt;&lt;/span&gt;
+        &lt;div&gt;&lt;b&gt;&lt;?= e($log['entity']) ?&gt; #&lt;?= e($log['entity_id'] ?? '—') ?&gt;&lt;/b&gt;&lt;small&gt;door &lt;?= e($log['user_email'] ?? 'verwijderde gebruiker') ?&gt;&lt;/small&gt;&lt;/div&gt;
+        &lt;time&gt;&lt;?= e($log['created_at']) ?&gt;&lt;/time&gt;
+      &lt;/li&gt;
+    &lt;?php endforeach; ?&gt;
+  &lt;/ol&gt;
+&lt;/section&gt;</code></pre></div>
+                    </div>
+                    <div><div class="snippet-part-heading"><span>3</span><div><b>CSS · compacte wijzigingstijdlijn</b><small>De hoofdclass <code>audit-log</code> staat in de HTML.</small></div></div>
+                      <p class="snippet-file-rule"><b>Plak in:</b> <code>assets/app.css</code>, onderaan.</p>
+                      <div class="code-block" data-snippet-part="css" data-snippet-root="audit-log" data-code-file="studenten-crud/assets/app.css" data-code-method="Voeg logboek-CSS toe" data-code-start="Ctrl+End" data-code-end="na de laatste }" data-code-action="Plak het hele blok onderaan." data-code-check="Iedere logregel moet actie, onderwerp, gebruiker en datum duidelijk scheiden."><div class="code-toolbar"><span>assets/app.css · activiteitenlog</span><button type="button" data-copy-target="snippet-audit-log-css">Kopieer CSS</button></div><pre><code id="snippet-audit-log-css">/* ACTIVITEITENLOG: nieuwste wijziging bovenaan. */
+.audit-log { margin-top: 40px; padding: 24px; border: 1px solid #d9dee8; background: #fff; }
+.audit-log header p { margin: 0; color: #1e56dc; font-weight: 700; text-transform: uppercase; }
+.audit-log header h2 { margin: 4px 0 20px; }
+.audit-log ol { margin: 0; padding: 0; list-style: none; }
+.audit-log li { display: grid; grid-template-columns: 90px 1fr auto; gap: 12px; align-items: center; padding: 13px 0; border-top: 1px solid #e6e9ee; }
+.audit-log__action { padding: 4px 7px; background: #edf2ff; color: #1e56dc; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.audit-log li div { display: grid; }
+.audit-log small, .audit-log time { color: #647083; font-size: 11px; }
+@media (max-width: 620px) { .audit-log li { grid-template-columns: 1fr; } }</code></pre></div>
+                    </div>
+                  </div>
                 </div>
               </details>
             </div>

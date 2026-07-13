@@ -124,6 +124,36 @@ const change = (element, value) => {
   element.dispatchEvent(new window.Event('change', { bubbles: true }));
 };
 
+if (!builder.querySelector('[data-builder-tab="complete"]').classList.contains('is-active')
+  || builder.querySelectorAll('[data-builder-tab]').length !== 7) {
+  throw new Error('De CRUD-generator opent niet direct met de complete testapp.');
+}
+if (!builder.querySelector('[data-builder-test-title]').textContent.includes('PHP + SQLite')
+  || builder.querySelectorAll('[data-builder-test-steps] li').length !== 4
+  || !builder.querySelector('[data-builder-test-steps]').textContent.includes('index.php')) {
+  throw new Error('De complete PHP + SQLite-app heeft geen direct zichtbaar testplan.');
+}
+const completePhpSqliteCode = code();
+if (!completePhpSqliteCode.startsWith('<?php')
+  || !completePhpSqliteCode.includes('<!DOCTYPE html>')
+  || !completePhpSqliteCode.includes('CREATE TABLE IF NOT EXISTS producten')
+  || !completePhpSqliteCode.includes('INSERT INTO producten')
+  || !completePhpSqliteCode.includes('UPDATE producten SET')
+  || !completePhpSqliteCode.includes('DELETE FROM producten')
+  || !['// STAP', '<!-- STAP', '/* STAP', '-- Dit bestand'].every((comment) => completePhpSqliteCode.includes(comment))) {
+  throw new Error('De standaard PHP-complete-app mist CRUD, HTML, CSS of uitlegcomments.');
+}
+const builderStackForComplete = builder.querySelector('[data-builder-stack]');
+change(builderStackForComplete, 'php-mysql');
+const completePhpMysqlCode = code();
+if (!completePhpMysqlCode.includes('CREATE DATABASE IF NOT EXISTS producten_crud')
+  || !completePhpMysqlCode.includes('mysql:host=127.0.0.1;dbname=producten_crud')
+  || !builder.querySelector('[data-builder-test-title]').textContent.includes('PHP + MySQL')
+  || !builder.querySelector('[data-builder-test-steps]').textContent.includes('Apache én MySQL')) {
+  throw new Error('De complete PHP + MySQL-app maakt geen direct bruikbare XAMPP-verbinding.');
+}
+change(builderStackForComplete, 'php-sqlite');
+
 clickTab('sql');
 if (!code().includes('CREATE TABLE IF NOT EXISTS producten')) {
   throw new Error('Standaard SQLite-schema is niet gegenereerd.');
@@ -157,6 +187,36 @@ if (!phpCode.includes("INSERT INTO producten") || !phpCode.includes("DELETE FROM
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), 'cfd-builder-'));
 try {
+  const completeSqliteFile = join(temporaryDirectory, 'complete-sqlite.php');
+  writeFileSync(completeSqliteFile, completePhpSqliteCode, 'utf8');
+  execFileSync('php', ['-l', completeSqliteFile], { stdio: 'pipe' });
+  const runCompletePhp = (filename, requestMethod, post = {}) => {
+    const phpPost = Object.entries(post).map(([key, value]) => `${JSON.stringify(key)} => ${JSON.stringify(value)}`).join(', ');
+    const requestSetup = `session_start();\n$_SERVER['REQUEST_METHOD'] = '${requestMethod}';\n$_SESSION['_token'] = 'test-token';\n$_POST = [${phpPost}];`;
+    const runnableSource = completePhpSqliteCode.replace('session_start();', requestSetup);
+    const runnableFile = join(temporaryDirectory, filename);
+    writeFileSync(runnableFile, runnableSource, 'utf8');
+    return execFileSync('php', [runnableFile], { encoding: 'utf8' });
+  };
+  runCompletePhp('complete-create.php', 'POST', {
+    _token: 'test-token', intent: 'create_product', naam: 'Testproduct', omschrijving: 'Eerste versie', prijs: '12.50', voorraad: '3', actief: '1'
+  });
+  if (!runCompletePhp('complete-read.php', 'GET').includes('Testproduct')) {
+    throw new Error('De complete PHP-app kan een aangemaakt item niet opnieuw lezen.');
+  }
+  runCompletePhp('complete-update.php', 'POST', {
+    _token: 'test-token', intent: 'update_product', id: '1', naam: 'Gewijzigd product', omschrijving: 'Tweede versie', prijs: '14.00', voorraad: '5', actief: '1'
+  });
+  if (!runCompletePhp('complete-read-updated.php', 'GET').includes('Gewijzigd product')) {
+    throw new Error('De complete PHP-app kan een item niet wijzigen.');
+  }
+  runCompletePhp('complete-delete.php', 'POST', { _token: 'test-token', intent: 'delete_product', id: '1' });
+  if (runCompletePhp('complete-read-deleted.php', 'GET').includes('Gewijzigd product')) {
+    throw new Error('De complete PHP-app kan een testitem niet verwijderen.');
+  }
+  const completeMysqlFile = join(temporaryDirectory, 'complete-mysql.php');
+  writeFileSync(completeMysqlFile, completePhpMysqlCode, 'utf8');
+  execFileSync('php', ['-l', completeMysqlFile], { stdio: 'pipe' });
   const phpFile = join(temporaryDirectory, 'generated.php');
   writeFileSync(phpFile, `<?php\n${phpCode}`, 'utf8');
   execFileSync('php', ['-l', phpFile], { stdio: 'pipe' });
@@ -181,6 +241,16 @@ if (!code().includes('AUTO_INCREMENT') || !code().includes('ENGINE=InnoDB')) {
 }
 
 change(stack, 'js-sqlite');
+clickTab('complete');
+const completeJavaScriptCode = code();
+if (!completeJavaScriptCode.includes("app.listen(3000")
+  || !completeJavaScriptCode.includes('<!DOCTYPE html>')
+  || !completeJavaScriptCode.includes('CREATE TABLE IF NOT EXISTS producten')
+  || !builder.querySelector('[data-builder-test-title]').textContent.includes('JavaScript + SQLite')
+  || !builder.querySelector('[data-builder-test-steps]').textContent.includes('npm install express better-sqlite3')) {
+  throw new Error('De complete JavaScript-app mist server, frontend of SQLite-tabel.');
+}
+new Function(completeJavaScriptCode);
 clickTab('form');
 const javascriptViewCode = code();
 if (!javascriptViewCode.includes('id="product-form"') || !javascriptViewCode.includes('id="producten-rows"') || !javascriptViewCode.includes('class="generated-crud')) {
@@ -267,14 +337,90 @@ if (wrongSnippetVisible) {
   throw new Error('Snippetfilter toont een verkeerde categorie.');
 }
 
+const snippetRecipes = [...window.document.querySelectorAll('.snippet-item')];
+if (snippetRecipes.length !== 17) {
+  throw new Error('Het verwachte aantal complete snippetrecepten is gewijzigd.');
+}
+const snippetPickButtons = [...window.document.querySelectorAll('[data-snippet-pick]')];
+if (snippetPickButtons.length !== snippetRecipes.length
+  || snippetPickButtons.some((button) => !window.document.getElementById(button.dataset.snippetPick))) {
+  throw new Error('De gewone-taal functiekiezer maakt niet ieder snippetrecept vindbaar.');
+}
+
+for (const recipe of snippetRecipes) {
+  const htmlBlock = recipe.querySelector('[data-snippet-part="html"]');
+  const cssBlock = recipe.querySelector('[data-snippet-part="css"]');
+  if (!htmlBlock || !cssBlock || !htmlBlock.dataset.codeFile || !cssBlock.dataset.codeFile) {
+    throw new Error('Niet ieder snippetrecept heeft HTML, CSS en een exacte bestandslocatie.');
+  }
+  const rootClass = htmlBlock.dataset.snippetRoot;
+  const htmlSource = htmlBlock.querySelector('pre code').textContent;
+  const cssSource = cssBlock.querySelector('pre code').textContent;
+  if (!rootClass || rootClass !== cssBlock.dataset.snippetRoot
+    || !htmlSource.includes(rootClass)
+    || !cssSource.includes(`.${rootClass}`)) {
+    throw new Error(`HTML en CSS wijzen niet naar dezelfde hoofdclass bij snippet ${rootClass || 'onbekend'}.`);
+  }
+  const openBraces = (cssSource.match(/\{/g) || []).length;
+  const closeBraces = (cssSource.match(/\}/g) || []).length;
+  if (openBraces !== closeBraces) {
+    throw new Error(`CSS-accolades zijn niet in balans bij ${rootClass}.`);
+  }
+}
+
+for (const filterName of ['html', 'css']) {
+  window.document.querySelector(`[data-snippet-filter="${filterName}"]`).click();
+  const wrongVisible = snippetRecipes.some((item) => !item.hidden && !item.dataset.snippetTags.split(' ').includes(filterName));
+  if (wrongVisible) throw new Error(`Het ${filterName.toUpperCase()}-snippetfilter toont een verkeerd recept.`);
+}
+window.document.querySelector('[data-snippet-filter="users"]').click();
+if (snippetRecipes.filter((item) => !item.hidden).length < 4
+  || snippetRecipes.some((item) => !item.hidden && !item.dataset.snippetTags.split(' ').includes('users'))) {
+  throw new Error('Het gebruikersfilter toont niet alle gebruikersrecepten of toont een verkeerd recept.');
+}
+if (!window.document.getElementById('snippet-user-crud-php').textContent.includes('user_reset_password')
+  || !window.document.getElementById('snippet-user-crud-mysql').textContent.includes('AUTO_INCREMENT')
+  || !window.document.getElementById('snippet-first-admin').textContent.includes("'admin'")
+  || !window.document.getElementById('snippet-login').textContent.includes("$user['active']")
+  || !window.document.getElementById('snippet-logout').textContent.includes('session_destroy()')
+  || !window.document.getElementById('snippet-audit-log-mysql').textContent.includes('fk_audit_user')) {
+  throw new Error('De gebruikersrecepten missen account-CRUD, MySQL, eerste admin, actiefcontrole, logout of logging.');
+}
+
+const alignedSnippetPairs = [
+  ['snippet-one-many-html', 'snippet-one-many', 'land_id'],
+  ['snippet-login-html', 'snippet-login', 'name="email"'],
+  ['snippet-upload-html', 'snippet-upload', 'name="foto"'],
+  ['snippet-csv-import-html', 'snippet-csv-import', 'name="csv_bestand"'],
+  ['snippet-soft-delete-html', 'snippet-soft-delete-php', 'restore_student'],
+  ['snippet-transaction-html', 'snippet-transaction', 'product_id'],
+];
+for (const [htmlId, logicId, sharedName] of alignedSnippetPairs) {
+  if (!window.document.getElementById(htmlId).textContent.includes(sharedName)
+    || !window.document.getElementById(logicId).textContent.includes(sharedName.replace('name="', '').replace('"', ''))) {
+    throw new Error(`${htmlId} gebruikt niet dezelfde veld- of actienaam als ${logicId}.`);
+  }
+}
+
 const snippetDirectory = mkdtempSync(join(tmpdir(), 'cfd-snippets-'));
 try {
-  for (const snippetId of ['snippet-detail-php', 'snippet-login', 'snippet-upload', 'snippet-csv', 'snippet-csv-import', 'snippet-transaction']) {
+  for (const snippetId of [
+    'snippet-many-many-php', 'snippet-detail-php', 'snippet-login', 'snippet-upload',
+    'snippet-first-admin', 'snippet-logout',
+    'snippet-csv', 'snippet-csv-import', 'snippet-soft-delete-php', 'snippet-transaction',
+    'snippet-user-crud-php', 'snippet-role-permissions', 'snippet-profile-settings',
+    'snippet-search-filter', 'snippet-pagination', 'snippet-bulk-actions', 'snippet-audit-log-php'
+  ]) {
     const snippet = window.document.getElementById(snippetId).textContent;
     const phpStart = snippet.indexOf('<?php');
     const phpSource = phpStart >= 0 ? snippet.slice(phpStart) : `<?php\n${snippet}`;
     const filename = join(snippetDirectory, `${snippetId}.php`);
     writeFileSync(filename, phpSource, 'utf8');
+    execFileSync('php', ['-l', filename], { stdio: 'pipe' });
+  }
+  for (const htmlCode of window.document.querySelectorAll('[data-snippet-part="html"] pre code')) {
+    const filename = join(snippetDirectory, `${htmlCode.id}.php`);
+    writeFileSync(filename, htmlCode.textContent, 'utf8');
     execFileSync('php', ['-l', filename], { stdio: 'pipe' });
   }
   new Function(window.document.getElementById('snippet-detail-js').textContent);

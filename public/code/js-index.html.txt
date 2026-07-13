@@ -12,6 +12,7 @@
     <script src="./app.js" defer></script>
   </head>
   <body>
+    <!-- PAGINA-INDELING: navigatie bovenaan, daarna studenten en landen als twee pagina-secties. -->
     <header class="app-header">
       <a class="brand" href="#"><span>C/</span>Campus JS</a>
       <nav aria-label="Onderdelen">

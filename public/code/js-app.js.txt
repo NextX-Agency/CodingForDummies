@@ -1,9 +1,11 @@
+// API-URLS: alle browserrequests gebruiken deze drie centrale adressen.
 const API = {
   students: "/api/students",
   countries: "/api/countries",
   stats: "/api/stats"
 };
 
+// STATE: hierin bewaart de browser de laatst geladen studenten en landen.
 const state = {
   students: [],
   countries: []
@@ -311,4 +313,3 @@ elements.countryRows.addEventListener("click", (event) => {
 
 Promise.all([loadCountries(), loadStudents(), loadStats()])
   .catch((error) => showMessage(error.message, "error"));
-

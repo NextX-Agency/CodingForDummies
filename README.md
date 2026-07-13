@@ -10,7 +10,7 @@ Een Nederlandstalige, beginnersvriendelijke gids voor het bouwen van een complet
 
 Iedere route heeft een downloadbare studentenadministratie met een gekoppeld landenregister. De starters bevatten CRUD, zoeken, filters, validatie en veilige databasevragen.
 
-De gids bevat daarnaast een frontendwerkbank die HTML, CSS en functionaliteit bestand voor bestand koppelt. De interactieve CRUD-builder genereert voor eigen resources niet alleen SQL en backendcode, maar ook bijpassende HTML, mobiele CSS, browser-JavaScript en een exact plakplan. De snippetbibliotheek behandelt onder andere veldtypes, relaties, detailpagina's, login, uploads, CSV-export, soft delete en transacties. Daarmee is de gids gericht op vrijwel iedere normale administratieve CRUD-app. Betalingen, realtime chat en vergelijkbare specialistische systemen vallen bewust buiten de scope.
+De gids bevat daarnaast een frontendwerkbank die HTML, CSS en functionaliteit bestand voor bestand koppelt. De interactieve CRUD-builder opent direct met één complete, testbare PHP- of JavaScript-app en biedt daarna losse SQL-, HTML-, CSS-, backend- en browsercode met uitlegcomments. De snippetbibliotheek bevat zeventien complete recepten, waaronder relaties, detailpagina's, login, uploads, CSV, soft delete, transacties, gebruikersbeheer-CRUD, rollen, profielinstellingen, zoeken, paginering, bulkacties en een activiteitenlog. Ieder recept bevat een functioneel deel, bijpassende HTML, bijpassende CSS en exacte bestandslocaties. Daarmee is de gids gericht op vrijwel iedere normale administratieve CRUD-app. Betalingen, realtime chat en vergelijkbare specialistische systemen vallen bewust buiten de scope.
 
 ## Gids lokaal starten
 

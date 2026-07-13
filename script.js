@@ -421,7 +421,10 @@ if (builder) {
   const builderCode = $("[data-builder-code]", builder);
   const builderFile = $("[data-builder-file]", builder);
   const builderTabs = $$('[data-builder-tab]', builder);
-  let currentBuilderTab = "steps";
+  const builderTestTitle = $("[data-builder-test-title]", builder);
+  const builderTestIntro = $("[data-builder-test-intro]", builder);
+  const builderTestSteps = $("[data-builder-test-steps]", builder);
+  let currentBuilderTab = "complete";
   let builderFields = [];
 
   const reservedWords = new Set(["select", "insert", "update", "delete", "from", "where", "order", "group", "table", "index", "user"]);
@@ -554,12 +557,12 @@ if (builder) {
       definitions.push("  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP");
       definitions.push("  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
       definitions.push("  PRIMARY KEY (id)");
-      return `CREATE TABLE IF NOT EXISTS ${state.table} (\n${definitions.join(",\n")}\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`;
+      return `-- Dit bestand maakt de tabel voor ${state.table}.\n-- IF NOT EXISTS voorkomt een fout wanneer je de app opnieuw opent.\nCREATE TABLE IF NOT EXISTS ${state.table} (\n${definitions.join(",\n")}\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`;
     }
 
     definitions.push("  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP");
     definitions.push("  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP");
-    return `CREATE TABLE IF NOT EXISTS ${state.table} (\n${definitions.join(",\n")}\n);`;
+    return `-- Dit bestand maakt de tabel voor ${state.table}.\n-- SQLite bewaart deze tabel in één lokaal databasebestand.\nCREATE TABLE IF NOT EXISTS ${state.table} (\n${definitions.join(",\n")}\n);`;
   }
 
   function htmlControl(field, state) {
@@ -588,6 +591,7 @@ if (builder) {
     if (state.stack === "js-sqlite") {
       const headers = state.fields.map((field) => `        <th>${escapeHtmlCode(field.label)}</th>`).join("\n");
       return [
+        `<!-- ZICHTBARE PAGINA: formulier links, overzicht rechts. -->`,
         `<section class="generated-crud ${state.table}-beheer">`,
         `  <header class="generated-crud-heading">`,
         `    <p>Eigen administratie</p>`,
@@ -636,6 +640,7 @@ if (builder) {
     const cells = state.fields.map((field) => `          <td><?= e($row['${field.name}']) ?></td>`).join("\n");
 
     return [
+      `<!-- ZICHTBARE CRUD: dit deel hoort in het HTML-gedeelte van index.php. -->`,
       `<section class="generated-crud ${state.table}-beheer">`,
       `  <header class="generated-crud-heading"><p>Eigen CRUD</p><h2>${state.table} beheren</h2></header>`,
       `  <div class="generated-crud-layout">`,
@@ -755,6 +760,7 @@ if (builder) {
       : "";
 
     return [
+      `// PHP CRUD: lees invoer, voer Create/Update/Delete uit en laad daarna alle rijen.`,
       `function read_${state.singular}_input(): array`,
       `{`,
       `    $input = [`,
@@ -781,7 +787,7 @@ if (builder) {
       ``,
       `    if ($intent === 'update_${state.singular}') {`,
       `        $input = read_${state.singular}_input();`,
-      `        $input['id'] = positive_id($_POST['id'] ?? null);`,
+      `        $input['id'] = positive_id($_POST['id'] ?? null, 'ID');`,
       `        $statement = $db->prepare(`,
       `            'UPDATE ${state.table} SET`,
       updateFields,
@@ -792,7 +798,7 @@ if (builder) {
       `    }`,
       ``,
       `    if ($intent === 'delete_${state.singular}') {`,
-      `        $id = positive_id($_POST['id'] ?? null);`,
+      `        $id = positive_id($_POST['id'] ?? null, 'ID');`,
       `        $db->prepare('DELETE FROM ${state.table} WHERE id = ?')->execute([$id]);`,
       `        redirect('index.php');`,
       `    }`,
@@ -827,6 +833,7 @@ if (builder) {
       .map((field) => `  if (item.${field.name} && !item.${field.name}.includes('@')) throw httpError(400, '${escapeSingleQuoted(field.label)} is ongeldig.');`);
 
     return [
+      `// EXPRESS API: deze routes voeren Create, Read, Update en Delete uit.`,
       `function read${functionName}(body = {}) {`,
       `  const item = {`,
       ...inputLines,
@@ -882,6 +889,7 @@ if (builder) {
     const cells = state.fields.map((field) => `      <td>\${escape${functionName}Html(item.${field.name})}</td>`).join("\n");
 
     return [
+      `// BROWSER-JAVASCRIPT: koppel de HTML aan de API en werk het overzicht bij.`,
       `const ${state.singular}Elements = {`,
       `  form: document.querySelector('#${state.singular}-form'),`,
       `  rows: document.querySelector('#${state.table}-rows'),`,
@@ -976,6 +984,215 @@ if (builder) {
     ].join("\n");
   }
 
+  function generateCompletePhpApp(state) {
+    const schema = generateSql(state);
+    const crudLogic = generatePhpBackend(state);
+    const pageHtml = generateForm(state);
+    const componentCss = generateCss(state);
+    const databaseName = `${state.table}_crud`;
+    const databaseSetup = state.stack === "php-mysql"
+      ? [
+          `// MYSQL-INSTELLINGEN: de standaard XAMPP-gebruiker is root zonder wachtwoord.`,
+          `$dbUser = 'root';`,
+          `$dbPassword = '';`,
+          `$server = new PDO('mysql:host=127.0.0.1;charset=utf8mb4', $dbUser, $dbPassword, $pdoOptions);`,
+          `$server->exec('CREATE DATABASE IF NOT EXISTS ${databaseName} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');`,
+          `$db = new PDO('mysql:host=127.0.0.1;dbname=${databaseName};charset=utf8mb4', $dbUser, $dbPassword, $pdoOptions);`
+        ].join("\n")
+      : [
+          `// SQLITE-INSTELLINGEN: maak automatisch de map data en het databasebestand.`,
+          `$dataDirectory = __DIR__ . '/data';`,
+          `if (!is_dir($dataDirectory) && !mkdir($dataDirectory, 0775, true) && !is_dir($dataDirectory)) {`,
+          `    throw new RuntimeException('De map data kon niet worden gemaakt.');`,
+          `}`,
+          `$db = new PDO('sqlite:' . $dataDirectory . '/app.sqlite', null, null, $pdoOptions);`,
+          `$db->exec('PRAGMA foreign_keys = ON');`
+        ].join("\n");
+
+    return [
+      `<?php`,
+      ``,
+      `declare(strict_types=1);`,
+      `session_start();`,
+      ``,
+      `// ============================================================`,
+      `// COMPLETE TESTAPP VOOR ${state.table.toUpperCase()}`,
+      `// Zet dit bestand als index.php in een nieuwe map onder htdocs.`,
+      `// De comments leggen ieder onderdeel uit; je mag ze laten staan.`,
+      `// ============================================================`,
+      ``,
+      `// STAP 1 — Kleine hulpfuncties voor veilige HTML, invoer en redirects.`,
+      `function e(mixed $value): string`,
+      `{`,
+      `    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');`,
+      `}`,
+      ``,
+      `function post_text(string $name): string`,
+      `{`,
+      `    return trim((string) ($_POST[$name] ?? ''));`,
+      `}`,
+      ``,
+      `function required_text(string $name, string $label, int $maxLength): string`,
+      `{`,
+      `    $value = post_text($name);`,
+      `    if ($value === '') throw new RuntimeException($label . ' is verplicht.');`,
+      `    if (strlen($value) > $maxLength) throw new RuntimeException($label . ' is te lang.');`,
+      `    return $value;`,
+      `}`,
+      ``,
+      `function positive_id(mixed $value, string $label = 'ID'): int`,
+      `{`,
+      `    $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);`,
+      `    if ($id === false) throw new RuntimeException($label . ' is ongeldig.');`,
+      `    return (int) $id;`,
+      `}`,
+      ``,
+      `function csrf_token(): string`,
+      `{`,
+      `    if (empty($_SESSION['_token'])) $_SESSION['_token'] = bin2hex(random_bytes(32));`,
+      `    return $_SESSION['_token'];`,
+      `}`,
+      ``,
+      `function verify_csrf(mixed $token): void`,
+      `{`,
+      `    if (!is_string($token) || !hash_equals(csrf_token(), $token)) {`,
+      `        throw new RuntimeException('De beveiligingscode is verlopen. Vernieuw de pagina.');`,
+      `    }`,
+      `}`,
+      ``,
+      `function flash(string $type, string $message): void`,
+      `{`,
+      `    $_SESSION['flash'] = ['type' => $type, 'message' => $message];`,
+      `}`,
+      ``,
+      `function redirect(string $location): never`,
+      `{`,
+      `    header('Location: ' . $location);`,
+      `    exit;`,
+      `}`,
+      ``,
+      `// STAP 2 — Open ${state.stack === "php-mysql" ? "MySQL via XAMPP" : "het lokale SQLite-bestand"}.`,
+      `$pdoOptions = [`,
+      `    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,`,
+      `    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,`,
+      `    PDO::ATTR_EMULATE_PREPARES => false,`,
+      `];`,
+      databaseSetup,
+      ``,
+      `// STAP 3 — Maak de tabel automatisch wanneer hij nog niet bestaat.`,
+      `$db->exec(<<<'SQL'`,
+      schema,
+      `SQL);`,
+      ``,
+      `// STAP 4 — Volledige Create, Read, Update en Delete-verwerking.`,
+      crudLogic,
+      ``,
+      `// STAP 5 — Haal een eenmalige succesmelding uit de sessie.`,
+      `$flashMessage = $_SESSION['flash'] ?? null;`,
+      `unset($_SESSION['flash']);`,
+      `?>`,
+      `<!DOCTYPE html>`,
+      `<html lang="nl">`,
+      `<head>`,
+      `  <meta charset="utf-8">`,
+      `  <meta name="viewport" content="width=device-width, initial-scale=1">`,
+      `  <title>${state.table} beheren</title>`,
+      `  <style>`,
+      `    /* STAP 6 — Basisopmaak van de complete testpagina. */`,
+      `    * { box-sizing: border-box; }`,
+      `    body { margin: 0; background: #f5f3ed; color: #10233f; font-family: Arial, sans-serif; line-height: 1.5; }`,
+      `    .complete-header { padding: 22px 5vw; background: #10233f; color: #fff; }`,
+      `    .complete-header b { font-size: 20px; }`,
+      `    .complete-header small { display: block; color: #bdcbe0; }`,
+      `    .complete-page { width: min(1280px, 92vw); margin: 0 auto; padding: 34px 0 70px; }`,
+      `    .complete-message { margin-bottom: 18px; padding: 13px 16px; border-left: 4px solid #168451; background: #fff; }`,
+      componentCss.split("\n").map((line) => `    ${line}`).join("\n"),
+      `  </style>`,
+      `</head>`,
+      `<body>`,
+      `  <!-- STAP 7 — Dit is het zichtbare gedeelte van de applicatie. -->`,
+      `  <header class="complete-header"><b>${state.table} administratie</b><small>Complete gegenereerde CRUD-testapp</small></header>`,
+      `  <main class="complete-page">`,
+      `    <?php if ($flashMessage): ?>`,
+      `      <div class="complete-message"><?= e($flashMessage['message']) ?></div>`,
+      `    <?php endif; ?>`,
+      pageHtml.split("\n").map((line) => `    ${line}`).join("\n"),
+      `  </main>`,
+      `</body>`,
+      `</html>`
+    ].join("\n");
+  }
+
+  function escapeForJsTemplate(value) {
+    return value
+      .replace(/\\/g, "\\\\")
+      .replace(/`/g, "\\`")
+      .replace(/\$\{/g, "\\${");
+  }
+
+  function generateCompleteJsApp(state) {
+    const schema = generateSql(state);
+    const api = generateJsBackend(state);
+    const form = generateForm(state);
+    const css = generateCss(state);
+    const browserCode = generateJsFrontend(state);
+    const page = [
+      `<!DOCTYPE html>`,
+      `<html lang="nl"><head>`,
+      `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">`,
+      `<title>${state.table} beheren</title>`,
+      `<style>body{margin:0;padding:4vw;background:#f5f3ed;color:#10233f;font-family:Arial,sans-serif}${css}</style>`,
+      `</head><body>`,
+      `<!-- COMPLETE HTML: formulier en overzicht gebruiken dezelfde ids als browser-JavaScript. -->`,
+      `<main>${form}</main>`,
+      `<script>${browserCode}</script>`,
+      `</body></html>`
+    ].join("\n");
+
+    return [
+      `// COMPLETE JAVASCRIPT + SQLITE TESTAPP`,
+      `// 1. Maak een lege map en sla dit bestand op als server.js.`,
+      `// 2. Open daar een terminal en voer uit: npm init -y`,
+      `// 3. Voer uit: npm install express better-sqlite3`,
+      `// 4. Start met: node server.js`,
+      `// 5. Open: http://localhost:3000`,
+      ``,
+      `const express = require('express');`,
+      `const Database = require('better-sqlite3');`,
+      `const { mkdirSync } = require('node:fs');`,
+      ``,
+      `// DATABASE: maak de datamap, open SQLite en maak de tabel.`,
+      `mkdirSync('data', { recursive: true });`,
+      `const db = new Database('data/app.sqlite');`,
+      `db.pragma('foreign_keys = ON');`,
+      `db.exec(${JSON.stringify(schema)});`,
+      ``,
+      `// EXPRESS: lees JSON uit de browser en geef duidelijke fouten terug.`,
+      `const app = express();`,
+      `app.use(express.json());`,
+      `function httpError(status, message) { const error = new Error(message); error.status = status; return error; }`,
+      `function requiredText(value, label, max) { const text = String(value ?? '').trim(); if (!text) throw httpError(400, label + ' is verplicht.'); if (text.length > max) throw httpError(400, label + ' is te lang.'); return text; }`,
+      `function readId(value, label = 'ID') { const id = Number(value); if (!Number.isInteger(id) || id < 1) throw httpError(400, label + ' is ongeldig.'); return id; }`,
+      ``,
+      api,
+      ``,
+      `// FRONTEND: deze complete HTML, CSS en browser-JS worden op / getoond.`,
+      `const page = \`${escapeForJsTemplate(page)}\`;`,
+      `app.get('/', (req, res) => res.type('html').send(page));`,
+      ``,
+      `// FOUTAFHANDELING: stuur altijd leesbare JSON naar de browser.`,
+      `app.use((error, req, res, next) => {`,
+      `  if (res.headersSent) return next(error);`,
+      `  res.status(error.status || 500).json({ error: error.message || 'Serverfout.' });`,
+      `});`,
+      `app.listen(3000, () => console.log('Open http://localhost:3000'));`
+    ].join("\n");
+  }
+
+  function generateCompleteApp(state) {
+    return state.stack === "js-sqlite" ? generateCompleteJsApp(state) : generateCompletePhpApp(state);
+  }
+
   function generatePastePlan(state) {
     const title = `EXACT PLAKPLAN VOOR: ${state.table.toUpperCase()}`;
     if (state.stack === "js-sqlite") {
@@ -983,33 +1200,33 @@ if (builder) {
         title,
         `Maak eerst een kopie van de hele projectmap.`,
         ``,
-        `1. DATABASETABEL — tab 1`,
+        `1. DATABASETABEL — tab 2`,
         `   Open: backend/server.js`,
         `   Ctrl+F: CREATE INDEX IF NOT EXISTS idx_students_country`,
         `   Zoek direct daarna de regel met een afsluitende backtick en );`,
-        `   Plak tab 1 OP EEN NIEUWE REGEL VÓÓR die backtick.`,
+        `   Plak tab 2 OP EEN NIEUWE REGEL VÓÓR die backtick.`,
         ``,
-        `2. HTML — tab 2`,
+        `2. HTML — tab 3`,
         `   Open: frontend/index.html`,
         `   Ctrl+F: </main>`,
         `   Klik aan het begin van die regel.`,
-        `   Plak tab 2 DIRECT BOVEN </main>.`,
+        `   Plak tab 3 DIRECT BOVEN </main>.`,
         ``,
-        `3. CSS-OPMAAK — tab 3`,
+        `3. CSS-OPMAAK — tab 4`,
         `   Open: frontend/style.css`,
         `   Druk Ctrl+End en maak twee nieuwe lege regels.`,
-        `   Plak tab 3 HELEMAAL ONDERAAN het CSS-bestand.`,
-        `   De class generated-crud in tab 2 wijst nu naar .generated-crud in tab 3.`,
+        `   Plak tab 4 HELEMAAL ONDERAAN het CSS-bestand.`,
+        `   De class generated-crud in tab 3 wijst nu naar .generated-crud in tab 4.`,
         ``,
-        `4. API — tab 4`,
+        `4. API — tab 5`,
         `   Open: backend/server.js`,
         `   Ctrl+F: app.use((error`,
-        `   Plak tab 4 DIRECT BOVEN de foutafhandeling.`,
+        `   Plak tab 5 DIRECT BOVEN de foutafhandeling.`,
         ``,
-        `5. BROWSERCODE — tab 5`,
+        `5. BROWSERCODE — tab 6`,
         `   Open: frontend/app.js`,
         `   Druk Ctrl+End en maak één nieuwe lege regel.`,
-        `   Plak tab 5 ONDERAAN het bestand.`,
+        `   Plak tab 6 ONDERAAN het bestand.`,
         ``,
         `6. TEST`,
         `   Stop npm start met Ctrl+C en start opnieuw met npm start.`,
@@ -1025,34 +1242,34 @@ if (builder) {
       title,
       `Maak eerst een kopie van de hele projectmap.`,
       ``,
-      `1. DATABASETABEL — tab 1`,
+      `1. DATABASETABEL — tab 2`,
       `   Open: database/schema.sql`,
       `   Druk Ctrl+End en maak één nieuwe lege regel.`,
       `   Controleer dat de vorige SQL-regel eindigt met een puntkomma (;).`,
-      `   Plak tab 1 ONDERAAN en sla op met Ctrl+S.`,
+      `   Plak tab 2 ONDERAAN en sla op met Ctrl+S.`,
       databaseReset,
       ``,
-      `2. PHP-VERWERKING — tab 4`,
+      `2. PHP-VERWERKING — tab 5`,
       `   Open: index.php`,
       `   Ctrl+F: if ($_SERVER['REQUEST_METHOD'] === 'POST') {`,
       `   Klik aan het begin van deze regel.`,
-      `   Plak tab 4 DIRECT BOVEN deze bestaande regel.`,
+      `   Plak tab 5 DIRECT BOVEN deze bestaande regel.`,
       `   Twee POST-blokken onder elkaar zijn hier bewust: het nieuwe blok verwerkt ${state.table}.`,
       ``,
-      `3. FORMULIER + OVERZICHT — tab 2`,
+      `3. FORMULIER + OVERZICHT — tab 3`,
       `   Blijf in: index.php`,
       `   Ctrl+F: <footer><span>Campus Admin`,
       `   Klik aan het begin van die regel.`,
-      `   Plak tab 2 DIRECT BOVEN deze footerregel.`,
-      `   Tab 2 bevat toevoegen, bekijken, bewerken én verwijderen.`,
+      `   Plak tab 3 DIRECT BOVEN deze footerregel.`,
+      `   Tab 3 bevat toevoegen, bekijken, bewerken én verwijderen.`,
       ``,
-      `4. CSS-OPMAAK — tab 3`,
+      `4. CSS-OPMAAK — tab 4`,
       `   Open: assets/app.css`,
       `   Druk Ctrl+End en maak twee nieuwe lege regels.`,
-      `   Plak tab 3 HELEMAAL ONDERAAN het CSS-bestand.`,
-      `   De class generated-crud in tab 2 wijst nu naar .generated-crud in tab 3.`,
+      `   Plak tab 4 HELEMAAL ONDERAAN het CSS-bestand.`,
+      `   De class generated-crud in tab 3 wijst nu naar .generated-crud in tab 4.`,
       ``,
-      `5. BROWSERCODE — tab 5`,
+      `5. BROWSERCODE — tab 6`,
       `   Voor PHP is geen extra browsercode nodig. Sla deze tab over.`,
       ``,
       `6. TEST IN DEZE VOLGORDE`,
@@ -1067,20 +1284,72 @@ if (builder) {
 
   function builderOutputs(state) {
     return {
+      complete: { file: state.stack === "js-sqlite" ? "server.js · compleet testbestand" : "index.php · compleet testbestand", code: generateCompleteApp(state) },
       sql: { file: state.stack === "js-sqlite" ? "backend/server.js · binnen db.exec" : "database/schema.sql", code: generateSql(state) },
       form: { file: state.stack === "js-sqlite" ? "frontend/index.html" : "index.php · HTML", code: generateForm(state) },
       css: { file: state.stack === "js-sqlite" ? "frontend/style.css · onderaan" : "assets/app.css · onderaan", code: generateCss(state) },
       backend: { file: state.stack === "js-sqlite" ? "backend/server.js" : "index.php · PHP", code: state.stack === "js-sqlite" ? generateJsBackend(state) : generatePhpBackend(state) },
-      frontend: { file: state.stack === "js-sqlite" ? "frontend/app.js" : "Niet nodig bij de PHP-route", code: state.stack === "js-sqlite" ? generateJsFrontend(state) : "PHP verwerkt het formulier bij iedere paginalaad. Voor deze gegenereerde CRUD hoef je geen extra browser-JavaScript te plakken. Ga naar tab 6 voor het exacte plakplan." },
+      frontend: { file: state.stack === "js-sqlite" ? "frontend/app.js" : "Niet nodig bij de PHP-route", code: state.stack === "js-sqlite" ? generateJsFrontend(state) : "// PHP verwerkt het formulier op de server.\n// Voor deze gegenereerde PHP-CRUD hoef je geen extra browser-JavaScript te plakken.\n// Ga naar tab 7 voor het exacte plakplan." },
       steps: { file: "plakplan.txt", code: generatePastePlan(state) }
     };
   }
 
+  function updateBuilderTestGuide(state) {
+    const guides = {
+      "php-sqlite": {
+        title: "Complete PHP + SQLite-app in één bestand",
+        intro: "Kopieer tab 1. De database en tabel worden bij de eerste keer openen automatisch gemaakt.",
+        steps: [
+          ["Stap 1", "Maak een projectmap", "C:\\xampp\\htdocs\\mijn-crud"],
+          ["Stap 2", "Maak één bestand", "Plak tab 1 in index.php"],
+          ["Stap 3", "Start Apache", "XAMPP → Apache → Start"],
+          ["Stap 4", "Open de app", "http://localhost/mijn-crud/"]
+        ]
+      },
+      "php-mysql": {
+        title: "Complete PHP + MySQL-app in één bestand",
+        intro: "Kopieer tab 1. PHP maakt de MySQL-database en tabel automatisch met de standaard XAMPP-instellingen.",
+        steps: [
+          ["Stap 1", "Start twee onderdelen", "XAMPP → Apache én MySQL → Start"],
+          ["Stap 2", "Maak een projectmap", "C:\\xampp\\htdocs\\mijn-crud"],
+          ["Stap 3", "Maak één bestand", "Plak tab 1 in index.php"],
+          ["Stap 4", "Open de app", "http://localhost/mijn-crud/"]
+        ]
+      },
+      "js-sqlite": {
+        title: "Complete JavaScript + SQLite-app in één bestand",
+        intro: "Kopieer tab 1 naar server.js. HTML, CSS, API en database zitten al in dat ene bestand.",
+        steps: [
+          ["Stap 1", "Maak een lege map", "Open die map in VS Code"],
+          ["Stap 2", "Maak één bestand", "Plak tab 1 in server.js"],
+          ["Stap 3", "Installeer en start", "npm init -y · npm install express better-sqlite3 · node server.js"],
+          ["Stap 4", "Open de app", "http://localhost:3000/"]
+        ]
+      }
+    };
+    const guide = guides[state.stack];
+    builderTestTitle.textContent = guide.title;
+    builderTestIntro.textContent = guide.intro;
+    builderTestSteps.replaceChildren(...guide.steps.map(([number, title, detail]) => {
+      const item = document.createElement("li");
+      const numberElement = document.createElement("span");
+      const titleElement = document.createElement("b");
+      const detailElement = document.createElement("code");
+      numberElement.textContent = number;
+      titleElement.textContent = title;
+      detailElement.textContent = detail;
+      item.append(numberElement, titleElement, detailElement);
+      return item;
+    }));
+  }
+
   function updateBuilderOutput() {
-    const output = builderOutputs(normalizedBuilderState())[currentBuilderTab];
+    const state = normalizedBuilderState();
+    const output = builderOutputs(state)[currentBuilderTab];
     builderFile.textContent = output.file;
     builderCode.textContent = output.code;
     builder.currentCode = output.code;
+    updateBuilderTestGuide(state);
   }
 
   function applyPreset(name) {
@@ -1517,30 +1786,30 @@ const pastePlacements = {
     copyReady: false
   },
   "snippet-detail-php": {
-    method: "Maak een compleet nieuw bestand",
-    file: "studenten-crud/detail.php",
-    start: "een nieuw, leeg bestand",
-    end: "het einde van het nieuwe bestand",
-    action: "Maak detail.php naast index.php, plak het hele blok vanaf <?php, sla op en open detail.php?id=1. Je vervangt niets in index.php.",
+    method: "Nieuw bestand in drie delen · PHP, HTML en CSS",
+    file: "studenten-crud/detail.php + assets/app.css",
+    start: "een nieuw detail.php-bestand",
+    end: "voer daarna de HTML- en CSS-blokken uit",
+    action: "Maak detail.php naast index.php. Plak eerst dit PHP-blok, daarna het HTML-blok in hetzelfde bestand en ten slotte het CSS-blok onderaan assets/app.css.",
     check: "Open http://localhost/studenten-crud/detail.php?id=1. Je moet één student of ‘Student niet gevonden’ zien, geen PHP-fout.",
-    copyReady: true
+    copyReady: false
   },
   "snippet-detail-js": {
-    method: "Twee bestanden · splits bij de comments",
-    file: "backend/server.js én frontend/app.js",
+    method: "Vier plaatsingen · API, browser-JS, HTML en CSS",
+    file: "backend/server.js + frontend/app.js + frontend/index.html + frontend/style.css",
     start: "// backend/server.js en daarna // frontend/app.js",
-    end: "het einde van iedere functie",
-    action: "Plak het eerste deel bij de andere app.get-routes in server.js. Plak het tweede deel bij de andere async functies in app.js. Plak nooit beide delen in één bestand.",
+    end: "voer daarna de afzonderlijke HTML- en CSS-blokken uit",
+    action: "Splits dit blok bij de comments over server.js en app.js. Voeg daarna de dialoog-HTML aan index.html en de bijbehorende CSS aan style.css toe.",
     check: "Open /api/students/1. Je moet één JSON-object of een duidelijke 404-fout krijgen.",
     copyReady: false
   },
   "snippet-login": {
-    method: "Meerdelig recept · geen losse plakactie",
-    file: "database/schema.sql + een nieuw login.php + het bestaande index.php",
+    method: "Meerdelig compleet recept · eerste admin, login, logout, HTML en CSS",
+    file: "maak-admin.php + login.php + logout.php + assets/app.css + beschermde pagina's",
     start: "drie verschillende plekken",
     end: "voer ieder deel afzonderlijk uit",
-    action: "Dit blok toont de beveiligingskern maar is nog geen compleet inlogscherm. Gebruik het niet als één copy-pasteblok; formulier, registratie en uitloggen zijn ook nodig.",
-    check: "Een complete login is pas klaar als fout wachtwoord wordt geweigerd, goed wachtwoord werkt en uitloggen de sessie wist.",
+    action: "Voer eerst de users-tabel van U1 uit. Maak daarna één admin met maak-admin.php en verwijder dat tijdelijke bestand. Bouw vervolgens login.php, logout.php, de HTML en de CSS in de getoonde volgorde.",
+    check: "Test fout wachtwoord, goed wachtwoord, inactief account, een beschermde pagina en uitloggen. Na uitloggen moet index.php je naar login.php terugsturen.",
     copyReady: false
   },
   "snippet-upload": {
@@ -1553,13 +1822,13 @@ const pastePlacements = {
     copyReady: false
   },
   "snippet-csv": {
-    method: "Maak een compleet nieuw bestand",
-    file: "studenten-crud/export.php",
+    method: "Nieuw exportbestand + HTML-knop + CSS",
+    file: "studenten-crud/export.php + index.php + assets/app.css",
     start: "een nieuw, volledig leeg bestand",
     end: "het einde van het bestand",
-    action: "Maak export.php naast index.php, plak het hele blok vanaf <?php en sla op. Voeg daarna in index.php een gewone link naar export.php toe.",
+    action: "Maak export.php naast index.php en plak dit hele PHP-blok. Voeg daarna de HTML-downloadlink aan index.php en het CSS-blok aan app.css toe.",
     check: "Open http://localhost/studenten-crud/export.php. Er moet een CSV-download starten die in Excel kan worden geopend.",
-    copyReady: true
+    copyReady: false
   },
   "snippet-csv-import": {
     method: "Meerdelig recept · nog een formulier nodig",
@@ -1571,20 +1840,20 @@ const pastePlacements = {
     copyReady: false
   },
   "snippet-soft-delete": {
-    method: "Zes losse wijzigingen · geen enkel plakblok",
-    file: "schema.sql + de SELECT-, DELETE- en herstelacties in index.php",
+    method: "Meerdelig recept · schema, PHP, HTML en CSS",
+    file: "schema.sql + index.php + assets/app.css",
     start: "iedere commentregel noemt een andere plek",
     end: "voer de regels één voor één uit",
-    action: "Kopieer dit niet als geheel. De kolom hoort in CREATE TABLE; iedere query vervangt een andere bestaande query in PHP.",
+    action: "Voeg eerst deleted_at aan het schema toe. Plaats daarna het complete PHP-actieblok, de twee HTML-fragmenten en ten slotte de CSS op hun afzonderlijke plekken.",
     check: "Een verwijderd testitem moet uit het normale overzicht verdwijnen, in de prullenbak staan en daarna hersteld kunnen worden.",
     copyReady: false
   },
   "snippet-transaction": {
-    method: "Aanpasvoorbeeld · variabelen eerst bepalen",
-    file: "de POST-case die bestelling en voorraad tegelijk verwerkt",
-    start: "nadat $klantId, $totaal, $aantal en $productId zijn gecontroleerd",
-    end: "vóór de redirect na opslaan",
-    action: "De variabelen en tabellen zijn voorbeelden en bestaan niet in de studenten-starter. Pas eerst namen en invoer aan; plak dit niet ongewijzigd.",
+    method: "Compleet voorbeeld in PHP, HTML en CSS · eigen tabellen nodig",
+    file: "jouw index.php + het gekoppelde assets/app.css",
+    start: "vóór het bestaande algemene POST-blok",
+    end: "voer daarna formulier en CSS afzonderlijk uit",
+    action: "Dit PHP-blok leest dezelfde klant_id, product_id en aantal als het HTML-formulier. De tabellen klanten, producten en bestellingen moeten wel al in jouw database bestaan.",
     check: "Forceer te weinig voorraad. Dan mogen zowel de bestelling als de voorraadwijziging niet opgeslagen worden.",
     copyReady: false
   }
@@ -1647,7 +1916,7 @@ function codeLesson(label, code, container) {
   }
 
   if (container.classList.contains("builder-code")) {
-    location = `De builder heeft dit gemaakt voor ${label}. Open eerst tab 6: “Exact plakplan”.`;
+    location = `De builder heeft dit gemaakt voor ${label}. Gebruik tab 1 om direct te testen of open tab 7 voor het losse plakplan.`;
     action = "Kopieer daarna één tab tegelijk. Iedere tab noemt een ander bestand of een andere plek; plak ze nooit samen in één bestand.";
   } else if (container.closest(".snippet-body")) {
     action = "Voeg dit pas toe nadat de basis-CRUD werkt. Volg eerst ‘Waar plakken’ boven dit blok, kopieer alles en test alleen deze nieuwe functie.";
@@ -1655,6 +1924,19 @@ function codeLesson(label, code, container) {
     location = `Dit is het complete bestand ${label}. Je hoeft het niet regel voor regel over te typen.`;
     action = "Gebruik dit alleen om een beschadigd bestand volledig te vervangen. Download voor een nieuw project liever de complete starter.";
     check = "Sla het vervangen bestand op en vernieuw de app. Controleer eerst de basisacties voordat je weer eigen wijzigingen toevoegt.";
+  }
+
+  if (container.dataset.codeFile) {
+    return {
+      location: container.dataset.codeFile,
+      purpose,
+      action: container.dataset.codeAction || action,
+      check: container.dataset.codeCheck || check,
+      method: container.dataset.codeMethod || "Voeg dit complete onderdeel toe",
+      start: container.dataset.codeStart,
+      end: container.dataset.codeEnd,
+      copyReady: container.dataset.copyReady !== "false"
+    };
   }
 
   const placement = pastePlacements[container.querySelector("pre code")?.id];
@@ -1763,8 +2045,12 @@ $$('.snippet-body').forEach((body) => {
   note.innerHTML = '<span>!</span><div><b>Eerst de basis controleren</b><small>Voeg deze functie pas toe als toevoegen, bekijken, wijzigen en verwijderen al zonder fout werken. Maak vooraf een kopie van je projectmap.</small></div>';
   body.prepend(note);
 
-  const codeId = $("pre code", body)?.id;
-  const placement = pastePlacements[codeId];
+  const firstCode = $("pre code", body);
+  const codeId = firstCode?.id;
+  const firstCodeBlock = firstCode?.closest(".code-block");
+  const placement = pastePlacements[codeId] || (firstCodeBlock?.dataset.codeFile ? {
+    copyReady: firstCodeBlock.dataset.copyReady !== "false"
+  } : null);
   const titleGroup = body.closest(".snippet-item")?.querySelector("summary > span:nth-child(2)");
   if (placement && titleGroup && !titleGroup.querySelector(".copy-ready-status")) {
     const status = document.createElement("em");
@@ -1791,7 +2077,10 @@ snippetPickButtons.forEach((button) => {
 
     const title = $("summary b", recipe)?.textContent || "het gekozen recept";
     const tags = recipe.dataset.snippetTags.split(" ");
-    const selectedPlacement = pastePlacements[targetCode.id];
+    const selectedCodeBlock = targetCode.closest(".code-block");
+    const selectedPlacement = pastePlacements[targetCode.id] || (selectedCodeBlock?.dataset.codeFile ? {
+      copyReady: selectedCodeBlock.dataset.copyReady !== "false"
+    } : null);
     const readiness = selectedPlacement?.copyReady
       ? " Dit recept levert een compleet direct te plakken bestand."
       : " Dit is een recept met meerdere plaatsingen; voer ieder genoemd bestand afzonderlijk uit.";

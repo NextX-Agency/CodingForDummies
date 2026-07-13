@@ -1,3 +1,5 @@
+-- BESTANDSKAART: maak eerst de bovenliggende tabel landen.
+-- Daarna kan studenten via land_id veilig naar een bestaand land verwijzen.
 CREATE TABLE IF NOT EXISTS landen (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   naam VARCHAR(100) NOT NULL,
@@ -37,4 +39,3 @@ INSERT IGNORE INTO landen (naam, code, regio) VALUES
   ('België', 'BE', 'Europa'),
   ('Guyana', 'GY', 'Zuid-Amerika'),
   ('Curaçao', 'CW', 'Cariben');
-

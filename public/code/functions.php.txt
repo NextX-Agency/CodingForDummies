@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/*
+ * HULPFUNCTIES
+ * De functies hieronder beveiligen HTML, lezen formulierwaarden,
+ * controleren ids en e-mail, beheren CSRF-tokens en maken redirects.
+ * index.php kan ze daardoor op meerdere plekken opnieuw gebruiken.
+ */
+
 function e(mixed $value): string
 {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

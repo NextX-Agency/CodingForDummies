@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * BESTANDSKAART
+ * 1. Start de sessie en open de database.
+ * 2. Verwerk POST-acties voor Create, Update en Delete.
+ * 3. Lees filters, statistieken en database-rijen.
+ * 4. Bouw daarna de zichtbare HTML-formulieren en tabellen.
+ */
+
 session_start();
 
 require __DIR__ . '/config/database.php';
