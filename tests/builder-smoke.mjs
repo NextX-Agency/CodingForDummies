@@ -142,4 +142,54 @@ try {
   rmSync(snippetDirectory, { recursive: true, force: true });
 }
 
-console.log('CRUD-builder + snippetfilters: PASS');
+const sqliteRoute = window.document.querySelector('[data-route-choice="php-sqlite"]');
+const mysqlRoute = window.document.querySelector('[data-route-choice="php-mysql"]');
+const javascriptRoute = window.document.querySelector('[data-route-choice="js-sqlite"]');
+const routeFocus = window.document.querySelector('[data-route-focus]');
+
+if (![sqliteRoute, mysqlRoute, javascriptRoute].every((choice) => choice.tagName === 'BUTTON')) {
+  throw new Error('Niet alle bouwroutes zijn toetsenbordvriendelijke knoppen.');
+}
+
+sqliteRoute.click();
+if (sqliteRoute.getAttribute('aria-pressed') !== 'true' || window.document.querySelector('[data-route-result]').hidden) {
+  throw new Error('PHP + SQLite kan niet als actieve route worden gekozen.');
+}
+if (window.document.querySelector('#database').hidden || !window.document.querySelector('#mysql-route').hidden || !window.document.querySelector('#javascript-route').hidden) {
+  throw new Error('Routefocus toont niet alleen de PHP + SQLite-hoofdstukken.');
+}
+if (window.document.querySelector('[data-progress-total]').textContent !== '9') {
+  throw new Error('De voortgang is niet aangepast aan PHP + SQLite.');
+}
+if (stack.value !== 'php-sqlite' || window.document.querySelector('.header-cta').getAttribute('href') !== './downloads/studenten-crud.zip') {
+  throw new Error('Builder of download volgt de gekozen SQLite-route niet.');
+}
+
+routeFocus.checked = false;
+routeFocus.dispatchEvent(new window.Event('change', { bubbles: true }));
+if ([...window.document.querySelectorAll('[data-route-section]')].some((section) => section.hidden)) {
+  throw new Error('“Toon alle routes” maakt niet alle hoofdstukken zichtbaar.');
+}
+
+routeFocus.checked = true;
+routeFocus.dispatchEvent(new window.Event('change', { bubbles: true }));
+javascriptRoute.click();
+if (!window.document.querySelector('#xampp').hidden || window.document.querySelector('#javascript-route').hidden) {
+  throw new Error('De JavaScript-route filtert de PHP-hoofdstukken niet goed.');
+}
+if (window.document.querySelector('[data-progress-total]').textContent !== '6' || stack.value !== 'js-sqlite') {
+  throw new Error('JavaScript-voortgang of buildertechniek is niet routespecifiek.');
+}
+if (window.document.querySelectorAll('[data-personal-route] li').length < 6) {
+  throw new Error('Het persoonlijke JavaScript-stappenplan is te kort of ontbreekt.');
+}
+if (window.localStorage.getItem('cfd-selected-route') !== 'js-sqlite') {
+  throw new Error('De gekozen route wordt niet onthouden.');
+}
+
+window.document.querySelector('[data-recommend-route="php-mysql"]').click();
+if (mysqlRoute.getAttribute('aria-pressed') !== 'true' || !window.document.querySelector('#database').hidden || window.document.querySelector('#mysql-route').hidden) {
+  throw new Error('De snelle keuzehulp activeert PHP + MySQL niet correct.');
+}
+
+console.log('CRUD-builder + snippets + interactieve bouwroutes: PASS');

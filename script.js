@@ -59,7 +59,8 @@ const searchResults = $("[data-search-results]");
 const searchIndex = $$('[data-search-title]').map((section) => ({
   id: section.id,
   title: section.dataset.searchTitle,
-  text: section.textContent.replace(/\s+/g, " ").trim()
+  text: section.textContent.replace(/\s+/g, " ").trim(),
+  element: section
 }));
 
 function openSearch() {
@@ -80,7 +81,7 @@ function renderGlobalSearch(query) {
   }
 
   const matches = searchIndex.filter((item) =>
-    `${item.title} ${item.text}`.toLowerCase().includes(needle)
+    !item.element.hidden && `${item.title} ${item.text}`.toLowerCase().includes(needle)
   ).slice(0, 7);
 
   if (matches.length === 0) {
@@ -124,7 +125,16 @@ document.addEventListener("keydown", (event) => {
 
 const progressItems = $$('[data-progress-item]');
 const progressCount = $("[data-progress-count]");
+const progressTotal = $("[data-progress-total]");
 const progressBar = $("[data-checklist-progress]");
+let activeRoute = null;
+
+function progressItemsForRoute() {
+  return progressItems.filter((input) => {
+    const routes = input.dataset.progressRoutes;
+    return !activeRoute || !routes || routes.split(" ").includes(activeRoute);
+  });
+}
 
 function loadProgress() {
   let saved = {};
@@ -143,10 +153,16 @@ function loadProgress() {
 function updateProgress() {
   const saved = {};
   progressItems.forEach((input) => { saved[input.dataset.progressItem] = input.checked; });
-  localStorage.setItem("cfd-progress", JSON.stringify(saved));
-  const completed = progressItems.filter((input) => input.checked).length;
+  try {
+    localStorage.setItem("cfd-progress", JSON.stringify(saved));
+  } catch {
+    // De checklist blijft werken wanneer browseropslag is uitgeschakeld.
+  }
+  const applicableItems = progressItemsForRoute();
+  const completed = applicableItems.filter((input) => input.checked).length;
   progressCount.textContent = completed;
-  progressBar.style.width = `${(completed / Math.max(progressItems.length, 1)) * 100}%`;
+  progressTotal.textContent = applicableItems.length;
+  progressBar.style.width = `${(completed / Math.max(applicableItems.length, 1)) * 100}%`;
 }
 
 progressItems.forEach((input) => input.addEventListener("change", updateProgress));
@@ -730,4 +746,208 @@ if (builder) {
 
   $("[data-copy-builder]", builder).addEventListener("click", () => copyText(builder.currentCode || ""));
   applyPreset("products");
+}
+
+const routeDefinitions = {
+  "php-sqlite": {
+    code: "Route A",
+    name: "PHP + SQLite",
+    description: "De kortste beginnersroute: XAMPP draait PHP en SQLite bewaart alles in één lokaal bestand. Je hoeft geen databaseserver of API te configureren.",
+    recommendation: "Advies: PHP + SQLite. Dit heeft de minste bewegende onderdelen en is daarom de veiligste eerste CRUD-route.",
+    download: "./downloads/studenten-crud.zip",
+    downloadLabel: "PHP + SQLite starter",
+    downloadHint: "Eén databasebestand · werkt met XAMPP",
+    nextHref: "#xampp",
+    nextLabel: "Start met XAMPP klaarzetten",
+    steps: [
+      ["xampp", "XAMPP klaarzetten", "Start Apache en controleer PDO SQLite."],
+      ["mappen", "Projectmap maken", "Zet de starter in htdocs en controleer de bestanden."],
+      ["database", "SQLite koppelen", "Maak de PDO-verbinding en de tabellen."],
+      ["crud", "Vier CRUD-acties bouwen", "Test Create, Read, Update en Delete apart."],
+      ["codebank", "Complete bestanden bekijken", "Vergelijk jouw code met de werkende codebank."],
+      ["builder", "Eigen onderwerp genereren", "Maak velden en SQL voor jouw eigen thema."],
+      ["snippets", "Functies toevoegen", "Kies zoeken, validatie, relaties of uploads."],
+      ["eigen-maken", "Alles eigen maken", "Hernoem studenten naar jouw resource en test opnieuw."],
+      ["foutzoeker", "Fouten gericht oplossen", "Zoek op de letterlijke foutmelding uit PHP of SQLite."]
+    ]
+  },
+  "php-mysql": {
+    code: "Route B",
+    name: "PHP + MySQL",
+    description: "Een eenvoudige PHP CRUD met de MySQL-server en phpMyAdmin die al in XAMPP zitten. Kies dit als je opleiding of bestaand project MySQL vereist.",
+    recommendation: "Advies: PHP + MySQL. Je beheert tabellen visueel in phpMyAdmin en werkt met de database die XAMPP al meelevert.",
+    download: "./downloads/php-mysql-crud.zip",
+    downloadLabel: "PHP + MySQL starter",
+    downloadHint: "XAMPP · MySQL · phpMyAdmin",
+    nextHref: "#xampp",
+    nextLabel: "Start Apache en MySQL",
+    steps: [
+      ["xampp", "XAMPP klaarzetten", "Start Apache én MySQL in het Control Panel."],
+      ["mappen", "Projectmap maken", "Zet de MySQL-starter in de juiste htdocs-map."],
+      ["mysql-route", "Database importeren", "Maak de database in phpMyAdmin en importeer schema.sql."],
+      ["crud", "Vier CRUD-acties bouwen", "Gebruik PDO en test iedere actie apart."],
+      ["builder", "Eigen onderwerp genereren", "Laat de builder MySQL-SQL en PHP maken."],
+      ["snippets", "Functies toevoegen", "Voeg daarna zoeken, relaties of login toe."],
+      ["uitbreiden", "Overzichten uitbreiden", "Werk met filters, sortering en paginering."],
+      ["eigen-maken", "Alles eigen maken", "Vervang resource, velden en labels systematisch."],
+      ["foutzoeker", "MySQL-fouten oplossen", "Zoek op Access denied, constraint of je foutcode."]
+    ]
+  },
+  "js-sqlite": {
+    code: "Route C",
+    name: "JavaScript + SQLite",
+    description: "Een frontend met HTML, CSS en browser-JavaScript, plus een Node.js/Express API die SQLite gebruikt. Kies dit als je fetch en API-routes wilt leren.",
+    recommendation: "Advies: JavaScript + SQLite. Deze route laat duidelijk zien hoe een frontend, API en database met elkaar praten.",
+    download: "./downloads/javascript-sqlite-crud.zip",
+    downloadLabel: "JavaScript + SQLite starter",
+    downloadHint: "Node.js · Express · fetch · SQLite",
+    nextHref: "#javascript-route",
+    nextLabel: "Start de JavaScript-route",
+    steps: [
+      ["javascript-route", "Node.js-project starten", "Installeer packages en open de lokale server."],
+      ["javascript-route", "API en database testen", "Controleer de GET-route en de SQLite-tabel."],
+      ["javascript-route", "Frontend koppelen", "Gebruik fetch voor Create, Read, Update en Delete."],
+      ["builder", "Eigen onderwerp genereren", "Maak SQL, formulier en Express-routes voor jouw thema."],
+      ["snippets", "Extra functies kiezen", "Voeg validatie, filters, relaties of uploads toe."],
+      ["uitbreiden", "Overzichten uitbreiden", "Bouw zoeken, sortering en paginering in."],
+      ["eigen-maken", "Alles eigen maken", "Hernoem de resource in frontend, API en database."],
+      ["foutzoeker", "API-fouten oplossen", "Zoek op Failed to fetch, module of SQLite-fout."]
+    ]
+  }
+};
+
+const routeChoices = $$('[data-route-choice]');
+const routeResult = $("[data-route-result]");
+const routeFocus = $("[data-route-focus]");
+const routeSections = $$('[data-route-section]');
+const routeLinks = $$('[data-route-link]');
+
+function routeMatches(element, routeKey) {
+  return element.dataset.routeSection?.split(" ").includes(routeKey)
+    || element.dataset.routeLink?.split(" ").includes(routeKey);
+}
+
+function applyRouteFocus() {
+  const shouldFocus = Boolean(activeRoute && routeFocus?.checked);
+  routeSections.forEach((section) => {
+    section.hidden = shouldFocus && !routeMatches(section, activeRoute);
+  });
+  routeLinks.forEach((link) => {
+    link.hidden = shouldFocus && !routeMatches(link, activeRoute);
+  });
+  document.body.classList.toggle("route-focused", shouldFocus);
+  updateProgress();
+}
+
+function renderPersonalRoute(route) {
+  const routeList = $("[data-personal-route]");
+  routeList.innerHTML = route.steps.map(([id, title, detail], index) => `
+    <li><a href="#${id}"><span>${String(index + 1).padStart(2, "0")}</span><div><b>${title}</b><small>${detail}</small></div></a></li>
+  `).join("");
+}
+
+function updateRouteDownloads(route) {
+  const headerDownload = $(".header-cta");
+  const sidebarDownload = $(".sidebar-download");
+  if (headerDownload) {
+    headerDownload.href = route.download;
+    headerDownload.textContent = `Download ${route.name}`;
+  }
+  if (sidebarDownload) {
+    sidebarDownload.href = route.download;
+    $("span", sidebarDownload).textContent = "Jouw gekozen starter";
+    $("strong", sidebarDownload).textContent = route.downloadLabel;
+    $("small", sidebarDownload).textContent = route.downloadHint;
+  }
+}
+
+function selectRoute(routeKey, { scrollResult = false } = {}) {
+  const route = routeDefinitions[routeKey];
+  if (!route) return;
+
+  activeRoute = routeKey;
+  try {
+    localStorage.setItem("cfd-selected-route", routeKey);
+  } catch {
+    // De route blijft voor deze sessie actief zonder browseropslag.
+  }
+
+  routeChoices.forEach((choice) => {
+    const selected = choice.dataset.routeChoice === routeKey;
+    choice.classList.toggle("is-selected", selected);
+    choice.setAttribute("aria-pressed", String(selected));
+    const label = $("[data-route-select-label]", choice);
+    if (label) label.textContent = selected ? "Gekozen ✓" : "Kies deze route →";
+  });
+
+  $$('[data-recommend-route]').forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.recommendRoute === routeKey);
+  });
+
+  routeResult.hidden = false;
+  $("[data-selected-route-code]").textContent = `${route.code} gekozen`;
+  $("[data-selected-route-name]").textContent = route.name;
+  $("[data-selected-route-description]").textContent = route.description;
+  $("[data-route-next]").href = route.nextHref;
+  $("[data-route-next-label]").textContent = route.nextLabel;
+  $("[data-route-recommendation]").textContent = route.recommendation;
+  renderPersonalRoute(route);
+
+  const headerRoute = $("[data-header-route]");
+  const sidebarRoute = $("[data-sidebar-route]");
+  [headerRoute, sidebarRoute].forEach((control) => {
+    if (!control) return;
+    control.hidden = false;
+    $("[data-header-route-code], [data-sidebar-route-code]", control).textContent = route.code;
+    $("[data-header-route-name], [data-sidebar-route-name]", control).textContent = route.name;
+  });
+
+  const builderStack = $("[data-builder-stack]");
+  if (builderStack) {
+    builderStack.value = routeKey;
+    builderStack.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  const stackProgress = $('[data-progress-item="stack"]');
+  if (stackProgress) stackProgress.checked = true;
+  updateRouteDownloads(route);
+  applyRouteFocus();
+
+  if (scrollResult) {
+    routeResult.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+routeChoices.forEach((choice) => {
+  choice.addEventListener("click", () => selectRoute(choice.dataset.routeChoice, { scrollResult: true }));
+});
+
+$$('[data-recommend-route]').forEach((button) => {
+  button.addEventListener("click", () => selectRoute(button.dataset.recommendRoute, { scrollResult: true }));
+});
+
+routeFocus?.addEventListener("change", () => {
+  try {
+    localStorage.setItem("cfd-route-focus", String(routeFocus.checked));
+  } catch {
+    // Focus blijft voor deze sessie werken zonder browseropslag.
+  }
+  applyRouteFocus();
+});
+
+function scrollToRouteChooser() {
+  $(".stack-decision")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  routeChoices[0]?.focus({ preventScroll: true });
+}
+
+$("[data-change-route]")?.addEventListener("click", scrollToRouteChooser);
+$("[data-header-route]")?.addEventListener("click", scrollToRouteChooser);
+$("[data-sidebar-route]")?.addEventListener("click", scrollToRouteChooser);
+
+try {
+  routeFocus.checked = localStorage.getItem("cfd-route-focus") !== "false";
+  const savedRoute = localStorage.getItem("cfd-selected-route");
+  if (routeDefinitions[savedRoute]) selectRoute(savedRoute);
+} catch {
+  routeFocus.checked = true;
 }

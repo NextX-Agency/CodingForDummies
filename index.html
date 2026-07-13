@@ -23,14 +23,15 @@
       </a>
 
       <nav class="top-nav" data-top-nav aria-label="Hoofdnavigatie">
-        <a href="#bouwroute">Bouwroute</a>
+        <a href="#stack">Bouwroute</a>
         <a href="#builder">CRUD-builder</a>
-        <a href="#codebank">Codebank</a>
+        <a href="#codebank" data-route-link="php-sqlite">Codebank</a>
         <a href="#foutzoeker">Foutzoeker</a>
         <a href="#publiceren">Publiceren</a>
       </nav>
 
       <div class="header-actions">
+        <button class="current-route" type="button" data-header-route hidden><span data-header-route-code>Route</span><b data-header-route-name>Kies bouwroute</b></button>
         <button class="icon-button search-trigger" type="button" data-open-search aria-label="Open zoeken">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
           <span>Zoeken</span><kbd>Ctrl K</kbd>
@@ -83,19 +84,20 @@
       <div class="guide-layout" id="bouwroute">
         <aside class="guide-sidebar" aria-label="Hoofdstukken">
           <div class="sidebar-progress">
-            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/11</strong></div>
+            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>11</span></strong></div>
             <div class="progress-track"><span data-checklist-progress></span></div>
           </div>
+          <button class="sidebar-route" type="button" data-sidebar-route hidden><span data-sidebar-route-code>Route</span><strong data-sidebar-route-name>Kies bouwroute</strong><small>Wijzig je route →</small></button>
           <nav class="chapter-nav" data-chapter-nav aria-label="Gidshoofdstukken">
             <a href="#begin"><span>01</span> Begin hier</a>
             <a href="#stack"><span>02</span> Kies je stack</a>
             <a href="#builder"><span>Tool</span> CRUD-builder</a>
-            <a href="#xampp"><span>03</span> XAMPP klaarzetten</a>
-            <a href="#mappen"><span>04</span> Projectmap maken</a>
-            <a href="#database"><span>05</span> SQLite koppelen</a>
-            <a href="#mysql-route"><span>06</span> MySQL alternatief</a>
-            <a href="#crud"><span>07</span> PHP CRUD bouwen</a>
-            <a href="#javascript-route"><span>08</span> JavaScript route</a>
+            <a href="#xampp" data-route-link="php-sqlite php-mysql"><span>03</span> XAMPP klaarzetten</a>
+            <a href="#mappen" data-route-link="php-sqlite php-mysql"><span>04</span> Projectmap maken</a>
+            <a href="#database" data-route-link="php-sqlite"><span>05</span> SQLite koppelen</a>
+            <a href="#mysql-route" data-route-link="php-mysql"><span>06</span> MySQL koppelen</a>
+            <a href="#crud" data-route-link="php-sqlite php-mysql"><span>07</span> PHP CRUD bouwen</a>
+            <a href="#javascript-route" data-route-link="js-sqlite"><span>08</span> JavaScript route</a>
             <a href="#snippets"><span>Bank</span> Snippetbibliotheek</a>
             <a href="#uitbreiden"><span>09</span> Uitbreiden</a>
             <a href="#eigen-maken"><span>10</span> Eigen thema</a>
@@ -145,25 +147,52 @@
             <h2>Kies de route die bij jou past.</h2>
             <p class="section-intro">Alle drie bouwen dezelfde applicatie. <strong>PHP + SQLite</strong> is het eenvoudigst. <strong>PHP + MySQL</strong> gebruikt de database die al in XAMPP zit. <strong>JavaScript + SQLite</strong> leert je een frontend, API en backend apart koppelen.</p>
 
-            <div class="stack-decision stack-decision--three">
-              <div class="stack-choice is-recommended">
-                <div class="choice-top"><span>Route A</span><b>Begin hier</b></div>
-                <h3>PHP + SQLite</h3>
-                <p>Minste installatie, goed te volgen en direct bruikbaar met XAMPP.</p>
-                <ul><li>Geen losse databaseserver nodig</li><li>Formulieren werken zonder frontend-framework</li><li>Volledig uitgewerkt in deze gids</li></ul>
+            <div class="route-help">
+              <div><span>Snelle keuzehulp</span><b>Wat wil je vooral?</b></div>
+              <div class="route-help-options">
+                <button type="button" data-recommend-route="php-sqlite">Zo eenvoudig mogelijk</button>
+                <button type="button" data-recommend-route="php-mysql">MySQL en phpMyAdmin</button>
+                <button type="button" data-recommend-route="js-sqlite">Frontend en API leren</button>
               </div>
-              <div class="stack-choice">
-                <div class="choice-top"><span>Route B</span></div>
-                <h3>PHP + MySQL</h3>
-                <p>Dezelfde simpele PHP, met MySQL en phpMyAdmin uit XAMPP.</p>
-                <ul><li>Apache én MySQL starten</li><li>Tabellen zichtbaar in phpMyAdmin</li><li>Complete aparte download</li></ul>
+              <p data-route-recommendation>Klik op wat het beste bij je past. Je krijgt meteen een aanbevolen bouwroute.</p>
+            </div>
+
+            <div class="stack-decision stack-decision--three" role="group" aria-label="Kies je bouwroute">
+              <button class="stack-choice is-recommended" type="button" data-route-choice="php-sqlite" aria-pressed="false">
+                <span class="choice-top"><span>Route A</span><b>Beste voor beginners</b></span>
+                <span class="route-title">PHP + SQLite</span>
+                <span class="route-description">Minste installatie, goed te volgen en direct bruikbaar met XAMPP.</span>
+                <span class="route-specs"><span><small>Moeilijkheid</small><b>Makkelijkst</b></span><span><small>Onderdelen</small><b>PHP + 1 bestand</b></span></span>
+                <span class="route-benefits"><span>✓ Geen losse databaseserver</span><span>✓ Formulieren zonder framework</span><span>✓ Volledig copy-paste uitgewerkt</span></span>
+                <span class="route-select-label" data-route-select-label>Kies deze route →</span>
+              </button>
+              <button class="stack-choice" type="button" data-route-choice="php-mysql" aria-pressed="false">
+                <span class="choice-top"><span>Route B</span><b>XAMPP-database</b></span>
+                <span class="route-title">PHP + MySQL</span>
+                <span class="route-description">Dezelfde simpele PHP, met MySQL en phpMyAdmin uit XAMPP.</span>
+                <span class="route-specs"><span><small>Moeilijkheid</small><b>Gemiddeld</b></span><span><small>Onderdelen</small><b>PHP + MySQL</b></span></span>
+                <span class="route-benefits"><span>✓ Database in phpMyAdmin</span><span>✓ Bekend in veel opleidingen</span><span>✓ Complete aparte download</span></span>
+                <span class="route-select-label" data-route-select-label>Kies deze route →</span>
+              </button>
+              <button class="stack-choice" type="button" data-route-choice="js-sqlite" aria-pressed="false">
+                <span class="choice-top"><span>Route C</span><b>Frontend + backend</b></span>
+                <span class="route-title">JavaScript + SQLite</span>
+                <span class="route-description">Bouw dezelfde CRUD met Node.js, Express, fetch en een API.</span>
+                <span class="route-specs"><span><small>Moeilijkheid</small><b>Meer stappen</b></span><span><small>Onderdelen</small><b>UI + API + SQLite</b></span></span>
+                <span class="route-benefits"><span>✓ Leer hoe een API werkt</span><span>✓ Handig als opstap naar React</span><span>✓ Complete werkende starter</span></span>
+                <span class="route-select-label" data-route-select-label>Kies deze route →</span>
+              </button>
+            </div>
+
+            <div class="route-result" data-route-result aria-live="polite" hidden>
+              <div class="route-result-heading">
+                <div><span data-selected-route-code>Route gekozen</span><h3 data-selected-route-name>Jouw bouwroute</h3><p data-selected-route-description></p></div>
+                <button type="button" data-change-route>Andere route kiezen</button>
               </div>
-              <div class="stack-choice">
-                <div class="choice-top"><span>Route C</span></div>
-                <h3>JavaScript + SQLite</h3>
-                <p>Dezelfde CRUD-flow, maar met Node.js, Express, fetch en een API.</p>
-                <ul><li>Frontend en backend apart</li><li>Handig als je later React wilt</li><li>Complete werkende starter</li></ul>
-              </div>
+              <label class="route-focus-control"><input type="checkbox" data-route-focus checked><span><b>Focus op mijn route</b><small>Verberg hoofdstukken die je voor deze route niet nodig hebt.</small></span></label>
+              <div class="personal-route-heading"><span>Jouw persoonlijke stappenplan</span><small>Klik op een stap om direct naar de uitleg te gaan.</small></div>
+              <ol class="personal-route" data-personal-route></ol>
+              <a class="button button--primary route-next" data-route-next href="#xampp"><span data-route-next-label>Start met bouwen</span> →</a>
             </div>
 
             <details class="explain-details">
@@ -216,7 +245,7 @@
             <div class="warning-callout"><span>!</span><div><b>De builder maakt een veilig beginpunt, geen compleet nieuw framework.</b><p>Gebruik altijd één van de drie starters als basis. Voeg daarna de gegenereerde resource toe en test eerst Create en Read.</p></div></div>
           </section>
 
-          <section id="xampp" class="guide-section" data-search-title="XAMPP installeren en SQLite activeren">
+          <section id="xampp" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="XAMPP installeren en SQLite activeren">
             <div class="section-number">Hoofdstuk 03</div>
             <h2>Zet XAMPP één keer goed klaar.</h2>
             <p class="section-intro">XAMPP levert Apache, PHP én MySQL. Voor de SQLite-route start je alleen Apache. Voor de MySQL-route start je <strong>Apache en MySQL</strong>. Kies één database per project.</p>
@@ -238,10 +267,10 @@ extension=sqlite3</code></pre>
             </ol>
 
             <div class="warning-callout"><span>!</span><div><b>SQLite en MySQL zijn alternatieven.</b><p>SQLite is één bestand en het makkelijkst. MySQL draait als XAMPP-service en kun je bekijken via <code>http://localhost/phpmyadmin/</code>.</p></div></div>
-            <label class="chapter-check"><input type="checkbox" data-progress-item="xampp"><span><b>Apache is gestart en SQLite werkt</b><small>Open <code>http://localhost/test.php</code> om dit te controleren.</small></span></label>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="xampp" data-progress-routes="php-sqlite php-mysql"><span><b>Apache is gestart en SQLite werkt</b><small>Open <code>http://localhost/test.php</code> om dit te controleren.</small></span></label>
           </section>
 
-          <section id="mappen" class="guide-section" data-search-title="Projectmap en bestanden maken">
+          <section id="mappen" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="Projectmap en bestanden maken">
             <div class="section-number">Hoofdstuk 04</div>
             <h2>Maak deze projectstructuur exact na.</h2>
             <p class="section-intro">Bestandsnamen zijn geen decoratie: PHP zoekt straks op deze paden. Kopieer de structuur dus eerst letterlijk. Daarna vullen we ieder bestand.</p>
@@ -275,10 +304,10 @@ extension=sqlite3</code></pre>
               <div><span>Sneller beginnen?</span><h3>De hele map staat al voor je klaar.</h3><p>Pak het ZIP-bestand uit in <code>htdocs</code> en open daarna <code>http://localhost/studenten-crud/</code>.</p></div>
               <a class="button button--primary" href="./downloads/studenten-crud.zip">Download starter.zip <span>↓</span></a>
             </div>
-            <label class="chapter-check"><input type="checkbox" data-progress-item="folders"><span><b>Mijn projectmap klopt</b><small>Ook lege submappen en bestandsnamen staan op de juiste plek.</small></span></label>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="folders" data-progress-routes="php-sqlite php-mysql"><span><b>Mijn projectmap klopt</b><small>Ook lege submappen en bestandsnamen staan op de juiste plek.</small></span></label>
           </section>
 
-          <section id="database" class="guide-section" data-search-title="SQLite database koppelen met PDO">
+          <section id="database" class="guide-section" data-route-section="php-sqlite" data-search-title="SQLite database koppelen met PDO">
             <div class="section-number">Hoofdstuk 05</div>
             <h2>Koppel PHP aan SQLite.</h2>
             <p class="section-intro">Er zijn twee delen: <code>schema.sql</code> beschrijft <em>wat</em> er wordt opgeslagen. <code>database.php</code> opent het databasebestand en voert het schema uit.</p>
@@ -313,10 +342,10 @@ $connection-&gt;exec(file_get_contents($schemaFile));</code></pre>
                 <div><dt><code>schema.sql</code></dt><dd>Maakt tabellen alleen als ze nog niet bestaan.</dd></div>
               </dl>
             </div>
-            <label class="chapter-check"><input type="checkbox" data-progress-item="database"><span><b>Mijn database wordt automatisch gemaakt</b><small>Na de eerste paginalaad staat <code>app.sqlite</code> in de map <code>data</code>.</small></span></label>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="database" data-progress-routes="php-sqlite"><span><b>Mijn database wordt automatisch gemaakt</b><small>Na de eerste paginalaad staat <code>app.sqlite</code> in de map <code>data</code>.</small></span></label>
           </section>
 
-          <section id="mysql-route" class="guide-section" data-search-title="PHP koppelen aan MySQL in XAMPP en phpMyAdmin">
+          <section id="mysql-route" class="guide-section" data-route-section="php-mysql" data-search-title="PHP koppelen aan MySQL in XAMPP en phpMyAdmin">
             <div class="section-number">Hoofdstuk 06 · alternatief</div>
             <h2>Liever MySQL uit XAMPP?</h2>
             <p class="section-intro">Dat kan. De formulieren en bijna alle PHP-code blijven hetzelfde. Alleen de databaseverbinding en enkele regels in het schema veranderen. Start bij deze route <strong>Apache én MySQL</strong>.</p>
@@ -366,10 +395,10 @@ $connection-&gt;exec('USE studenten_crud');</code></pre>
               <div><span>Route B · compleet</span><h3>PHP + MySQL starter</h3><p>Uitpakken in <code>htdocs</code>, Apache en MySQL starten, pagina openen.</p></div>
               <a class="button button--primary" href="./downloads/php-mysql-crud.zip">Download MySQL-starter <span>↓</span></a>
             </div>
-            <label class="chapter-check"><input type="checkbox" data-progress-item="mysql"><span><b>Mijn gekozen PHP-database reageert</b><small>SQLite óf MySQL is genoeg. Je hoeft niet beide routes af te ronden.</small></span></label>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="mysql" data-progress-routes="php-mysql"><span><b>Mijn gekozen PHP-database reageert</b><small>SQLite óf MySQL is genoeg. Je hoeft niet beide routes af te ronden.</small></span></label>
           </section>
 
-          <section id="crud" class="guide-section" data-search-title="Create Read Update Delete bouwen met PHP">
+          <section id="crud" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="Create Read Update Delete bouwen met PHP">
             <div class="section-number">Hoofdstuk 07 · PHP-route</div>
             <h2>Bouw CRUD in deze volgorde.</h2>
             <p class="section-intro">Werk niet aan alles tegelijk. Test na iedere bewerking. Dan weet je precies in welk blok een fout is ontstaan.</p>
@@ -447,10 +476,10 @@ if ($statement-&gt;rowCount() === 0) {
               <h3>Testcheck na ieder onderdeel</h3>
               <ol><li>Voeg één student toe.</li><li>Vernieuw de pagina: blijft de student staan?</li><li>Wijzig de achternaam.</li><li>Verwijder de teststudent.</li></ol>
             </div>
-            <label class="chapter-check"><input type="checkbox" data-progress-item="crud"><span><b>Mijn vier CRUD-acties werken</b><small>Create, Read, Update en Delete zijn ieder apart getest.</small></span></label>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="crud" data-progress-routes="php-sqlite php-mysql"><span><b>Mijn vier CRUD-acties werken</b><small>Create, Read, Update en Delete zijn ieder apart getest.</small></span></label>
           </section>
 
-          <section id="codebank" class="guide-section codebank-section" data-search-title="Volledige copy-paste bestanden codebank">
+          <section id="codebank" class="guide-section codebank-section" data-route-section="php-sqlite" data-search-title="Volledige copy-paste bestanden codebank">
             <div class="section-number">PHP + SQLite codebank</div>
             <h2>Complete PHP-bestanden, zonder gaten.</h2>
             <p class="section-intro">Kies een bestand, kopieer alles en plak het op precies hetzelfde pad in jouw PHP + SQLite-project. Dit is dezelfde code als in de download.</p>
@@ -472,7 +501,7 @@ if ($statement-&gt;rowCount() === 0) {
             <p class="codebank-note"><span>i</span><b>Begin je vanaf nul?</b> Download dan de ZIP. De Codebank is vooral handig wanneer je één beschadigd of aangepast bestand wilt vervangen.</p>
           </section>
 
-          <section id="javascript-route" class="guide-section javascript-section" data-search-title="Volledige JavaScript Node Express SQLite CRUD route">
+          <section id="javascript-route" class="guide-section javascript-section" data-route-section="js-sqlite" data-search-title="Volledige JavaScript Node Express SQLite CRUD route">
             <div class="section-number">Hoofdstuk 08 · JavaScript-route</div>
             <h2>Bouw dezelfde CRUD met JavaScript.</h2>
             <p class="section-intro">Deze route gebruikt JavaScript op twee plekken. <strong>Browser-JavaScript</strong> leest formulieren en toont rijen. <strong>Node.js + Express</strong> ontvangt API-requests en voert SQL uit met <code>better-sqlite3</code>.</p>
@@ -596,7 +625,7 @@ db.exec(`
             </div>
 
             <div class="warning-callout"><span>!</span><div><b>Open de frontend niet als los bestand.</b><p>De API bestaat alleen terwijl <code>node backend/server.js</code> draait. Gebruik altijd <code>http://localhost:3000</code>.</p></div></div>
-            <label class="chapter-check"><input type="checkbox" data-progress-item="javascript"><span><b>Mijn JavaScript API antwoordt</b><small>Open <code>http://localhost:3000/api/students</code>; je moet een JSON-array zien.</small></span></label>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="javascript" data-progress-routes="js-sqlite"><span><b>Mijn JavaScript API antwoordt</b><small>Open <code>http://localhost:3000/api/students</code>; je moet een JSON-array zien.</small></span></label>
           </section>
 
           <section id="snippets" class="guide-section snippet-section" data-search-title="Universele snippets login relaties uploads CSV soft delete detailpagina transacties">
@@ -1063,7 +1092,7 @@ try {
 
     <footer class="site-footer">
       <div><a class="wordmark" href="#top"><span class="wordmark-mark">CFD/</span><span>CodingForDummies</span></a><p>Van “ik snap de fout niet” naar een CRUD die je zelf kunt uitleggen.</p></div>
-      <div class="footer-links"><div><b>Gids</b><a href="#bouwroute">Bouwroute</a><a href="#codebank">PHP-codebank</a><a href="#javascript-route">JavaScript-route</a><a href="#foutzoeker">Foutzoeker</a></div><div><b>Downloads</b><a href="./downloads/studenten-crud.zip">PHP + SQLite</a><a href="./downloads/php-mysql-crud.zip">PHP + MySQL</a><a href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite</a></div></div>
+      <div class="footer-links"><div><b>Gids</b><a href="#stack">Bouwroute</a><a href="#codebank" data-route-link="php-sqlite">PHP-codebank</a><a href="#javascript-route" data-route-link="js-sqlite">JavaScript-route</a><a href="#foutzoeker">Foutzoeker</a></div><div><b>Downloads</b><a href="./downloads/studenten-crud.zip">PHP + SQLite</a><a href="./downloads/php-mysql-crud.zip">PHP + MySQL</a><a href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite</a></div></div>
       <p class="footer-note">Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken.</p>
     </footer>
 
