@@ -45,11 +45,11 @@ if (beginnerCodeBlocks.length < 20 || beginnerCodeBlocks.some((block) => !block.
   throw new Error('Niet alle grote codeblokken krijgen eerst een beginnersuitleg.');
 }
 
-const toggleTestBlock = beginnerCodeBlocks.find((block) => !block.classList.contains('is-code-open'));
-const firstCodeToggle = toggleTestBlock.querySelector('[data-code-toggle]');
-firstCodeToggle.click();
-if (!toggleTestBlock.classList.contains('is-code-open') || firstCodeToggle.getAttribute('aria-expanded') !== 'true') {
-  throw new Error('Code kan niet bewust worden getoond vanuit de beginnersuitleg.');
+if (window.document.querySelector('[data-code-toggle]') || beginnerCodeBlocks.some((block) => !block.querySelector('pre') || !block.querySelector('.code-toolbar button'))) {
+  throw new Error('Code en kopieerknoppen moeten zonder een extra “Toon code”-stap direct beschikbaar zijn.');
+}
+if (styles.includes('.beginner-code:not(.is-code-open)') || styles.includes('visibility: hidden')) {
+  throw new Error('Beginnersmodus verbergt nog code of een kopieerknop.');
 }
 
 const beginnerToggle = window.document.querySelector('[data-beginner-toggle]');
@@ -75,6 +75,27 @@ anatomyDatabaseButton.click();
 if (!window.document.querySelector('[data-anatomy-path]').textContent.includes('config\\database.php')
   || window.document.querySelectorAll('[data-anatomy-zones] li').length !== 5) {
   throw new Error('De interactieve PHP-bestandskaart legt de gekozen bestandsstructuur niet uit.');
+}
+
+if (!phpStarter.includes(window.document.getElementById('php-style-link').textContent)
+  || !phpStarter.includes(window.document.getElementById('php-script-link').textContent)
+  || !jsHtmlStarter.includes(window.document.getElementById('js-style-link').textContent)
+  || !jsHtmlStarter.includes(window.document.getElementById('js-script-link').textContent)) {
+  throw new Error('De frontend-koppelregels wijzen niet letterlijk naar de echte starterbestanden.');
+}
+
+const jsFrontendTab = window.document.querySelector('[data-frontend-tab="js"]');
+jsFrontendTab.click();
+if (window.document.querySelector('[data-frontend-panel="js"]').hidden
+  || !window.document.querySelector('[data-frontend-panel="php"]').hidden
+  || jsFrontendTab.getAttribute('aria-selected') !== 'true') {
+  throw new Error('De PHP/JavaScript-frontendwerkbank wisselt niet van route.');
+}
+
+const phpEmailField = window.document.querySelector('[data-field-connection="php"] [data-field-example="email"]');
+phpEmailField.click();
+if (!window.document.querySelector('[data-field-connection="php"] [data-chain-value="output"]').textContent.includes("$student['email']")) {
+  throw new Error('De veldketen koppelt HTML, backend, database en uitvoer niet interactief.');
 }
 
 const createGuide = window.document.getElementById('create-code').closest('.code-block').querySelector('.beginner-code-guide').textContent;
@@ -113,8 +134,19 @@ if (!code().includes('name="prijs"') || !code().includes('type="number"')) {
   throw new Error('HTML-formulier bevat niet de verwachte productvelden.');
 }
 const phpViewCode = code();
-if (!phpViewCode.includes('foreach ($rows as $row)') || !phpViewCode.includes('update_product') || !phpViewCode.includes('delete_product')) {
+if (!phpViewCode.includes('foreach ($rows as $row)') || !phpViewCode.includes('update_product') || !phpViewCode.includes('delete_product') || !phpViewCode.includes('class="generated-crud')) {
   throw new Error('PHP-builder maakt geen compleet overzicht met Update en Delete.');
+}
+
+clickTab('css');
+const generatedCss = code();
+if (!generatedCss.includes('.generated-crud-layout') || !generatedCss.includes('.generated-field input') || !generatedCss.includes('@media (max-width: 850px)')) {
+  throw new Error('Builder maakt geen complete, mobiele CSS-opmaak voor de gegenereerde HTML.');
+}
+for (const className of ['generated-crud', 'generated-crud-layout', 'generated-card', 'generated-form', 'generated-field', 'generated-primary', 'generated-list', 'generated-table-scroll']) {
+  if (phpViewCode.includes(className) && !generatedCss.includes(`.${className}`)) {
+    throw new Error(`De HTML-class ${className} wijst niet naar de gegenereerde CSS.`);
+  }
 }
 
 clickTab('backend');
@@ -151,8 +183,12 @@ if (!code().includes('AUTO_INCREMENT') || !code().includes('ENGINE=InnoDB')) {
 change(stack, 'js-sqlite');
 clickTab('form');
 const javascriptViewCode = code();
-if (!javascriptViewCode.includes('id="product-form"') || !javascriptViewCode.includes('id="producten-rows"')) {
+if (!javascriptViewCode.includes('id="product-form"') || !javascriptViewCode.includes('id="producten-rows"') || !javascriptViewCode.includes('class="generated-crud')) {
   throw new Error('JavaScript-builder maakt geen passend formulier en overzicht.');
+}
+clickTab('css');
+if (!code().includes('.generated-crud') || builder.querySelector('[data-builder-file]').textContent !== 'frontend/style.css · onderaan') {
+  throw new Error('JavaScript-builder wijst de CSS niet naar frontend/style.css.');
 }
 clickTab('backend');
 const javascriptCode = code();
@@ -262,7 +298,7 @@ if (sqliteRoute.getAttribute('aria-pressed') !== 'true' || window.document.query
 if (window.document.querySelector('#database').hidden || !window.document.querySelector('#mysql-route').hidden || !window.document.querySelector('#javascript-route').hidden) {
   throw new Error('Routefocus toont niet alleen de PHP + SQLite-hoofdstukken.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '8') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '9') {
   throw new Error('De voortgang is niet aangepast aan PHP + SQLite.');
 }
 if (stack.value !== 'php-sqlite' || window.document.querySelector('.header-cta').getAttribute('href') !== './downloads/studenten-crud.zip') {
@@ -281,8 +317,11 @@ javascriptRoute.click();
 if (!window.document.querySelector('#xampp').hidden || window.document.querySelector('#javascript-route').hidden) {
   throw new Error('De JavaScript-route filtert de PHP-hoofdstukken niet goed.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '5' || stack.value !== 'js-sqlite') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '6' || stack.value !== 'js-sqlite') {
   throw new Error('JavaScript-voortgang of buildertechniek is niet routespecifiek.');
+}
+if (window.document.querySelector('[data-frontend-panel="js"]').hidden) {
+  throw new Error('De frontendwerkbank volgt de gekozen JavaScript-route niet.');
 }
 if (window.document.querySelectorAll('[data-personal-route] li').length < 6) {
   throw new Error('Het persoonlijke JavaScript-stappenplan is te kort of ontbreekt.');

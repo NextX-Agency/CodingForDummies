@@ -241,6 +241,55 @@ $$('[data-file-viewer]').forEach((viewer) => {
   if (buttons[0]) loadViewerFile(viewer, buttons[0]);
 });
 
+const frontendTabs = $$('[data-frontend-tab]');
+const frontendPanels = $$('[data-frontend-panel]');
+
+function showFrontendPanel(name) {
+  const panelName = name === "js" || name === "js-sqlite" ? "js" : "php";
+  frontendTabs.forEach((button) => {
+    const active = button.dataset.frontendTab === panelName;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  frontendPanels.forEach((panel) => {
+    panel.hidden = panel.dataset.frontendPanel !== panelName;
+  });
+}
+
+frontendTabs.forEach((button) => {
+  button.addEventListener("click", () => showFrontendPanel(button.dataset.frontendTab));
+});
+
+const fieldConnectionExamples = {
+  php: {
+    voornaam: { html: 'name="voornaam"', logic: "required_text('voornaam')", database: ":voornaam → voornaam", output: "$student['voornaam']" },
+    email: { html: 'name="email"', logic: "required_text('email')", database: ":email → email", output: "$student['email']" },
+    opleiding: { html: 'name="opleiding"', logic: "required_text('opleiding')", database: ":opleiding → opleiding", output: "$student['opleiding']" }
+  },
+  js: {
+    firstName: { html: 'id="first-name"', logic: "elements.firstName", api: "firstName", database: "first_name", output: "student.firstName" },
+    email: { html: 'id="email"', logic: "elements.email", api: "email", database: "email", output: "student.email" },
+    education: { html: 'id="education"', logic: "elements.education", api: "education", database: "education", output: "student.education" }
+  }
+};
+
+$$('[data-field-connection]').forEach((connection) => {
+  const type = connection.dataset.fieldConnection;
+  const examples = fieldConnectionExamples[type];
+  const buttons = $$('[data-field-example]', connection);
+
+  function showFieldExample(key) {
+    const example = examples[key];
+    if (!example) return;
+    buttons.forEach((button) => button.classList.toggle("is-active", button.dataset.fieldExample === key));
+    $$('[data-chain-value]', connection).forEach((value) => {
+      value.textContent = example[value.dataset.chainValue] || "—";
+    });
+  }
+
+  buttons.forEach((button) => button.addEventListener("click", () => showFieldExample(button.dataset.fieldExample)));
+});
+
 const themeData = {
   students: { singular: "student", plural: "studenten", fields: "studentnummer, naam, e-mail", create: "create_student", update: "update_student", table: "studenten" },
   products: { singular: "product", plural: "producten", fields: "sku, naam, prijs, voorraad", create: "create_product", update: "update_product", table: "producten" },
@@ -519,19 +568,19 @@ if (builder) {
     const label = escapeHtmlCode(field.label);
 
     if (field.type === "textarea") {
-      return `  <label for="${id}">${label}</label>\n  <textarea id="${id}" name="${field.name}"${required}></textarea>`;
+      return `    <label class="generated-field" for="${id}"><span>${label}</span>\n      <textarea id="${id}" name="${field.name}"${required}></textarea>\n    </label>`;
     }
 
     if (field.type === "boolean") {
       if (state.stack.startsWith("php")) {
-        return `  <input type="hidden" name="${field.name}" value="0">\n  <label><input id="${id}" name="${field.name}" type="checkbox" value="1"> ${label}</label>`;
+        return `    <input type="hidden" name="${field.name}" value="0">\n    <label class="generated-check"><input id="${id}" name="${field.name}" type="checkbox" value="1"> <span>${label}</span></label>`;
       }
-      return `  <label><input id="${id}" name="${field.name}" type="checkbox"> ${label}</label>`;
+      return `    <label class="generated-check"><input id="${id}" name="${field.name}" type="checkbox"> <span>${label}</span></label>`;
     }
 
     const type = { email: "email", integer: "number", decimal: "number", date: "date" }[field.type] || "text";
     const extra = field.type === "decimal" ? ' min="0" step="0.01"' : field.type === "integer" ? ' step="1"' : "";
-    return `  <label for="${id}">${label}</label>\n  <input id="${id}" name="${field.name}" type="${type}"${extra}${required}>`;
+    return `    <label class="generated-field" for="${id}"><span>${label}</span>\n      <input id="${id}" name="${field.name}" type="${type}"${extra}${required}>\n    </label>`;
   }
 
   function generateForm(state) {
@@ -539,14 +588,22 @@ if (builder) {
     if (state.stack === "js-sqlite") {
       const headers = state.fields.map((field) => `        <th>${escapeHtmlCode(field.label)}</th>`).join("\n");
       return [
-        `<section class="${state.table}-beheer">`,
-        `  <h2>${state.table} beheren</h2>`,
-        `  <form id="${state.singular}-form">`,
+        `<section class="generated-crud ${state.table}-beheer">`,
+        `  <header class="generated-crud-heading">`,
+        `    <p>Eigen administratie</p>`,
+        `    <h2>${state.table} beheren</h2>`,
+        `  </header>`,
+        `  <div class="generated-crud-layout">`,
+        `  <form class="generated-card generated-form" id="${state.singular}-form">`,
+        `    <h3>Nieuwe ${state.singular}</h3>`,
         controls,
-        `    <button type="submit" id="${state.singular}-submit">${state.singular} toevoegen</button>`,
-        `    <button type="button" id="${state.singular}-cancel" hidden>Annuleer bewerken</button>`,
+        `    <button class="generated-primary" type="submit" id="${state.singular}-submit">${state.singular} toevoegen</button>`,
+        `    <button class="generated-secondary" type="button" id="${state.singular}-cancel" hidden>Annuleer bewerken</button>`,
         `  </form>`,
         ``,
+        `  <div class="generated-card generated-list">`,
+        `  <h3>Overzicht ${state.table}</h3>`,
+        `  <div class="generated-table-scroll">`,
         `  <table>`,
         `    <thead>`,
         `      <tr>`,
@@ -556,6 +613,9 @@ if (builder) {
         `    </thead>`,
         `    <tbody id="${state.table}-rows"></tbody>`,
         `  </table>`,
+        `  </div>`,
+        `  </div>`,
+        `  </div>`,
         `</section>`
       ].join("\n");
     }
@@ -563,34 +623,34 @@ if (builder) {
     const editControls = state.fields.map((field) => {
       const label = escapeHtmlCode(field.label);
       if (field.type === "textarea") {
-        return `      <label>${label}\n        <textarea name="${field.name}"${field.required ? " required" : ""}><?= e($row['${field.name}']) ?></textarea>\n      </label>`;
+        return `      <label class="generated-field"><span>${label}</span>\n        <textarea name="${field.name}"${field.required ? " required" : ""}><?= e($row['${field.name}']) ?></textarea>\n      </label>`;
       }
       if (field.type === "boolean") {
-        return `      <input type="hidden" name="${field.name}" value="0">\n      <label><input name="${field.name}" type="checkbox" value="1" <?= (int) $row['${field.name}'] === 1 ? 'checked' : '' ?>> ${label}</label>`;
+        return `      <input type="hidden" name="${field.name}" value="0">\n      <label class="generated-check"><input name="${field.name}" type="checkbox" value="1" <?= (int) $row['${field.name}'] === 1 ? 'checked' : '' ?>> <span>${label}</span></label>`;
       }
       const type = { email: "email", integer: "number", decimal: "number", date: "date" }[field.type] || "text";
       const extra = field.type === "decimal" ? ' min="0" step="0.01"' : field.type === "integer" ? ' step="1"' : "";
-      return `      <label>${label}\n        <input name="${field.name}" type="${type}" value="<?= e($row['${field.name}']) ?>"${extra}${field.required ? " required" : ""}>\n      </label>`;
+      return `      <label class="generated-field"><span>${label}</span>\n        <input name="${field.name}" type="${type}" value="<?= e($row['${field.name}']) ?>"${extra}${field.required ? " required" : ""}>\n      </label>`;
     }).join("\n");
     const headers = state.fields.map((field) => `        <th>${escapeHtmlCode(field.label)}</th>`).join("\n");
     const cells = state.fields.map((field) => `          <td><?= e($row['${field.name}']) ?></td>`).join("\n");
 
     return [
-      `<section class="app-shell ${state.table}-beheer">`,
-      `  <div class="page-heading"><div><p class="eyebrow">Eigen CRUD</p><h2>${state.table} beheren</h2></div></div>`,
+      `<section class="generated-crud ${state.table}-beheer">`,
+      `  <header class="generated-crud-heading"><p>Eigen CRUD</p><h2>${state.table} beheren</h2></header>`,
+      `  <div class="generated-crud-layout">`,
       ``,
-      `  <div class="form-panel">`,
+      `  <div class="generated-card">`,
       `  <h3>Nieuwe ${state.singular}</h3>`,
-      `  <form class="stack-form" method="post">`,
+      `  <form class="generated-form" method="post">`,
       `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
       `    <input type="hidden" name="intent" value="create_${state.singular}">`,
       controls,
-      `    <button type="submit">${state.singular} toevoegen</button>`,
+      `    <button class="generated-primary" type="submit">${state.singular} toevoegen</button>`,
       `  </form>`,
       `  </div>`,
       ``,
-      `  <h3>Overzicht</h3>`,
-      `  <div class="list-panel"><div class="table-scroll">`,
+      `  <div class="generated-card generated-list"><h3>Overzicht</h3><div class="generated-table-scroll">`,
       `  <table>`,
       `    <thead>`,
       `      <tr>`,
@@ -605,19 +665,19 @@ if (builder) {
       `          <td class="row-actions">`,
       `            <details>`,
       `              <summary>Bewerk</summary>`,
-      `              <form class="stack-form" method="post">`,
+      `              <form class="generated-form generated-edit-form" method="post">`,
       `                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
       `                <input type="hidden" name="intent" value="update_${state.singular}">`,
       `                <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
       editControls,
-      `                <button type="submit">Wijzigingen opslaan</button>`,
+      `                <button class="generated-primary" type="submit">Wijzigingen opslaan</button>`,
       `              </form>`,
       `            </details>`,
       `            <form method="post" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">`,
       `              <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
       `              <input type="hidden" name="intent" value="delete_${state.singular}">`,
       `              <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
-      `              <button class="danger-link" type="submit">Verwijder</button>`,
+      `              <button class="generated-danger" type="submit">Verwijder</button>`,
       `            </form>`,
       `          </td>`,
       `        </tr>`,
@@ -625,7 +685,54 @@ if (builder) {
       `    </tbody>`,
       `  </table>`,
       `  </div></div>`,
+      `  </div>`,
       `</section>`
+    ].join("\n");
+  }
+
+  function generateCss(state) {
+    return [
+      `/* Vormgeving voor ${state.table}. Plak dit hele blok onderaan je CSS-bestand. */`,
+      `.generated-crud {`,
+      `  --generated-blue: #1e56dc;`,
+      `  --generated-ink: #10233f;`,
+      `  --generated-muted: #5f6c7e;`,
+      `  --generated-line: #d9dee8;`,
+      `  margin: 48px 0;`,
+      `  color: var(--generated-ink);`,
+      `  font-family: "DM Sans", Arial, sans-serif;`,
+      `}`,
+      ``,
+      `.generated-crud * { box-sizing: border-box; }`,
+      `.generated-crud-heading { margin-bottom: 22px; }`,
+      `.generated-crud-heading p { margin: 0 0 6px; color: var(--generated-blue); font-size: 12px; font-weight: 700; text-transform: uppercase; }`,
+      `.generated-crud-heading h2 { margin: 0; font-size: clamp(30px, 5vw, 48px); line-height: 1; }`,
+      `.generated-crud-layout { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); gap: 22px; align-items: start; }`,
+      `.generated-card { padding: 22px; border: 1px solid var(--generated-line); background: #fff; box-shadow: 0 16px 40px rgba(16, 35, 63, .08); }`,
+      `.generated-card h3 { margin: 0 0 18px; font-size: 20px; }`,
+      `.generated-form { display: grid; gap: 14px; }`,
+      `.generated-field { display: grid; gap: 6px; color: var(--generated-muted); font-size: 12px; font-weight: 700; }`,
+      `.generated-field input, .generated-field textarea, .generated-field select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #c7cfda; border-radius: 3px; background: #fff; color: var(--generated-ink); font: inherit; font-weight: 400; }`,
+      `.generated-field textarea { min-height: 110px; resize: vertical; }`,
+      `.generated-field input:focus, .generated-field textarea:focus, .generated-field select:focus { border-color: var(--generated-blue); outline: 3px solid rgba(30, 86, 220, .12); }`,
+      `.generated-check { display: flex; gap: 9px; align-items: center; color: var(--generated-muted); font-size: 13px; font-weight: 700; }`,
+      `.generated-check input { width: 18px; height: 18px; }`,
+      `.generated-primary, .generated-secondary, .generated-danger { min-height: 42px; padding: 0 14px; border: 1px solid transparent; border-radius: 3px; font: inherit; font-weight: 700; cursor: pointer; }`,
+      `.generated-primary { background: var(--generated-blue); color: #fff; }`,
+      `.generated-primary:hover { background: #153fa7; }`,
+      `.generated-secondary { border-color: var(--generated-line); background: #fff; color: var(--generated-ink); }`,
+      `.generated-danger { background: #fff0f1; color: #b62935; }`,
+      `.generated-table-scroll { width: 100%; overflow-x: auto; }`,
+      `.generated-list table { width: 100%; border-collapse: collapse; text-align: left; }`,
+      `.generated-list th { padding: 11px 13px; border-bottom: 1px solid var(--generated-line); background: #f5f7fa; color: var(--generated-muted); font-size: 10px; text-transform: uppercase; }`,
+      `.generated-list td { padding: 13px; border-bottom: 1px solid #e8ebf0; font-size: 13px; vertical-align: top; }`,
+      `.generated-list td button, .generated-list summary { margin: 2px; border: 0; background: transparent; color: var(--generated-blue); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }`,
+      `.generated-edit-form { min-width: 240px; margin-top: 12px; padding: 14px; background: #f5f7fa; }`,
+      ``,
+      `@media (max-width: 850px) {`,
+      `  .generated-crud-layout { grid-template-columns: 1fr; }`,
+      `  .generated-card { padding: 17px; }`,
+      `}`
     ].join("\n");
   }
 
@@ -888,17 +995,23 @@ if (builder) {
         `   Klik aan het begin van die regel.`,
         `   Plak tab 2 DIRECT BOVEN </main>.`,
         ``,
-        `3. API — tab 3`,
+        `3. CSS-OPMAAK — tab 3`,
+        `   Open: frontend/style.css`,
+        `   Druk Ctrl+End en maak twee nieuwe lege regels.`,
+        `   Plak tab 3 HELEMAAL ONDERAAN het CSS-bestand.`,
+        `   De class generated-crud in tab 2 wijst nu naar .generated-crud in tab 3.`,
+        ``,
+        `4. API — tab 4`,
         `   Open: backend/server.js`,
         `   Ctrl+F: app.use((error`,
-        `   Plak tab 3 DIRECT BOVEN de foutafhandeling.`,
+        `   Plak tab 4 DIRECT BOVEN de foutafhandeling.`,
         ``,
-        `4. BROWSERCODE — tab 4`,
+        `5. BROWSERCODE — tab 5`,
         `   Open: frontend/app.js`,
         `   Druk Ctrl+End en maak één nieuwe lege regel.`,
-        `   Plak tab 4 ONDERAAN het bestand.`,
+        `   Plak tab 5 ONDERAAN het bestand.`,
         ``,
-        `5. TEST`,
+        `6. TEST`,
         `   Stop npm start met Ctrl+C en start opnieuw met npm start.`,
         `   Test: toevoegen → vernieuwen → wijzigen → verwijderen.`,
         `   Zoek bij een fout op de letterlijke foutmelding in de Foutzoeker.`
@@ -919,11 +1032,11 @@ if (builder) {
       `   Plak tab 1 ONDERAAN en sla op met Ctrl+S.`,
       databaseReset,
       ``,
-      `2. PHP-VERWERKING — tab 3`,
+      `2. PHP-VERWERKING — tab 4`,
       `   Open: index.php`,
       `   Ctrl+F: if ($_SERVER['REQUEST_METHOD'] === 'POST') {`,
       `   Klik aan het begin van deze regel.`,
-      `   Plak tab 3 DIRECT BOVEN deze bestaande regel.`,
+      `   Plak tab 4 DIRECT BOVEN deze bestaande regel.`,
       `   Twee POST-blokken onder elkaar zijn hier bewust: het nieuwe blok verwerkt ${state.table}.`,
       ``,
       `3. FORMULIER + OVERZICHT — tab 2`,
@@ -933,10 +1046,16 @@ if (builder) {
       `   Plak tab 2 DIRECT BOVEN deze footerregel.`,
       `   Tab 2 bevat toevoegen, bekijken, bewerken én verwijderen.`,
       ``,
-      `4. BROWSERCODE — tab 4`,
+      `4. CSS-OPMAAK — tab 3`,
+      `   Open: assets/app.css`,
+      `   Druk Ctrl+End en maak twee nieuwe lege regels.`,
+      `   Plak tab 3 HELEMAAL ONDERAAN het CSS-bestand.`,
+      `   De class generated-crud in tab 2 wijst nu naar .generated-crud in tab 3.`,
+      ``,
+      `5. BROWSERCODE — tab 5`,
       `   Voor PHP is geen extra browsercode nodig. Sla deze tab over.`,
       ``,
-      `5. TEST IN DEZE VOLGORDE`,
+      `6. TEST IN DEZE VOLGORDE`,
       `   Open localhost en voeg één testitem toe.`,
       `   Vernieuw: het item moet blijven staan.`,
       `   Wijzig één veld en vernieuw opnieuw.`,
@@ -950,8 +1069,9 @@ if (builder) {
     return {
       sql: { file: state.stack === "js-sqlite" ? "backend/server.js · binnen db.exec" : "database/schema.sql", code: generateSql(state) },
       form: { file: state.stack === "js-sqlite" ? "frontend/index.html" : "index.php · HTML", code: generateForm(state) },
+      css: { file: state.stack === "js-sqlite" ? "frontend/style.css · onderaan" : "assets/app.css · onderaan", code: generateCss(state) },
       backend: { file: state.stack === "js-sqlite" ? "backend/server.js" : "index.php · PHP", code: state.stack === "js-sqlite" ? generateJsBackend(state) : generatePhpBackend(state) },
-      frontend: { file: state.stack === "js-sqlite" ? "frontend/app.js" : "Niet nodig bij de PHP-route", code: state.stack === "js-sqlite" ? generateJsFrontend(state) : "PHP verwerkt het formulier bij iedere paginalaad. Voor deze gegenereerde CRUD hoef je geen extra browser-JavaScript te plakken. Ga naar tab 5 voor het exacte plakplan." },
+      frontend: { file: state.stack === "js-sqlite" ? "frontend/app.js" : "Niet nodig bij de PHP-route", code: state.stack === "js-sqlite" ? generateJsFrontend(state) : "PHP verwerkt het formulier bij iedere paginalaad. Voor deze gegenereerde CRUD hoef je geen extra browser-JavaScript te plakken. Ga naar tab 6 voor het exacte plakplan." },
       steps: { file: "plakplan.txt", code: generatePastePlan(state) }
     };
   }
@@ -987,14 +1107,6 @@ if (builder) {
     tab.addEventListener("click", () => {
       currentBuilderTab = tab.dataset.builderTab;
       builderTabs.forEach((item) => item.classList.toggle("is-active", item === tab));
-      const builderCodeContainer = builderCode.closest(".builder-code");
-      builderCodeContainer?.classList.toggle("is-code-open", currentBuilderTab === "steps");
-      const codeToggle = builderCodeContainer?.querySelector("[data-code-toggle]");
-      if (codeToggle) {
-        const open = currentBuilderTab === "steps";
-        codeToggle.setAttribute("aria-expanded", String(open));
-        codeToggle.textContent = open ? "Verberg het plakplan" : "2. Toon de code";
-      }
       updateBuilderOutput();
     });
   });
@@ -1017,6 +1129,7 @@ const routeDefinitions = {
     steps: [
       ["xampp", "XAMPP klaarzetten", "Start Apache en controleer PDO SQLite."],
       ["mappen", "Projectmap maken", "Zet de starter in htdocs en controleer de bestanden."],
+      ["frontend-koppelen", "HTML en CSS koppelen", "Zie waar index.php, app.css en app.js staan en hoe de paden werken."],
       ["database", "SQLite koppelen", "Maak de PDO-verbinding en de tabellen."],
       ["crud", "Vier CRUD-acties bouwen", "Test Create, Read, Update en Delete apart."],
       ["codebank", "Complete bestanden bekijken", "Vergelijk jouw code met de werkende codebank."],
@@ -1039,6 +1152,7 @@ const routeDefinitions = {
     steps: [
       ["xampp", "XAMPP klaarzetten", "Start Apache én MySQL in het Control Panel."],
       ["mappen", "Projectmap maken", "Zet de MySQL-starter in de juiste htdocs-map."],
+      ["frontend-koppelen", "HTML en CSS koppelen", "Verbind index.php met assets/app.css en begrijp class-namen."],
       ["mysql-route", "Database importeren", "Maak de database in phpMyAdmin en importeer schema.sql."],
       ["crud", "Vier CRUD-acties bouwen", "Gebruik PDO en test iedere actie apart."],
       ["builder", "Eigen onderwerp genereren", "Laat de builder MySQL-SQL en PHP maken."],
@@ -1056,9 +1170,10 @@ const routeDefinitions = {
     download: "./downloads/javascript-sqlite-crud.zip",
     downloadLabel: "JavaScript + SQLite starter",
     downloadHint: "Node.js · Express · fetch · SQLite",
-    nextHref: "#javascript-route",
-    nextLabel: "Start de JavaScript-route",
+    nextHref: "#frontend-koppelen",
+    nextLabel: "Koppel eerst de JavaScript-frontend",
     steps: [
+      ["frontend-koppelen", "HTML en CSS koppelen", "Verbind index.html, style.css en app.js met de juiste paden."],
       ["javascript-route", "Node.js-project starten", "Installeer packages en open de lokale server."],
       ["javascript-route", "API en database testen", "Controleer de GET-route en de SQLite-tabel."],
       ["javascript-route", "Frontend koppelen", "Gebruik fetch voor Create, Read, Update en Delete."],
@@ -1167,6 +1282,7 @@ function selectRoute(routeKey, { scrollResult = false } = {}) {
   if (stackProgress) stackProgress.checked = true;
   updateRouteDownloads(route);
   applyRouteFocus();
+  showFrontendPanel(routeKey);
 
   if (scrollResult) {
     routeResult.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1220,7 +1336,7 @@ function setBeginnerMode(enabled, persist = true) {
   $$('[data-beginner-toggle]').forEach((button) => {
     button.setAttribute("aria-pressed", String(enabled));
     const label = $("[data-beginner-toggle-label]", button);
-    if (label) label.textContent = enabled ? "Aan · leg code eerst uit" : "Uit · toon alle code direct";
+    if (label) label.textContent = enabled ? "Aan · uitleg boven de code" : "Uit · alleen code";
   });
 
   if (persist) {
@@ -1238,6 +1354,60 @@ $$('[data-beginner-toggle]').forEach((button) => {
 setBeginnerMode(beginnerModeEnabled, false);
 
 const pastePlacements = {
+  "php-style-link": {
+    method: "Controleer één bestaande regel",
+    file: "studenten-crud/index.php",
+    start: "<head>",
+    end: "</head>",
+    action: "Deze regel staat al in de starter. Ontbreekt hij? Plak hem één keer vóór </head>. Gebruik exact assets/app.css en zet hem niet in app.css zelf.",
+    check: "Open localhost en druk Ctrl+F5. De pagina moet kleuren, ruimte en een layout hebben in plaats van kale tekst.",
+    copyReady: true
+  },
+  "php-script-link": {
+    method: "Controleer één bestaande regel",
+    file: "studenten-crud/index.php",
+    start: "<head>",
+    end: "</head>",
+    action: "Deze regel staat al in de starter. Ontbreekt hij? Plak hem één keer vóór </head>. defer zorgt dat de HTML eerst wordt geladen.",
+    check: "Klik op Menu op een smal scherm of probeer Verwijder. De menu- of bevestigingsactie moet reageren.",
+    copyReady: true
+  },
+  "php-first-html": {
+    method: "Voeg één compleet HTML-blok toe",
+    file: "studenten-crud/index.php",
+    start: "<main class=\"app-shell\">",
+    end: "dezelfde regel <main class=\"app-shell\">",
+    action: "Laat de gevonden main-regel staan. Zet je cursor aan het einde, druk Enter en plak het hele section-blok direct eronder.",
+    check: "Sla op en vernieuw localhost. De tekst ‘Mijn eerste eigen onderdeel’ moet boven de administratie verschijnen.",
+    copyReady: true
+  },
+  "php-first-css": {
+    method: "Voeg CSS onderaan toe",
+    file: "studenten-crud/assets/app.css",
+    start: "ga met Ctrl+End naar de laatste regel",
+    end: "onder de bestaande CSS",
+    action: "Zet de cursor na de laatste } van het bestand, druk twee keer Enter en plak dit hele CSS-blok. Plak het niet in index.php.",
+    check: "Druk Ctrl+F5 in de browser. Het nieuwe blok moet wit zijn en links een blauwe lijn hebben.",
+    copyReady: true
+  },
+  "js-style-link": {
+    method: "Controleer één bestaande regel",
+    file: "javascript-sqlite-crud/frontend/index.html",
+    start: "<head>",
+    end: "</head>",
+    action: "Deze regel staat al in de starter. Ontbreekt hij? Plak hem één keer vóór </head>. style.css staat naast index.html, daarom begint het pad met ./.",
+    check: "Start npm start en open http://localhost:3000. De pagina moet de Campus-layout en blauwe knoppen tonen.",
+    copyReady: true
+  },
+  "js-script-link": {
+    method: "Controleer één bestaande regel",
+    file: "javascript-sqlite-crud/frontend/index.html",
+    start: "<head>",
+    end: "</head>",
+    action: "Deze regel staat al in de starter. Ontbreekt hij? Plak hem één keer vóór </head>. app.js staat in dezelfde frontendmap.",
+    check: "Open http://localhost:3000. Landen en studenten moeten geladen worden; de browserconsole mag geen 404 voor app.js tonen.",
+    copyReady: true
+  },
   "phpini-code": {
     method: "Wijzig twee bestaande regels",
     file: "C:\\xampp\\php\\php.ini (open via XAMPP → Apache → Config → PHP)",
@@ -1477,7 +1647,7 @@ function codeLesson(label, code, container) {
   }
 
   if (container.classList.contains("builder-code")) {
-    location = `De builder heeft dit gemaakt voor ${label}. Open eerst tab 5: “Start: waar plakken?”.`;
+    location = `De builder heeft dit gemaakt voor ${label}. Open eerst tab 6: “Exact plakplan”.`;
     action = "Kopieer daarna één tab tegelijk. Iedere tab noemt een ander bestand of een andere plek; plak ze nooit samen in één bestand.";
   } else if (container.closest(".snippet-body")) {
     action = "Voeg dit pas toe nadat de basis-CRUD werkt. Volg eerst ‘Waar plakken’ boven dit blok, kopieer alles en test alleen deze nieuwe functie.";
@@ -1512,7 +1682,7 @@ function addLabeledLine(parent, label, value) {
   parent.append(line);
 }
 
-$$('.code-block, .file-code').forEach((container, index) => {
+$$('.code-block, .file-code').forEach((container) => {
   const toolbar = [...container.children].find((child) => child.classList?.contains("code-toolbar"));
   const pre = [...container.children].find((child) => child.tagName === "PRE");
   const code = pre?.querySelector("code");
@@ -1533,13 +1703,7 @@ $$('.code-block, .file-code').forEach((container, index) => {
   const checkLine = document.createElement("div");
   explanation.append(eyebrow, title, locationLine, startLine, endLine, purposeLine, actionLine, checkLine);
 
-  const toggle = document.createElement("button");
-  toggle.type = "button";
-  toggle.dataset.codeToggle = String(index);
-  const initiallyOpen = container.classList.contains("is-code-open");
-  toggle.setAttribute("aria-expanded", String(initiallyOpen));
-  toggle.textContent = initiallyOpen ? "Verberg het plakplan" : "2. Toon de code";
-  guide.append(explanation, toggle);
+  guide.append(explanation);
   toolbar.insertAdjacentElement("afterend", guide);
 
   function refreshGuide() {
@@ -1566,12 +1730,6 @@ $$('.code-block, .file-code').forEach((container, index) => {
       copyButton.dataset.originalCopyLabel = "saved";
     }
   }
-
-  toggle.addEventListener("click", () => {
-    const open = container.classList.toggle("is-code-open");
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.textContent = open ? "Verberg de code" : "2. Toon de code";
-  });
 
   refreshGuide();
   const observedLabel = toolbar.querySelector("span");

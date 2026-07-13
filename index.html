@@ -24,6 +24,7 @@
 
       <nav class="top-nav" data-top-nav aria-label="Hoofdnavigatie">
         <a href="#stack">Bouwroute</a>
+        <a href="#frontend-koppelen">HTML + CSS</a>
         <a href="#builder">CRUD-builder</a>
         <a href="#codebank" data-route-link="php-sqlite">Codebank</a>
         <a href="#foutzoeker">Foutzoeker</a>
@@ -86,7 +87,7 @@
             <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>10</span></strong></div>
             <div class="progress-track"><span data-checklist-progress></span></div>
           </div>
-          <button class="beginner-mode-toggle" type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><strong data-beginner-toggle-label>Aan · leg code eerst uit</strong><small>Je kunt dit altijd wijzigen.</small></button>
+          <button class="beginner-mode-toggle" type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><strong data-beginner-toggle-label>Aan · uitleg boven de code</strong><small>Je kunt dit altijd wijzigen.</small></button>
           <button class="sidebar-route" type="button" data-sidebar-route hidden><span data-sidebar-route-code>Route</span><strong data-sidebar-route-name>Kies bouwroute</strong><small>Wijzig je route →</small></button>
           <nav class="chapter-nav" data-chapter-nav aria-label="Gidshoofdstukken">
             <a href="#begin"><span>01</span> Begin hier</a>
@@ -94,6 +95,7 @@
             <a href="#builder"><span>Tool</span> CRUD-builder</a>
             <a href="#xampp" data-route-link="php-sqlite php-mysql"><span>03</span> XAMPP klaarzetten</a>
             <a href="#mappen" data-route-link="php-sqlite php-mysql"><span>04</span> Projectmap maken</a>
+            <a href="#frontend-koppelen"><span>UI</span> HTML + CSS koppelen</a>
             <a href="#database" data-route-link="php-sqlite"><span>05</span> SQLite koppelen</a>
             <a href="#mysql-route" data-route-link="php-mysql"><span>06</span> MySQL koppelen</a>
             <a href="#crud" data-route-link="php-sqlite php-mysql"><span>07</span> PHP CRUD bouwen</a>
@@ -116,8 +118,8 @@
             <p class="section-intro">Een echte administratie-app met twee gekoppelde onderdelen: <strong>studenten</strong> en een <strong>landenregister</strong>. Dit is bewust groter dan een simpele takenlijst, zodat je patronen leert die je opnieuw kunt gebruiken.</p>
 
             <div class="zero-start">
-              <div class="zero-start-heading"><span>Start hier als je nul ervaring hebt</span><h3>Je hoeft code nog niet te kunnen lezen.</h3><p>Je werkt eerst met een compleet werkend project. Daarna verander je steeds één klein onderdeel. De gids laat code pas zien nadat je weet wat het doet en waar je het moet plakken.</p></div>
-              <button type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><b data-beginner-toggle-label>Aan · leg code eerst uit</b><small>Klik om de normale codeweergave te gebruiken.</small></button>
+              <div class="zero-start-heading"><span>Start hier als je nul ervaring hebt</span><h3>Je hoeft code nog niet te kunnen lezen.</h3><p>Je werkt eerst met een compleet werkend project. Daarna verander je steeds één klein onderdeel. Boven ieder codeblok staat direct wat het doet, welk bestand je opent en waar je het plakt.</p></div>
+              <button type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><b data-beginner-toggle-label>Aan · uitleg boven de code</b><small>Klik om alleen de code zonder extra uitleg te zien.</small></button>
               <ol class="zero-start-route">
                 <li><span>1</span><div><b>Kies één route</b><small>Voor je eerste project: PHP + SQLite.</small></div></li>
                 <li><span>2</span><div><b>Download de starter</b><small>Begin niet met een lege map.</small></div></li>
@@ -256,19 +258,20 @@
               <div class="builder-output">
                 <div class="builder-tabs" role="tablist" aria-label="Gegenereerde code">
                   <button type="button" data-builder-tab="sql">1. Database</button>
-                  <button type="button" data-builder-tab="form">2. Invulvelden</button>
-                  <button type="button" data-builder-tab="backend">3. Opslaan</button>
-                  <button type="button" data-builder-tab="frontend">4. Browsercode</button>
-                  <button class="is-active" type="button" data-builder-tab="steps">5. Start: waar plakken?</button>
+                  <button type="button" data-builder-tab="form">2. HTML-pagina</button>
+                  <button type="button" data-builder-tab="css">3. CSS-opmaak</button>
+                  <button type="button" data-builder-tab="backend">4. Opslaan</button>
+                  <button type="button" data-builder-tab="frontend">5. Browser-JS</button>
+                  <button class="is-active" type="button" data-builder-tab="steps">6. Exact plakplan</button>
                 </div>
-                <div class="code-block builder-code is-code-open">
+                <div class="code-block builder-code">
                   <div class="code-toolbar"><span data-builder-file>database/schema.sql</span><button type="button" data-copy-builder>Kopieer resultaat</button></div>
                   <pre><code data-builder-code></code></pre>
                 </div>
               </div>
             </div>
 
-            <div class="warning-callout"><span>!</span><div><b>De builder maakt een complete extra CRUD, maar gebruikt de basis uit de starter.</b><p>Tab 2 bevat formulier, overzicht, bewerken en verwijderen. Tab 3 verwerkt alle vier de acties. Volg altijd eerst tab 5, omdat daar de exacte bestanden en zoekankers staan.</p></div></div>
+            <div class="warning-callout"><span>!</span><div><b>De builder maakt een complete extra CRUD, inclusief HTML en CSS.</b><p>Tab 2 bevat de zichtbare pagina. Tab 3 geeft die pagina vorm. Tab 4 verwerkt alle vier CRUD-acties. Begin altijd met tab 6: daar staan de exacte bestanden en zoekankers in de juiste volgorde.</p></div></div>
           </section>
 
           <section id="xampp" class="guide-section" data-route-section="php-sqlite php-mysql" data-search-title="XAMPP installeren en SQLite activeren">
@@ -355,6 +358,158 @@ extension=sqlite3</code></pre>
               <a class="button button--primary" href="./downloads/studenten-crud.zip">Download starter.zip <span>↓</span></a>
             </div>
             <label class="chapter-check"><input type="checkbox" data-progress-item="folders" data-progress-routes="php-sqlite php-mysql"><span><b>Mijn projectmap klopt</b><small>Ook lege submappen en bestandsnamen staan op de juiste plek.</small></span></label>
+          </section>
+
+          <section id="frontend-koppelen" class="guide-section frontend-section" data-route-section="php-sqlite php-mysql js-sqlite" data-search-title="HTML CSS frontend koppelen aan PHP of JavaScript">
+            <div class="section-number">Frontend-basis · voor alle routes</div>
+            <h2>Koppel wat je ziet aan wat je app doet.</h2>
+            <p class="section-intro">Je frontend bestaat niet uit mysterieuze losse code. <strong>HTML</strong> zet onderdelen op de pagina, <strong>CSS</strong> maakt ze mooi en <strong>PHP of JavaScript</strong> verwerkt wat de gebruiker doet. Hieronder verbind je de echte bestanden uit jouw starter zonder zelf paden te hoeven raden.</p>
+
+            <div class="frontend-roles">
+              <article><span>01 · HTML</span><b>Wat staat er?</b><p>Formulieren, knoppen, koppen en tabellen.</p><code>&lt;input&gt;</code></article>
+              <article><span>02 · CSS</span><b>Hoe ziet het eruit?</b><p>Kleuren, ruimte, lettertypes en mobiele layout.</p><code>.stack-form</code></article>
+              <article><span>03 · Logica</span><b>Wat gebeurt er?</b><p>PHP of JavaScript leest de invoer en kiest een CRUD-actie.</p><code>create</code></article>
+              <article><span>04 · SQL</span><b>Wat blijft bewaard?</b><p>SQLite of MySQL bewaart de gegevens in een tabel.</p><code>INSERT</code></article>
+            </div>
+
+            <div class="frontend-connection" role="img" aria-label="HTML laadt CSS en stuurt formuliergegevens via PHP of JavaScript naar de database">
+              <div><span>Browser</span><b>HTML</b><small>formulier + overzicht</small></div>
+              <i>laadt →</i>
+              <div><span>Uiterlijk</span><b>CSS</b><small>class-namen geven stijl</small></div>
+              <i>actie →</i>
+              <div><span>Functionaliteit</span><b>PHP / JS</b><small>controleert en verwerkt</small></div>
+              <i>bewaart →</i>
+              <div><span>Gegevens</span><b>Database</b><small>SQLite / MySQL</small></div>
+            </div>
+
+            <div class="frontend-workbench" data-frontend-workbench>
+              <div class="frontend-workbench-heading">
+                <div><span>Kies dezelfde techniek als jouw bouwroute</span><h3>Laat alleen jouw koppelstappen zien.</h3></div>
+                <div class="frontend-route-tabs" role="tablist" aria-label="Frontendroute kiezen">
+                  <button class="is-active" type="button" role="tab" aria-selected="true" data-frontend-tab="php">PHP + XAMPP</button>
+                  <button type="button" role="tab" aria-selected="false" data-frontend-tab="js">JavaScript + Node</button>
+                </div>
+              </div>
+
+              <div class="frontend-route-panel" data-frontend-panel="php">
+                <div class="frontend-path-card">
+                  <div class="frontend-path-title"><span>PHP-route · drie bestanden</span><h3>Deze bestanden staan niet los van elkaar.</h3><p><code>index.php</code> staat in de hoofdmap. Daarom begint het pad naar CSS en JavaScript met <code>assets/</code>.</p></div>
+                  <ol class="frontend-files">
+                    <li><span>1</span><div><b>studenten-crud/index.php</b><small>Bevat de HTML én PHP-functionaliteit.</small></div></li>
+                    <li><span>2</span><div><b>studenten-crud/assets/app.css</b><small>Wordt vanuit index.php geladen voor de vormgeving.</small></div></li>
+                    <li><span>3</span><div><b>studenten-crud/assets/app.js</b><small>Regelt alleen menu en verwijderbevestiging; PHP doet de CRUD.</small></div></li>
+                  </ol>
+                </div>
+
+                <div class="link-code-grid">
+                  <div class="code-block code-block--flush">
+                    <div class="code-toolbar"><span>index.php · CSS koppelen in &lt;head&gt;</span><button type="button" data-copy-target="php-style-link">Kopieer</button></div>
+                    <pre><code id="php-style-link">&lt;link rel="stylesheet" href="assets/app.css"&gt;</code></pre>
+                  </div>
+                  <div class="code-block code-block--flush">
+                    <div class="code-toolbar"><span>index.php · JavaScript koppelen in &lt;head&gt;</span><button type="button" data-copy-target="php-script-link">Kopieer</button></div>
+                    <pre><code id="php-script-link">&lt;script src="assets/app.js" defer&gt;&lt;/script&gt;</code></pre>
+                  </div>
+                </div>
+                <p class="path-explainer"><b>Waarom geen <code>C:\xampp\...</code> in deze regels?</b> De browser rekent vanaf de map van <code>index.php</code>. <code>assets/app.css</code> betekent dus: ga vanuit <code>studenten-crud</code> naar de map <code>assets</code> en open <code>app.css</code>.</p>
+
+                <div class="first-frontend-edit">
+                  <div class="first-frontend-heading"><span>Eerste veilige oefening</span><h3>Voeg één zichtbaar blok toe en geef het stijl.</h3><p>Doe stap 1 in <code>index.php</code> en stap 2 in <code>assets/app.css</code>. Dezelfde classnaam <code>begin-kaart</code> verbindt de twee bestanden.</p></div>
+                  <div class="frontend-edit-steps">
+                    <article><span>Stap 1 · HTML</span><p>Open <code>index.php</code>. Zoek <code>&lt;main class="app-shell"&gt;</code> en plak dit direct op de volgende regel.</p>
+                      <div class="code-block code-block--flush"><div class="code-toolbar"><span>index.php · direct na &lt;main class="app-shell"&gt;</span><button type="button" data-copy-target="php-first-html">Kopieer</button></div><pre><code id="php-first-html">&lt;section class="begin-kaart"&gt;
+    &lt;p&gt;Mijn eerste eigen onderdeel&lt;/p&gt;
+    &lt;h2&gt;Welkom bij mijn administratie&lt;/h2&gt;
+&lt;/section&gt;</code></pre></div>
+                    </article>
+                    <article><span>Stap 2 · CSS</span><p>Open <code>assets/app.css</code>, ga helemaal naar beneden en plak dit na de laatste regel.</p>
+                      <div class="code-block code-block--flush"><div class="code-toolbar"><span>assets/app.css · helemaal onderaan</span><button type="button" data-copy-target="php-first-css">Kopieer</button></div><pre><code id="php-first-css">.begin-kaart {
+  margin-bottom: 24px;
+  padding: 24px;
+  border-left: 4px solid #1e56dc;
+  background: #ffffff;
+}
+
+.begin-kaart p {
+  margin: 0 0 6px;
+  color: #1e56dc;
+  font-weight: 700;
+}</code></pre></div>
+                    </article>
+                  </div>
+                  <div class="frontend-test"><b>Zo test je dit:</b><span>Sla beide bestanden op → open <code>http://localhost/studenten-crud/</code> → druk <kbd>Ctrl F5</kbd>. Zie je het witte blok met een blauwe lijn? Dan zijn HTML en CSS goed gekoppeld.</span></div>
+                </div>
+
+                <div class="field-connection" data-field-connection="php">
+                  <div class="field-connection-heading"><div><span>Van formulier naar scherm</span><h3>Eén veld moet overal dezelfde codenaam houden.</h3><p>Klik op een voorbeeld. De blauwe woorden moeten bij elkaar blijven horen wanneer je jouw thema verandert.</p></div>
+                    <div class="field-example-tabs" role="tablist" aria-label="PHP-voorbeeldveld"><button class="is-active" type="button" data-field-example="voornaam">Voornaam</button><button type="button" data-field-example="email">E-mail</button><button type="button" data-field-example="opleiding">Opleiding</button></div>
+                  </div>
+                  <div class="field-chain">
+                    <div><span>1 · HTML-formulier</span><b data-chain-value="html">name="voornaam"</b><small>index.php</small></div><i>→</i>
+                    <div><span>2 · PHP leest</span><b data-chain-value="logic">required_text('voornaam')</b><small>functions.php</small></div><i>→</i>
+                    <div><span>3 · SQL bewaart</span><b data-chain-value="database">:voornaam → voornaam</b><small>index.php + database</small></div><i>→</i>
+                    <div><span>4 · HTML toont</span><b data-chain-value="output">$student['voornaam']</b><small>index.php</small></div>
+                  </div>
+                  <p class="field-chain-rule"><b>De zichtbare tekst mag anders zijn.</b> Je mag <em>Voornaam</em> veranderen in <em>Roepnaam</em>, maar verander <code>voornaam</code> alleen als je dit in alle vier de blokken tegelijk doet.</p>
+                </div>
+
+                <h3 class="subheading">Complete PHP-frontendbestanden</h3>
+                <p>Wil je niet zoeken of losse delen plaatsen? Kies hieronder een bestand, klik op <b>Kopieer bestand</b> en vervang exact dat hele bestand met <kbd>Ctrl A</kbd> → <kbd>Ctrl V</kbd>.</p>
+                <div class="file-viewer file-viewer--compact" data-file-viewer>
+                  <div class="file-sidebar" role="tablist" aria-label="PHP frontendbestanden">
+                    <button class="is-active" type="button" data-source="./code/index.php.txt"><span>PHP</span>index.php · HTML + PHP</button>
+                    <button type="button" data-source="./code/app.css.txt"><span>CSS</span>assets/app.css</button>
+                    <button type="button" data-source="./code/app.js.txt"><span>JS</span>assets/app.js</button>
+                  </div>
+                  <div class="file-code"><div class="code-toolbar"><span data-current-file>index.php</span><div><span class="line-count" data-line-count>laden…</span><button type="button" data-copy-file>Kopieer bestand</button></div></div><pre><code data-file-code>Bestand wordt geladen…</code></pre></div>
+                </div>
+              </div>
+
+              <div class="frontend-route-panel" data-frontend-panel="js" hidden>
+                <div class="frontend-path-card">
+                  <div class="frontend-path-title"><span>JavaScript-route · frontendmap</span><h3>Deze drie bestanden staan naast elkaar.</h3><p>Omdat <code>index.html</code>, <code>style.css</code> en <code>app.js</code> in dezelfde map staan, gebruikt de HTML alleen <code>./style.css</code> en <code>./app.js</code>.</p></div>
+                  <ol class="frontend-files">
+                    <li><span>1</span><div><b>frontend/index.html</b><small>Formulieren, knoppen, tabellen en lege plekken voor data.</small></div></li>
+                    <li><span>2</span><div><b>frontend/style.css</b><small>Alle vormgeving van de pagina.</small></div></li>
+                    <li><span>3</span><div><b>frontend/app.js</b><small>Leest de HTML, gebruikt fetch en vult het overzicht.</small></div></li>
+                  </ol>
+                </div>
+
+                <div class="link-code-grid">
+                  <div class="code-block code-block--flush"><div class="code-toolbar"><span>frontend/index.html · CSS koppelen in &lt;head&gt;</span><button type="button" data-copy-target="js-style-link">Kopieer</button></div><pre><code id="js-style-link">&lt;link rel="stylesheet" href="./style.css"&gt;</code></pre></div>
+                  <div class="code-block code-block--flush"><div class="code-toolbar"><span>frontend/index.html · JavaScript koppelen in &lt;head&gt;</span><button type="button" data-copy-target="js-script-link">Kopieer</button></div><pre><code id="js-script-link">&lt;script src="./app.js" defer&gt;&lt;/script&gt;</code></pre></div>
+                </div>
+                <p class="path-explainer"><b>Belangrijk:</b> open <code>frontend/index.html</code> niet door erop te dubbelklikken. Start eerst <code>npm start</code> en open <code>http://localhost:3000</code>. Express levert dan zowel de frontend als de API.</p>
+
+                <div class="field-connection" data-field-connection="js">
+                  <div class="field-connection-heading"><div><span>Van HTML naar API en terug</span><h3>Een HTML-id wordt gekoppeld aan een JavaScriptnaam.</h3><p>Klik op een veld en volg het van de invulbox naar SQLite en terug naar de tabel.</p></div>
+                    <div class="field-example-tabs" role="tablist" aria-label="JavaScript-voorbeeldveld"><button class="is-active" type="button" data-field-example="firstName">Voornaam</button><button type="button" data-field-example="email">E-mail</button><button type="button" data-field-example="education">Opleiding</button></div>
+                  </div>
+                  <div class="field-chain field-chain--five">
+                    <div><span>1 · HTML</span><b data-chain-value="html">id="first-name"</b><small>index.html</small></div><i>→</i>
+                    <div><span>2 · Browser-JS</span><b data-chain-value="logic">elements.firstName</b><small>app.js</small></div><i>→</i>
+                    <div><span>3 · JSON / API</span><b data-chain-value="api">firstName</b><small>app.js + server.js</small></div><i>→</i>
+                    <div><span>4 · SQLite</span><b data-chain-value="database">first_name</b><small>server.js</small></div><i>→</i>
+                    <div><span>5 · Overzicht</span><b data-chain-value="output">student.firstName</b><small>app.js</small></div>
+                  </div>
+                  <p class="field-chain-rule"><b>HTML gebruikt vaak een streepje en JavaScript camelCase.</b> Dat is goed zolang de koppeling letterlijk klopt: <code>#first-name</code> wordt één keer gekoppeld aan <code>elements.firstName</code>.</p>
+                </div>
+
+                <h3 class="subheading">Complete JavaScript-frontendbestanden</h3>
+                <p>Deze drie bestanden werken als set. Vervang een bestand altijd op het pad dat links op de knop staat.</p>
+                <div class="file-viewer file-viewer--compact" data-file-viewer>
+                  <div class="file-sidebar" role="tablist" aria-label="JavaScript frontendbestanden">
+                    <button class="is-active" type="button" data-source="./code/js-index.html.txt"><span>HTML</span>frontend/index.html</button>
+                    <button type="button" data-source="./code/js-style.css.txt"><span>CSS</span>frontend/style.css</button>
+                    <button type="button" data-source="./code/js-app.js.txt"><span>JS</span>frontend/app.js</button>
+                  </div>
+                  <div class="file-code"><div class="code-toolbar"><span data-current-file>frontend/index.html</span><div><span class="line-count" data-line-count>laden…</span><button type="button" data-copy-file>Kopieer bestand</button></div></div><pre><code data-file-code>Bestand wordt geladen…</code></pre></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="warning-callout"><span>!</span><div><b>Een class en een id hebben verschillende taken.</b><p>Gebruik <code>class="primary-button"</code> voor CSS die meerdere knoppen mag stylen. Gebruik <code>id="student-form"</code> wanneer JavaScript precies één onderdeel moet vinden. Verander een id niet zonder ook de JavaScript-selector te veranderen.</p></div></div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="frontend"><span><b>Mijn HTML, CSS en functionaliteit zijn gekoppeld</b><small>Ik zie de pagina met stijl en kan één veld van formulier tot database volgen.</small></span></label>
           </section>
 
           <section id="database" class="guide-section" data-route-section="php-sqlite" data-search-title="SQLite database koppelen met PDO">
