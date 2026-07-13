@@ -76,7 +76,7 @@ function renderGlobalSearch(query) {
   const needle = query.trim().toLowerCase();
 
   if (!needle) {
-    searchResults.innerHTML = "<p>Typ een onderwerp of foutmelding. Je kunt ook zoeken op ‘XAMPP’, ‘update’ of ‘Vercel’.</p>";
+    searchResults.innerHTML = "<p>Typ een onderwerp of foutmelding. Je kunt ook zoeken op ‘XAMPP’, ‘opslaan’ of ‘database’.</p>";
     return;
   }
 
@@ -418,11 +418,11 @@ if (builder) {
   function renderBuilderFields() {
     fieldsContainer.innerHTML = builderFields.map((field, index) => `
       <div class="builder-field-row" data-builder-field-row="${index}">
-        <label><span>Label</span><input data-field-key="label" value="${escapeBuilderAttribute(field.label)}" aria-label="Label van veld ${index + 1}"></label>
-        <label><span>Veldnaam</span><input data-field-key="name" value="${escapeBuilderAttribute(field.name)}" aria-label="Databasenaam van veld ${index + 1}"></label>
-        <label><span>Type</span><select data-field-key="type" aria-label="Type van veld ${index + 1}">${typeOptions(field.type)}</select></label>
-        <label class="builder-check"><input type="checkbox" data-field-key="required" ${field.required ? "checked" : ""}><span>Verplicht</span></label>
-        <label class="builder-check"><input type="checkbox" data-field-key="unique" ${field.unique ? "checked" : ""}><span>Uniek</span></label>
+        <label><span>Tekst op formulier</span><input data-field-key="label" value="${escapeBuilderAttribute(field.label)}" aria-label="Tekst op formulier voor gegeven ${index + 1}"></label>
+        <label><span>Naam in database</span><input data-field-key="name" value="${escapeBuilderAttribute(field.name)}" aria-label="Databasenaam van gegeven ${index + 1}"></label>
+        <label><span>Soort invoer</span><select data-field-key="type" aria-label="Soort invoer van gegeven ${index + 1}">${typeOptions(field.type)}</select></label>
+        <label class="builder-check"><input type="checkbox" data-field-key="required" ${field.required ? "checked" : ""}><span>Moet ingevuld</span></label>
+        <label class="builder-check"><input type="checkbox" data-field-key="unique" ${field.unique ? "checked" : ""}><span>Geen dubbele</span></label>
         <button class="builder-remove" type="button" data-remove-field="${index}" aria-label="Verwijder veld ${index + 1}">Verwijder</button>
       </div>
     `).join("");
@@ -951,3 +951,217 @@ try {
 } catch {
   routeFocus.checked = true;
 }
+
+let beginnerModeEnabled = true;
+try {
+  beginnerModeEnabled = localStorage.getItem("cfd-beginner-mode") !== "false";
+} catch {
+  beginnerModeEnabled = true;
+}
+
+function setBeginnerMode(enabled, persist = true) {
+  beginnerModeEnabled = enabled;
+  document.body.classList.toggle("beginner-mode", enabled);
+  $$('[data-beginner-toggle]').forEach((button) => {
+    button.setAttribute("aria-pressed", String(enabled));
+    const label = $("[data-beginner-toggle-label]", button);
+    if (label) label.textContent = enabled ? "Aan · leg code eerst uit" : "Uit · toon alle code direct";
+  });
+
+  if (persist) {
+    try {
+      localStorage.setItem("cfd-beginner-mode", String(enabled));
+    } catch {
+      // De instelling blijft voor deze sessie actief zonder browseropslag.
+    }
+  }
+}
+
+$$('[data-beginner-toggle]').forEach((button) => {
+  button.addEventListener("click", () => setBeginnerMode(!beginnerModeEnabled));
+});
+setBeginnerMode(beginnerModeEnabled, false);
+
+function codeLesson(label, code, container) {
+  const context = `${label} ${code.slice(0, 1800)}`.toLowerCase();
+  let location = `Open het bestand dat boven dit blok staat: ${label || "het genoemde bestand"}.`;
+  let purpose = "Dit blok voert precies de functie uit die in de stap erboven wordt beschreven.";
+  let action = "Lees de stap boven het blok. Kopieer daarna het hele blok, plak het één keer op de genoemde plek, sla op en test meteen.";
+  let check = "Vernieuw de pagina. Zie je een fout? Kopieer de volledige foutmelding en plak één belangrijk woord in de Foutzoeker.";
+
+  if (context.includes("php.ini")) {
+    location = "Open XAMPP Control Panel → Apache → Config → PHP (php.ini).";
+    purpose = "Deze regels zetten SQLite-ondersteuning in PHP aan.";
+    action = "Zoek de bestaande regels. Verwijder alleen de puntkomma ervoor, sla op en herstart Apache. Voeg geen dubbele regels toe.";
+    check = "Open daarna de controlepagina via localhost. De melding ‘could not find driver’ mag niet verschijnen.";
+  } else if (label.toLowerCase().includes("schema")) {
+    location = "Open de projectmap en daarna database/schema.sql in je code-editor.";
+  } else if (label.toLowerCase().includes("database.php")) {
+    location = "Open config/database.php in je projectmap.";
+  } else if (label.toLowerCase().includes("functions.php")) {
+    location = "Open includes/functions.php in je projectmap.";
+  } else if (label.toLowerCase().includes("server.js") || label.toLowerCase().includes("express")) {
+    location = "Open backend/server.js in de uitgepakte JavaScript-starter.";
+  } else if (label.toLowerCase().includes("app.js") || label.toLowerCase().includes("browser")) {
+    location = "Open het genoemde app.js-bestand in de frontendmap.";
+  } else if (label.toLowerCase().includes("index.php")) {
+    location = "Open index.php in de PHP-projectmap onder htdocs.";
+  } else if (/\.php/i.test(label)) {
+    location = `Maak of open ${label.split("·")[0].trim()} in je PHP-projectmap.`;
+  }
+
+  if (context.includes("create table")) {
+    purpose = "Dit maakt de tabel en bepaalt welke gegevens daarin mogen worden bewaard.";
+    check = "Open de app één keer. De tabel of het SQLite-databasebestand moet daarna bestaan; er hoeft nog geen rij in te staan.";
+  }
+  if (context.includes("insert into") && !context.includes("update ")) {
+    purpose = "Dit bewaart de ingevulde gegevens als een nieuwe rij in de database.";
+    check = "Vul het formulier met testgegevens in en klik op opslaan. De nieuwe rij moet in het overzicht verschijnen.";
+  }
+  if (context.includes("select ") && !context.includes("insert into") && !context.includes("delete from")) {
+    purpose = "Dit leest opgeslagen gegevens uit de database zodat je ze op de pagina kunt tonen.";
+    check = "Vernieuw de pagina. Eerder opgeslagen testgegevens moeten zichtbaar blijven.";
+  }
+  if (context.includes("update ") && !context.includes("insert into")) {
+    purpose = "Dit zoekt één bestaande rij en bewaart de aangepaste waarden.";
+    check = "Wijzig één herkenbaar testveld, sla op en vernieuw de pagina. Alleen die gekozen rij moet veranderd zijn.";
+  }
+  if (context.includes("delete from") && !context.includes("insert into")) {
+    purpose = "Dit verwijdert precies één gekozen rij uit de database.";
+    check = "Verwijder een testitem en vernieuw de pagina. Het item moet weg zijn terwijl de andere rijen blijven staan.";
+  }
+  if (context.includes("app.get(") || context.includes("app.post(") || context.includes("fetch(")) {
+    purpose = "Dit laat de browser en de JavaScript-backend gegevens naar elkaar sturen.";
+    check = "Laat npm start draaien en open de genoemde localhost-URL. Je moet gegevens zien en geen ‘Failed to fetch’-melding krijgen.";
+  }
+  if (context.includes("create table") && context.includes("insert into") && context.includes("delete from")) {
+    purpose = "Dit is een compleet onderdeel met database, opslaan, lezen en verwijderen bij elkaar.";
+  }
+
+  if (container.classList.contains("builder-code")) {
+    location = `De builder heeft dit gemaakt voor ${label}. Open eerst tab 4: “Waar plakken?”.`;
+    action = "Kopieer daarna één tab tegelijk. Plak nooit alle vier de tabs in hetzelfde bestand.";
+  } else if (container.closest(".snippet-body")) {
+    action = "Voeg dit pas toe nadat de basis-CRUD werkt. Volg eerst ‘Waar plakken’ boven dit blok, kopieer alles en test alleen deze nieuwe functie.";
+  } else if (container.classList.contains("file-code")) {
+    location = `Dit is het complete bestand ${label}. Je hoeft het niet regel voor regel over te typen.`;
+    action = "Gebruik dit alleen om een beschadigd bestand volledig te vervangen. Download voor een nieuw project liever de complete starter.";
+    check = "Sla het vervangen bestand op en vernieuw de app. Controleer eerst de basisacties voordat je weer eigen wijzigingen toevoegt.";
+  }
+
+  return { location, purpose, action, check };
+}
+
+function addLabeledLine(parent, label, value) {
+  const line = document.createElement("p");
+  const strong = document.createElement("b");
+  strong.textContent = `${label}: `;
+  line.append(strong, document.createTextNode(value));
+  parent.append(line);
+}
+
+$$('.code-block, .file-code').forEach((container, index) => {
+  const toolbar = [...container.children].find((child) => child.classList?.contains("code-toolbar"));
+  const pre = [...container.children].find((child) => child.tagName === "PRE");
+  const code = pre?.querySelector("code");
+  if (!toolbar || !pre || !code || container.querySelector(":scope > .beginner-code-guide")) return;
+
+  container.classList.add("beginner-code");
+  const guide = document.createElement("div");
+  guide.className = "beginner-code-guide";
+  const explanation = document.createElement("div");
+  const eyebrow = document.createElement("span");
+  eyebrow.textContent = "Eerst begrijpen, daarna kopiëren";
+  const title = document.createElement("h4");
+  const locationLine = document.createElement("div");
+  const purposeLine = document.createElement("div");
+  const actionLine = document.createElement("div");
+  const checkLine = document.createElement("div");
+  explanation.append(eyebrow, title, locationLine, purposeLine, actionLine, checkLine);
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.dataset.codeToggle = String(index);
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.textContent = "2. Toon de code";
+  guide.append(explanation, toggle);
+  toolbar.insertAdjacentElement("afterend", guide);
+
+  function refreshGuide() {
+    const label = toolbar.querySelector("span")?.textContent.trim() || "dit codeblok";
+    const lesson = codeLesson(label, code.textContent, container);
+    title.textContent = `1. Dit hoort bij: ${label}`;
+    locationLine.replaceChildren();
+    purposeLine.replaceChildren();
+    actionLine.replaceChildren();
+    checkLine.replaceChildren();
+    addLabeledLine(locationLine, "Open", lesson.location);
+    addLabeledLine(purposeLine, "Dit doet het", lesson.purpose);
+    addLabeledLine(actionLine, "Jouw actie", lesson.action);
+    addLabeledLine(checkLine, "Zo test je het", lesson.check);
+  }
+
+  toggle.addEventListener("click", () => {
+    const open = container.classList.toggle("is-code-open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.textContent = open ? "Verberg de code" : "2. Toon de code";
+  });
+
+  refreshGuide();
+  const observedLabel = toolbar.querySelector("span");
+  const observer = new MutationObserver(refreshGuide);
+  observer.observe(code, { childList: true, characterData: true, subtree: true });
+  if (observedLabel) observer.observe(observedLabel, { childList: true, characterData: true, subtree: true });
+});
+
+$$('.mini-code').forEach((commandBlock) => {
+  if (commandBlock.previousElementSibling?.classList.contains("command-guide")) return;
+  const command = $("code", commandBlock)?.textContent.trim() || "de opdracht";
+  let instruction = "Open de terminal in je projectmap, plak deze opdracht, druk op Enter en wacht tot hij klaar is.";
+  if (command.startsWith("npm install")) instruction = "Open de terminal in de uitgepakte JavaScript-projectmap, plak dit, druk op Enter en wacht tot de installatie klaar is.";
+  if (command.startsWith("npm start")) instruction = "Open de terminal in je JavaScript-projectmap, plak dit en laat het venster open terwijl je de app gebruikt.";
+  if (command.startsWith("git ")) instruction = "Open de terminal in de map van CodingForDummies, plak deze opdracht en druk op Enter.";
+
+  const guide = document.createElement("div");
+  guide.className = "command-guide";
+  const number = document.createElement("span");
+  number.textContent = "→";
+  const textLine = document.createElement("div");
+  addLabeledLine(textLine, "Zo voer je dit uit", instruction);
+  guide.append(number, textLine);
+  commandBlock.insertAdjacentElement("beforebegin", guide);
+});
+
+$$('.snippet-body').forEach((body) => {
+  if (body.querySelector(":scope > .snippet-read-first")) return;
+  const note = document.createElement("div");
+  note.className = "snippet-read-first";
+  note.innerHTML = '<span>!</span><div><b>Eerst de basis controleren</b><small>Voeg deze functie pas toe als toevoegen, bekijken, wijzigen en verwijderen al zonder fout werken. Maak vooraf een kopie van je projectmap.</small></div>';
+  body.prepend(note);
+});
+
+const snippetPickButtons = $$('[data-snippet-pick]');
+const snippetAdvice = $("[data-snippet-advice]");
+
+snippetPickButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    let targetId = button.dataset.snippetPick;
+    if (targetId === "snippet-detail-php" && activeRoute === "js-sqlite") targetId = "snippet-detail-js";
+    const targetCode = document.getElementById(targetId);
+    const recipe = targetCode?.closest(".snippet-item");
+    if (!recipe) return;
+
+    snippetFilterButtons.find((item) => item.dataset.snippetFilter === "all")?.click();
+    snippetItems.forEach((item) => { item.open = item === recipe; });
+    snippetPickButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+
+    const title = $("summary b", recipe)?.textContent || "het gekozen recept";
+    const tags = recipe.dataset.snippetTags.split(" ");
+    const routeWarning = activeRoute === "js-sqlite" && !tags.includes("javascript") && !tags.includes("database")
+      ? " Let op: dit specifieke recept gebruikt PHP en kan niet rechtstreeks in de JavaScript-starter."
+      : "";
+    $("span", snippetAdvice).textContent = recipe.querySelector(".snippet-index")?.textContent || "→";
+    $("p", snippetAdvice).textContent = `Open: “${title}”. Lees eerst de startcheck en ‘Waar plakken’. Toon de code pas als die twee duidelijk zijn.${routeWarning}`;
+    window.setTimeout(() => recipe.scrollIntoView({ behavior: "smooth", block: "start" }), 20);
+  });
+});

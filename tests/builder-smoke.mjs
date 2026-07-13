@@ -31,6 +31,39 @@ window.HTMLDialogElement.prototype.close = function close() {
 window.eval(script);
 await new Promise((resolve) => window.setTimeout(resolve, 0));
 
+if (!window.document.body.classList.contains('beginner-mode')) {
+  throw new Error('Beginnerstand staat niet standaard aan.');
+}
+
+const beginnerCodeBlocks = [...window.document.querySelectorAll('.beginner-code')];
+if (beginnerCodeBlocks.length < 20 || beginnerCodeBlocks.some((block) => !block.querySelector('.beginner-code-guide'))) {
+  throw new Error('Niet alle grote codeblokken krijgen eerst een beginnersuitleg.');
+}
+
+const firstCodeToggle = beginnerCodeBlocks[0].querySelector('[data-code-toggle]');
+firstCodeToggle.click();
+if (!beginnerCodeBlocks[0].classList.contains('is-code-open') || firstCodeToggle.getAttribute('aria-expanded') !== 'true') {
+  throw new Error('Code kan niet bewust worden getoond vanuit de beginnersuitleg.');
+}
+
+const beginnerToggle = window.document.querySelector('[data-beginner-toggle]');
+beginnerToggle.click();
+if (window.document.body.classList.contains('beginner-mode') || window.localStorage.getItem('cfd-beginner-mode') !== 'false') {
+  throw new Error('Beginnerstand kan niet worden uitgeschakeld of onthouden.');
+}
+beginnerToggle.click();
+
+if (window.document.querySelectorAll('.command-guide').length !== window.document.querySelectorAll('.mini-code').length) {
+  throw new Error('Terminalopdrachten krijgen niet allemaal een uitleg.');
+}
+
+const snippetWizardChoice = window.document.querySelector('[data-snippet-pick="snippet-upload"]');
+snippetWizardChoice.click();
+if (!window.document.getElementById('snippet-upload').closest('.snippet-item').open
+  || !window.document.querySelector('[data-snippet-advice]').textContent.includes('Een foto laten uploaden')) {
+  throw new Error('De taakgerichte functiekiezer opent niet het juiste beginnersrecept.');
+}
+
 const builder = window.document.querySelector('[data-crud-builder]');
 const code = () => builder.querySelector('[data-builder-code]').textContent;
 const clickTab = (name) => builder.querySelector(`[data-builder-tab="${name}"]`).click();
@@ -158,7 +191,7 @@ if (sqliteRoute.getAttribute('aria-pressed') !== 'true' || window.document.query
 if (window.document.querySelector('#database').hidden || !window.document.querySelector('#mysql-route').hidden || !window.document.querySelector('#javascript-route').hidden) {
   throw new Error('Routefocus toont niet alleen de PHP + SQLite-hoofdstukken.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '9') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '8') {
   throw new Error('De voortgang is niet aangepast aan PHP + SQLite.');
 }
 if (stack.value !== 'php-sqlite' || window.document.querySelector('.header-cta').getAttribute('href') !== './downloads/studenten-crud.zip') {
@@ -177,7 +210,7 @@ javascriptRoute.click();
 if (!window.document.querySelector('#xampp').hidden || window.document.querySelector('#javascript-route').hidden) {
   throw new Error('De JavaScript-route filtert de PHP-hoofdstukken niet goed.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '6' || stack.value !== 'js-sqlite') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '5' || stack.value !== 'js-sqlite') {
   throw new Error('JavaScript-voortgang of buildertechniek is niet routespecifiek.');
 }
 if (window.document.querySelectorAll('[data-personal-route] li').length < 6) {

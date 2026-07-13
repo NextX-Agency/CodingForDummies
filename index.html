@@ -27,7 +27,6 @@
         <a href="#builder">CRUD-builder</a>
         <a href="#codebank" data-route-link="php-sqlite">Codebank</a>
         <a href="#foutzoeker">Foutzoeker</a>
-        <a href="#publiceren">Publiceren</a>
       </nav>
 
       <div class="header-actions">
@@ -84,9 +83,10 @@
       <div class="guide-layout" id="bouwroute">
         <aside class="guide-sidebar" aria-label="Hoofdstukken">
           <div class="sidebar-progress">
-            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>11</span></strong></div>
+            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>10</span></strong></div>
             <div class="progress-track"><span data-checklist-progress></span></div>
           </div>
+          <button class="beginner-mode-toggle" type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><strong data-beginner-toggle-label>Aan · leg code eerst uit</strong><small>Je kunt dit altijd wijzigen.</small></button>
           <button class="sidebar-route" type="button" data-sidebar-route hidden><span data-sidebar-route-code>Route</span><strong data-sidebar-route-name>Kies bouwroute</strong><small>Wijzig je route →</small></button>
           <nav class="chapter-nav" data-chapter-nav aria-label="Gidshoofdstukken">
             <a href="#begin"><span>01</span> Begin hier</a>
@@ -101,7 +101,6 @@
             <a href="#snippets"><span>Bank</span> Snippetbibliotheek</a>
             <a href="#uitbreiden"><span>09</span> Uitbreiden</a>
             <a href="#eigen-maken"><span>10</span> Eigen thema</a>
-            <a href="#publiceren"><span>11</span> Gids publiceren</a>
           </nav>
           <a class="sidebar-download" href="./downloads/studenten-crud.zip">
             <span>Eenvoudigste starter</span>
@@ -116,6 +115,30 @@
             <h2>Wat ga je precies bouwen?</h2>
             <p class="section-intro">Een echte administratie-app met twee gekoppelde onderdelen: <strong>studenten</strong> en een <strong>landenregister</strong>. Dit is bewust groter dan een simpele takenlijst, zodat je patronen leert die je opnieuw kunt gebruiken.</p>
 
+            <div class="zero-start">
+              <div class="zero-start-heading"><span>Start hier als je nul ervaring hebt</span><h3>Je hoeft code nog niet te kunnen lezen.</h3><p>Je werkt eerst met een compleet werkend project. Daarna verander je steeds één klein onderdeel. De gids laat code pas zien nadat je weet wat het doet en waar je het moet plakken.</p></div>
+              <button type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><b data-beginner-toggle-label>Aan · leg code eerst uit</b><small>Klik om de normale codeweergave te gebruiken.</small></button>
+              <ol class="zero-start-route">
+                <li><span>1</span><div><b>Kies één route</b><small>Voor je eerste project: PHP + SQLite.</small></div></li>
+                <li><span>2</span><div><b>Download de starter</b><small>Begin niet met een lege map.</small></div></li>
+                <li><span>3</span><div><b>Start hem zonder wijzigingen</b><small>Controleer eerst dat het voorbeeld werkt.</small></div></li>
+                <li><span>4</span><div><b>Verander één ding</b><small>Test opnieuw vóór de volgende wijziging.</small></div></li>
+              </ol>
+              <p class="zero-promise"><b>Belangrijk:</b> je hoeft nooit een groot codeblok over te typen. Gebruik <strong>Kopieer</strong>, plak het in het genoemde bestand en verander alleen wat de stap aanwijst.</p>
+            </div>
+
+            <details class="plain-words">
+              <summary><span><b>Woorden die je straks tegenkomt</b><small>Zes begrippen in normaal Nederlands</small></span><span aria-hidden="true">+</span></summary>
+              <div class="plain-words-grid">
+                <div><b>Bestand</b><span>Een document met code, bijvoorbeeld <code>index.php</code>.</span></div>
+                <div><b>Map</b><span>Een plek waarin je projectbestanden samen staan.</span></div>
+                <div><b>Database</b><span>De digitale kast waarin je gegevens bewaart.</span></div>
+                <div><b>Server</b><span>Het programma dat je app uitvoert. Lokaal is dat XAMPP of Node.js.</span></div>
+                <div><b>Terminal</b><span>Een venster waarin je een korte opdracht plakt en op Enter drukt.</span></div>
+                <div><b>Snippet</b><span>Een kant-en-klaar stukje code voor één functie.</span></div>
+              </div>
+            </details>
+
             <div class="build-output">
               <div class="output-title">
                 <span class="live-dot"></span>
@@ -124,8 +147,8 @@
               <div class="output-columns">
                 <div><b>Studenten</b><span>Toevoegen, bekijken, wijzigen, verwijderen</span></div>
                 <div><b>Overzicht</b><span>Zoeken, filteren, sorteren, pagina’s</span></div>
-                <div><b>Relatie</b><span>Iedere student hoort bij één land</span></div>
-                <div><b>Veiligheid</b><span>Validatie, prepared statements, CSRF</span></div>
+                <div><b>Landkeuze</b><span>Iedere student kan aan één land worden gekoppeld</span></div>
+                <div><b>Bescherming</b><span>Verkeerde invoer wordt gestopt en verwijderen wordt gecontroleerd</span></div>
               </div>
             </div>
 
@@ -210,7 +233,9 @@
           <section id="builder" class="guide-section builder-section" data-search-title="CRUD builder generator voor eigen resource en velden">
             <div class="section-number">Interactieve tool</div>
             <h2>Maak de basis voor jouw eigen onderwerp.</h2>
-            <p class="section-intro">Kies een voorbeeld of vul je eigen resource en velden in. De builder maakt daarna het SQL-schema, HTML-formulier en het juiste backendblok voor PHP of JavaScript. Plak deze onderdelen in de bijbehorende starter.</p>
+            <p class="section-intro">Kies wat je wilt beheren, bijvoorbeeld producten of boeken. De builder maakt de benodigde databasevelden, het formulier en de verwerking. Je hoeft de technische namen nog niet zelf te bedenken.</p>
+
+            <div class="beginner-later"><span>Niet je eerste stap</span><div><b>Laat eerst de studenten-starter ongewijzigd werken.</b><p>Kom daarna hier terug om “student” te veranderen in jouw eigen onderwerp. Zo weet je dat een fout door je laatste wijziging komt.</p></div><a href="#stack">Kies eerst je route →</a></div>
 
             <div class="builder-shell" data-crud-builder>
               <div class="builder-controls">
@@ -219,21 +244,21 @@
                   <label><span>Techniek</span><select data-builder-stack><option value="php-sqlite">PHP + SQLite</option><option value="php-mysql">PHP + MySQL</option><option value="js-sqlite">JavaScript + SQLite</option></select></label>
                 </div>
                 <div class="builder-control-row">
-                  <label><span>Enkelvoud</span><input type="text" data-builder-singular value="product" placeholder="product"></label>
-                  <label><span>Tabelnaam / meervoud</span><input type="text" data-builder-table value="producten" placeholder="producten"></label>
+                  <label><span>Naam voor één item</span><input type="text" data-builder-singular value="product" placeholder="product"><small>Voorbeeld: product, boek of medewerker.</small></label>
+                  <label><span>Naam voor de hele lijst</span><input type="text" data-builder-table value="producten" placeholder="producten"><small>Voorbeeld: producten, boeken of medewerkers.</small></label>
                 </div>
 
-                <div class="builder-field-heading"><div><b>Velden</b><small>Gebruik eenvoudige namen zonder spaties.</small></div><button type="button" data-add-field>+ Veld toevoegen</button></div>
+                <div class="builder-field-heading"><div><b>Welke gegevens wil je invullen?</b><small>Voorbeelden: naam, e-mailadres, prijs of datum.</small></div><button type="button" data-add-field>+ Gegeven toevoegen</button></div>
                 <div class="builder-fields" data-builder-fields></div>
-                <p class="builder-hint">De builder voegt <code>id</code>, <code>created_at</code> en <code>updated_at</code> automatisch toe.</p>
+                <p class="builder-hint">Technische velden voor het volgnummer en de aanmaakdatum worden automatisch toegevoegd. Je hoeft daar niets voor in te vullen.</p>
               </div>
 
               <div class="builder-output">
                 <div class="builder-tabs" role="tablist" aria-label="Gegenereerde code">
-                  <button class="is-active" type="button" data-builder-tab="sql">1. SQL</button>
-                  <button type="button" data-builder-tab="form">2. Formulier</button>
-                  <button type="button" data-builder-tab="backend">3. Backend</button>
-                  <button type="button" data-builder-tab="steps">4. Plakplan</button>
+                  <button class="is-active" type="button" data-builder-tab="sql">1. Database</button>
+                  <button type="button" data-builder-tab="form">2. Invulvelden</button>
+                  <button type="button" data-builder-tab="backend">3. Opslaan</button>
+                  <button type="button" data-builder-tab="steps">4. Waar plakken?</button>
                 </div>
                 <div class="code-block builder-code">
                   <div class="code-toolbar"><span data-builder-file>database/schema.sql</span><button type="button" data-copy-builder>Kopieer resultaat</button></div>
@@ -638,6 +663,19 @@ db.exec(`
               <div><span>Vraagt een aparte specialistische route</span><b>Webshops met betalingen, realtime chat, videoplatforms en sociale netwerken</b></div>
             </div>
 
+            <div class="snippet-wizard">
+              <div class="snippet-wizard-heading"><span>Functiekiezer</span><h3>Zeg wat je app moet kunnen.</h3><p>Je hoeft de technische naam niet te kennen. Kies een gewone taak; de juiste uitleg wordt voor je geopend.</p></div>
+              <div class="snippet-picks" role="group" aria-label="Kies wat je wilt toevoegen">
+                <button type="button" data-snippet-pick="snippet-one-many">Iets aan een categorie koppelen</button>
+                <button type="button" data-snippet-pick="snippet-detail-php">Een detailpagina maken</button>
+                <button type="button" data-snippet-pick="snippet-login">Gebruikers laten inloggen</button>
+                <button type="button" data-snippet-pick="snippet-upload">Een foto uploaden</button>
+                <button type="button" data-snippet-pick="snippet-csv">Gegevens downloaden als CSV</button>
+                <button type="button" data-snippet-pick="snippet-soft-delete">Een prullenbak maken</button>
+              </div>
+              <div class="snippet-advice" data-snippet-advice aria-live="polite"><span>1</span><p>Kies hierboven één functie. Voeg extra functies pas toe wanneer Create, Read, Update en Delete al werken.</p></div>
+            </div>
+
             <div class="snippet-filter" role="group" aria-label="Filter snippets">
               <button class="is-active" type="button" data-snippet-filter="all">Alles</button>
               <button type="button" data-snippet-filter="database">Database</button>
@@ -646,19 +684,22 @@ db.exec(`
               <button type="button" data-snippet-filter="feature">Extra functies</button>
             </div>
 
-            <div class="field-cookbook">
-              <div class="field-cookbook-head"><span>Wat wil je opslaan?</span><span>HTML</span><span>SQLite</span><span>MySQL</span><span>Validatie</span></div>
-              <div><b>Korte tekst</b><code>text</code><code>TEXT</code><code>VARCHAR(160)</code><span>verplicht + maximale lengte</span></div>
-              <div><b>Lange beschrijving</b><code>textarea</code><code>TEXT</code><code>TEXT</code><span>trimmen + maximale lengte</span></div>
-              <div><b>Heel getal</b><code>number</code><code>INTEGER</code><code>INT</code><span>filter_var(..., FILTER_VALIDATE_INT)</span></div>
-              <div><b>Prijs / decimaal</b><code>number step=.01</code><code>REAL</code><code>DECIMAL(10,2)</code><span>minimaal 0</span></div>
-              <div><b>Datum</b><code>date</code><code>TEXT</code><code>DATE</code><span>formaat YYYY-MM-DD</span></div>
-              <div><b>Ja / nee</b><code>checkbox</code><code>INTEGER</code><code>TINYINT(1)</code><span>opslaan als 0 of 1</span></div>
-            </div>
+            <details class="field-cookbook-details">
+              <summary><span><b>Ik wil zelf verschillende soorten velden kiezen</b><small>Open het technische overzicht alleen wanneer je eigen velden gaat toevoegen.</small></span><span aria-hidden="true">+</span></summary>
+              <div class="field-cookbook">
+                <div class="field-cookbook-head"><span>Wat wil je opslaan?</span><span>Formulier</span><span>SQLite</span><span>MySQL</span><span>Controle</span></div>
+                <div><b>Korte tekst</b><code>text</code><code>TEXT</code><code>VARCHAR(160)</code><span>verplicht + maximale lengte</span></div>
+                <div><b>Lange beschrijving</b><code>textarea</code><code>TEXT</code><code>TEXT</code><span>spaties verwijderen + maximale lengte</span></div>
+                <div><b>Heel getal</b><code>number</code><code>INTEGER</code><code>INT</code><span>controleer of het een heel getal is</span></div>
+                <div><b>Prijs / decimaal</b><code>number step=.01</code><code>REAL</code><code>DECIMAL(10,2)</code><span>mag niet lager dan 0 zijn</span></div>
+                <div><b>Datum</b><code>date</code><code>TEXT</code><code>DATE</code><span>formaat jaar-maand-dag</span></div>
+                <div><b>Ja / nee</b><code>checkbox</code><code>INTEGER</code><code>TINYINT(1)</code><span>bewaren als nee (0) of ja (1)</span></div>
+              </div>
+            </details>
 
             <div class="snippet-list" data-snippet-list>
               <details class="snippet-item" data-snippet-tags="database feature">
-                <summary><span class="snippet-index">01</span><span><b>One-to-many relatie</b><small>Bijvoorbeeld: veel studenten horen bij één land.</small></span><span class="snippet-stack">SQL</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">01</span><span><b>Studenten aan een land koppelen</b><small>Technische naam: one-to-many relatie.</small></span><span class="snippet-stack">Database</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Waar plakken:</strong> in <code>database/schema.sql</code>. Maak altijd eerst de bovenliggende tabel <code>landen</code>.</p>
                   <div class="code-block"><div class="code-toolbar"><span>schema.sql · foreign key</span><button type="button" data-copy-target="snippet-one-many">Kopieer</button></div><pre><code id="snippet-one-many">CREATE TABLE studenten (
@@ -676,7 +717,7 @@ JOIN landen ON landen.id = studenten.land_id;</code></pre></div>
               </details>
 
               <details class="snippet-item" data-snippet-tags="database feature">
-                <summary><span class="snippet-index">02</span><span><b>Many-to-many relatie</b><small>Bijvoorbeeld: studenten volgen meerdere vakken.</small></span><span class="snippet-stack">SQL</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">02</span><span><b>Studenten meerdere vakken geven</b><small>Technische naam: many-to-many relatie.</small></span><span class="snippet-stack">Database</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Waar plakken:</strong> na de tabellen <code>studenten</code> en <code>vakken</code>. De koppeltabel bewaart ieder gekozen paar één keer.</p>
                   <div class="code-block"><div class="code-toolbar"><span>schema.sql · koppeltabel</span><button type="button" data-copy-target="snippet-many-many">Kopieer</button></div><pre><code id="snippet-many-many">CREATE TABLE student_vakken (
@@ -697,7 +738,7 @@ WHERE student_vakken.student_id = ?;</code></pre></div>
               </details>
 
               <details class="snippet-item" data-snippet-tags="php feature">
-                <summary><span class="snippet-index">03</span><span><b>Detailpagina in PHP</b><small>Open één record via detail.php?id=12.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">03</span><span><b>Een pagina voor één student maken</b><small>Bijvoorbeeld: open student 12 op een eigen detailpagina.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Nieuw bestand:</strong> <code>detail.php</code>. De functie <code>positive_id()</code> en <code>e()</code> staan al in de PHP-starter.</p>
                   <div class="code-block"><div class="code-toolbar"><span>detail.php</span><button type="button" data-copy-target="snippet-detail-php">Kopieer</button></div><pre><code id="snippet-detail-php">&lt;?php
@@ -723,7 +764,7 @@ if (!$student) {
               </details>
 
               <details class="snippet-item" data-snippet-tags="javascript feature">
-                <summary><span class="snippet-index">04</span><span><b>Detail ophalen met JavaScript</b><small>API-route plus fetch voor één record.</small></span><span class="snippet-stack">JS</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">04</span><span><b>Één student ophalen met JavaScript</b><small>De browser vraagt één student aan de API.</small></span><span class="snippet-stack">JavaScript</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Backend:</strong> voeg de GET-route vóór <code>/api/students/:id</code>-conflicten toe. <strong>Frontend:</strong> roep <code>loadStudent(id)</code> aan vanuit een detailknop.</p>
                   <div class="code-block"><div class="code-toolbar"><span>Express + browser</span><button type="button" data-copy-target="snippet-detail-js">Kopieer</button></div><pre><code id="snippet-detail-js">// backend/server.js
@@ -746,7 +787,7 @@ async function loadStudent(id) {
               </details>
 
               <details class="snippet-item" data-snippet-tags="php database feature">
-                <summary><span class="snippet-index">05</span><span><b>Eenvoudige veilige login</b><small>password_hash, password_verify en PHP-sessies.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">05</span><span><b>Gebruikers laten inloggen</b><small>Wachtwoorden veilig bewaren en ingelogd blijven.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Nodig:</strong> een <code>users</code>-tabel, <code>session_start()</code> bovenaan iedere beschermde pagina en HTTPS wanneer de app online gaat.</p>
                   <div class="code-block"><div class="code-toolbar"><span>schema.sql + login.php</span><button type="button" data-copy-target="snippet-login">Kopieer</button></div><pre><code id="snippet-login">-- schema.sql
@@ -784,7 +825,7 @@ $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);</code></pre></div>
               </details>
 
               <details class="snippet-item" data-snippet-tags="php feature">
-                <summary><span class="snippet-index">06</span><span><b>Afbeelding veilig uploaden</b><small>Controleert foutcode, grootte en echt MIME-type.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">06</span><span><b>Een foto laten uploaden</b><small>Alleen geldige JPG- en PNG-bestanden tot 2 MB.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Formulier:</strong> voeg <code>enctype="multipart/form-data"</code> toe en gebruik <code>&lt;input type="file" name="foto" accept="image/png,image/jpeg"&gt;</code>.</p>
                   <div class="code-block"><div class="code-toolbar"><span>upload.php · verwerking</span><button type="button" data-copy-target="snippet-upload">Kopieer</button></div><pre><code id="snippet-upload">$file = $_FILES['foto'] ?? null;
@@ -816,7 +857,7 @@ if (!move_uploaded_file($file['tmp_name'], $destination)) {
               </details>
 
               <details class="snippet-item" data-snippet-tags="php feature">
-                <summary><span class="snippet-index">07</span><span><b>CSV-export</b><small>Download het huidige overzicht als spreadsheetbestand.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">07</span><span><b>Gegevens downloaden voor Excel</b><small>Download het huidige overzicht als CSV-bestand.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Nieuw bestand:</strong> <code>export.php</code>. Dit bestand mag vóór de headers geen HTML of spaties uitvoeren.</p>
                   <div class="code-block"><div class="code-toolbar"><span>export.php</span><button type="button" data-copy-target="snippet-csv">Kopieer</button></div><pre><code id="snippet-csv">&lt;?php
@@ -842,7 +883,7 @@ exit;</code></pre></div>
               </details>
 
               <details class="snippet-item" data-snippet-tags="php feature">
-                <summary><span class="snippet-index">08</span><span><b>CSV-import</b><small>Voeg meerdere gecontroleerde rijen in één transactie toe.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">08</span><span><b>Een lijst uit Excel toevoegen</b><small>Importeer meerdere gecontroleerde CSV-rijen tegelijk.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Formulier:</strong> gebruik <code>method="post" enctype="multipart/form-data"</code>, een CSRF-token en een input met <code>name="csv_bestand"</code>. De kolomvolgorde moet exact overeenkomen.</p>
                   <div class="code-block"><div class="code-toolbar"><span>import.php · transactie</span><button type="button" data-copy-target="snippet-csv-import">Kopieer</button></div><pre><code id="snippet-csv-import">verify_csrf($_POST['_token'] ?? null);
@@ -887,7 +928,7 @@ try {
               </details>
 
               <details class="snippet-item" data-snippet-tags="database php javascript feature">
-                <summary><span class="snippet-index">09</span><span><b>Soft delete en herstellen</b><small>Verberg een record zonder het definitief te wissen.</small></span><span class="snippet-stack">SQL</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">09</span><span><b>Een prullenbak maken</b><small>Verberg gegevens en zet ze later eventueel terug.</small></span><span class="snippet-stack">Database</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Gebruik dit voor:</strong> archiveren, prullenbakken en gegevens die je later wilt terugzetten.</p>
                   <div class="code-block"><div class="code-toolbar"><span>schema + queries</span><button type="button" data-copy-target="snippet-soft-delete">Kopieer</button></div><pre><code id="snippet-soft-delete">-- Voeg de kolom toe aan je CREATE TABLE:
@@ -911,7 +952,7 @@ DELETE FROM studenten WHERE id = ? AND deleted_at IS NOT NULL;</code></pre></div
               </details>
 
               <details class="snippet-item" data-snippet-tags="database php feature">
-                <summary><span class="snippet-index">10</span><span><b>Transactie voor meerdere wijzigingen</b><small>Alles lukt, of alles wordt teruggedraaid.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
+                <summary><span class="snippet-index">10</span><span><b>Meerdere wijzigingen samen veilig opslaan</b><small>Alles lukt, of alles wordt automatisch teruggedraaid.</small></span><span class="snippet-stack">PHP</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></summary>
                 <div class="snippet-body">
                   <p><strong>Gebruik dit voor:</strong> bestellingen + voorraad, inschrijving + vakken of uitleen + beschikbaar aantal.</p>
                   <div class="code-block"><div class="code-toolbar"><span>PHP · database transaction</span><button type="button" data-copy-target="snippet-transaction">Kopieer</button></div><pre><code id="snippet-transaction">$db-&gt;beginTransaction();
@@ -1063,29 +1104,6 @@ try {
             <div class="no-errors" data-no-errors hidden><b>Geen exacte match.</b><span>Probeer één technisch woord uit je fout, zoals “driver”, “locked” of “headers”.</span></div>
           </section>
 
-          <section id="publiceren" class="guide-section publish-section" data-search-title="CodingForDummies gids publiceren op Vercel">
-            <div class="section-number">Hoofdstuk 11</div>
-            <h2>Zet deze gids op Vercel.</h2>
-            <p class="section-intro">Dit gaat over <strong>CodingForDummies zelf</strong>: de site die je nu leest. Die bestaat uit statische HTML, CSS, JavaScript en downloads en past daardoor goed op Vercel.</p>
-
-            <div class="scope-note">
-              <div><span>Publiceer op Vercel</span><b>Deze gids</b><small>HTML · CSS · JavaScript · ZIP</small></div>
-              <i>≠</i>
-              <div><span>Draai lokaal tijdens het leren</span><b>De CRUD-starters</b><small>XAMPP voor PHP · Node.js voor JavaScript</small></div>
-            </div>
-
-            <ol class="deploy-steps">
-              <li><span>1</span><div><h3>Zet CodingForDummies op GitHub</h3><p>Maak een repository, voeg deze projectmap toe en push de bestanden.</p><div class="mini-code"><code>git add . &amp;&amp; git commit -m "Launch CodingForDummies"</code><button type="button" data-copy-text="git add . && git commit -m &quot;Launch CodingForDummies&quot;">Kopieer</button></div></div></li>
-              <li><span>2</span><div><h3>Importeer de repository in Vercel</h3><p>Kies <strong>Add New → Project</strong>, selecteer de repository en laat Vercel de Vite-instellingen herkennen.</p></div></li>
-              <li><span>3</span><div><h3>Klik op Deploy</h3><p>Build command: <code>npm run build</code>. Output directory: <code>dist</code>. Iedere volgende push publiceert automatisch een nieuwe versie.</p></div></li>
-            </ol>
-
-            <div class="finish-panel">
-              <div><p class="kicker"><span></span> Klaar om te bouwen</p><h3>Begin met één werkende basis. Maak hem daarna van jou.</h3><p>PHP gaat in <code>htdocs</code>. De JavaScript-starter start je in zijn eigen map met <code>npm start</code>.</p></div>
-              <div class="finish-actions"><a class="button button--light" href="./downloads/studenten-crud.zip">PHP + SQLite <span>↓</span></a><a class="button button--outline-light" href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite <span>↓</span></a></div>
-            </div>
-            <label class="chapter-check chapter-check--finish"><input type="checkbox" data-progress-item="deploy"><span><b>Mijn CodingForDummies repository staat klaar voor Vercel</b><small>De gids en het PHP-starterproject hebben ieder hun eigen duidelijke rol.</small></span></label>
-          </section>
         </article>
       </div>
     </main>
@@ -1100,11 +1118,11 @@ try {
       <div class="search-dialog-inner">
         <div class="search-top">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-          <input type="search" data-global-search placeholder="Zoek: SQLite koppelen, delete, driver…" aria-label="Doorzoek de gids">
+          <input type="search" data-global-search placeholder="Zoek: SQLite koppelen, verwijderen, foutmelding…" aria-label="Doorzoek de gids">
           <button type="button" data-close-search aria-label="Sluit zoeken">Esc</button>
         </div>
         <div class="search-results" data-search-results>
-          <p>Typ een onderwerp of foutmelding. Je kunt ook zoeken op “XAMPP”, “update” of “Vercel”.</p>
+          <p>Typ een onderwerp of foutmelding. Je kunt ook zoeken op “XAMPP”, “opslaan” of “database”.</p>
         </div>
       </div>
     </dialog>
