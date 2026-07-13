@@ -302,6 +302,11 @@ kbd { display: inline-block; padding: 1px 5px; border: 1px solid #c9cbc8; backgr
 .builder-php-note { display: grid; grid-template-columns: auto 1fr; gap: 11px; align-items: start; margin-top: 10px; padding: 11px 12px; border-left: 3px solid var(--blue); background: #edf2ff; }
 .builder-php-note > span { padding: 3px 6px; background: var(--blue); color: #fff; font-family: var(--mono); font-size: 7px; font-weight: 700; text-transform: uppercase; }
 .builder-php-note p { margin: 0; color: var(--muted); font-size: 9px; }
+.builder-feature-option { display: grid !important; grid-template-columns: auto 1fr; gap: 10px !important; align-items: start; margin-top: 10px; padding: 12px; border: 1px solid #cbd2dd; background: #f7f8fb; cursor: pointer; }
+.builder-feature-option > input { width: 17px; min-height: 17px; height: 17px; margin-top: 2px; padding: 0; accent-color: var(--blue); }
+.builder-feature-option > span { display: grid; gap: 2px; color: var(--ink) !important; font-size: inherit !important; letter-spacing: 0 !important; text-transform: none !important; }
+.builder-feature-option b { font-size: 10px; }
+.builder-feature-option small { color: var(--muted); font-size: 9px; }
 .builder-validation { display: flex; gap: 14px; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
 .builder-validation p { margin: 0; color: #18764f; font-size: 9px; font-weight: 700; }
 .builder-validation p.has-note { color: var(--orange); }
@@ -735,7 +740,7 @@ kbd { display: inline-block; padding: 1px 5px; border: 1px solid #c9cbc8; backgr
 :root[data-theme="dark"] :is(.sidebar-route, .zero-promise, .chapter-check, .route-help, .route-focus-control, .builder-data-type, .builder-php-note, .snippet-advice, .complete-app-roadmap, .snippet-file-rule, .callout, .path-explainer, .field-connection, .php-map-rule, .paste-contract) { border-color: #34465e; background: #14233a; }
 :root[data-theme="dark"] :is(.beginner-mode-toggle, .zero-start > button, .beginner-later, .snippet-read-first, .snippet-note, .warning-callout, .danger-callout) { border-color: #70482f; background: #2a1d18; }
 :root[data-theme="dark"] :is(.route-help-options button, .stack-choice.is-selected, .builder-controls input, .builder-controls select, .builder-operation-presets button, .builder-operations label, .builder-type-reference, .builder-test-guide ol, .complete-app-roadmap ol, .full-file-coach ol, .builder-validation button) { border-color: #34465e; background: #101d2e; color: var(--ink); }
-:root[data-theme="dark"] :is(.builder-operation-picker, .builder-field-row, .builder-test-guide, .field-cookbook .field-cookbook-head, .frontend-route-tabs button, .frontend-path-card, .first-frontend-edit, .php-map-tabs button, .paste-demo-flow > div, .api-table .api-head, .mapping-table .mapping-head) { border-color: #34465e; background: #0d1a2b; }
+:root[data-theme="dark"] :is(.builder-operation-picker, .builder-field-row, .builder-test-guide, .builder-feature-option, .field-cookbook .field-cookbook-head, .frontend-route-tabs button, .frontend-path-card, .first-frontend-edit, .php-map-tabs button, .paste-demo-flow > div, .api-table .api-head, .mapping-table .mapping-head) { border-color: #34465e; background: #0d1a2b; }
 :root[data-theme="dark"] :is(.builder-operations label:has(input:checked), .snippet-picks button:hover, .snippet-picks button.is-active) { border-color: var(--blue); background: #172b4a; }
 :root[data-theme="dark"] .builder-operation-presets button.is-active { border-color: var(--blue); background: var(--blue); color: #fff; }
 :root[data-theme="dark"] :is(.snippet-picks button, .frontend-route-tabs button, .paste-demo-flow > div) { border-color: #34465e; background: #101d2e; color: var(--ink); }

@@ -22,6 +22,8 @@ const englishTranslations = {
   "Configuratie is geldig.": "Configuration is valid.",
   "Herstel productvoorbeeld": "Restore product example",
   "Download bestand": "Download file",
+  "Optioneel voor PHP: CSRF-beveiliging toevoegen": "Optional for PHP: add CSRF protection",
+  "Laat dit uit voor je eerste lokale oefenapp. Zet het later aan voor een gepubliceerde applicatie; de tokenfuncties, controle en verborgen formuliervelden worden dan samen toegevoegd.": "Leave this off for your first local practice app. Enable it later for a published application; the token functions, check and hidden form fields will then be added together.",
   "Open exact dit bestand": "Open this exact file",
   "Zoek dit begin met Ctrl+F": "Find this starting point with Ctrl+F",
   "Stop met selecteren bij": "Stop selecting at",
@@ -591,6 +593,8 @@ if (builder) {
   const operationPresetButtons = $$('[data-crud-preset]', builder);
   const builderValidation = $("[data-builder-validation]", builder);
   const resetBuilderButton = $("[data-reset-builder]", builder);
+  const csrfInput = $("[data-builder-csrf]", builder);
+  const csrfOption = $("[data-builder-csrf-option]", builder);
   let currentBuilderTab = "complete";
   let builderFields = [];
   let builderInitialized = false;
@@ -719,6 +723,7 @@ if (builder) {
   }
 
   function normalizedBuilderState() {
+    const operations = selectedOperations();
     const usedNames = new Set();
     const fields = builderFields.map((field, index) => {
       const baseName = sanitizeFieldIdentifier(field.name, `veld_${index + 1}`);
@@ -739,7 +744,10 @@ if (builder) {
       stack: stackSelect.value,
       singular: sanitizeIdentifier(singularInput.value, "onderdeel"),
       table: sanitizeIdentifier(tableInput.value, "onderdelen"),
-      operations: selectedOperations(),
+      operations,
+      csrf: stackSelect.value !== "js-sqlite"
+        && Boolean(csrfInput?.checked)
+        && (operations.create || operations.update || operations.delete),
       fields
     };
   }
@@ -788,6 +796,7 @@ if (builder) {
       singular: singularInput.value,
       table: tableInput.value,
       operations: selectedOperations(),
+      csrf: Boolean(csrfInput?.checked),
       fields: builderFields,
       tab: currentBuilderTab
     };
@@ -821,6 +830,7 @@ if (builder) {
     }));
     const savedOperations = saved.operations || {};
     operationInputs.forEach((input) => { input.checked = Boolean(savedOperations[input.dataset.builderOperation]); });
+    if (csrfInput) csrfInput.checked = Boolean(saved.csrf);
     if (!operationInputs.some((input) => input.checked)) operationInputs[0].checked = true;
     if (builderTabs.some((tab) => tab.dataset.builderTab === saved.tab)) currentBuilderTab = saved.tab;
     builderTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === currentBuilderTab));
@@ -975,6 +985,9 @@ if (builder) {
       ].join("\n");
     }
 
+    const csrfField = state.csrf ? `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">` : "";
+    const csrfEditField = state.csrf ? `                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">` : "";
+    const csrfRowField = state.csrf ? `              <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">` : "";
     const phpEditControls = (rowExpression = null) => state.fields.map((field) => {
       const label = escapeHtmlCode(field.label);
       const required = field.required ? " required" : "";
@@ -1002,7 +1015,7 @@ if (builder) {
         `  <!-- CREATE: dit formulier stuurt intent create_${state.singular}. -->`,
         `  <div class="generated-card"><h3>Nieuwe ${state.singular}</h3>`,
         `  <form class="generated-form" method="post">`,
-        `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+        csrfField,
         `    <input type="hidden" name="intent" value="create_${state.singular}">`,
         state.fields.map((field) => htmlControl(field, state, "create")).join("\n\n"),
         `    <button class="generated-primary" type="submit">${state.singular} toevoegen</button>`,
@@ -1018,7 +1031,7 @@ if (builder) {
         ops.update ? [
           `            <details><summary>Bewerk</summary>`,
           `              <form class="generated-form generated-edit-form" method="post">`,
-          `                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+          csrfEditField,
           `                <input type="hidden" name="intent" value="update_${state.singular}">`,
           `                <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
           phpEditControls("$row"),
@@ -1028,7 +1041,7 @@ if (builder) {
         ].join("\n") : "",
         ops.delete ? [
           `            <form method="post" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">`,
-          `              <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+          csrfRowField,
           `              <input type="hidden" name="intent" value="delete_${state.singular}">`,
           `              <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
           `              <button class="generated-danger" type="submit">Verwijder</button>`,
@@ -1059,7 +1072,7 @@ if (builder) {
         `  <!-- UPDATE ZONDER READ: vul het doel-ID en de nieuwe waarden in. -->`,
         `  <div class="generated-card"><h3>${state.singular} wijzigen</h3>`,
         `  <form class="generated-form" method="post">`,
-        `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+        csrfField,
         `    <input type="hidden" name="intent" value="update_${state.singular}">`,
         `    <label class="generated-field"><span>ID van de ${state.singular}</span><input name="id" type="number" min="1" step="1" required></label>`,
         phpEditControls(),
@@ -1073,7 +1086,7 @@ if (builder) {
         `  <!-- DELETE ZONDER READ: verwijder één bestaande rij met het ID. -->`,
         `  <div class="generated-card"><h3>${state.singular} verwijderen</h3>`,
         `  <form class="generated-form" method="post" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">`,
-        `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+        csrfField,
         `    <input type="hidden" name="intent" value="delete_${state.singular}">`,
         `    <label class="generated-field"><span>ID van de ${state.singular}</span><input name="id" type="number" min="1" step="1" required></label>`,
         `    <button class="generated-danger" type="submit">Definitief verwijderen</button>`,
@@ -1234,7 +1247,7 @@ if (builder) {
         `$pageError = '';`,
         `if ($_SERVER['REQUEST_METHOD'] === 'POST') {`,
         `    try {`,
-        `        verify_csrf($_POST['_token'] ?? null);`,
+        ...(state.csrf ? [`        verify_csrf($_POST['_token'] ?? null);`] : []),
         `        $intent = post_text('intent');`
       );
       if (ops.create) {
@@ -1538,6 +1551,21 @@ if (builder) {
     const componentCss = generateCss(state);
     const databaseName = `${state.table}_crud`;
     const operationNames = [state.operations.create && "Create", state.operations.read && "Read", state.operations.update && "Update", state.operations.delete && "Delete"].filter(Boolean).join(" + ");
+    const csrfHelpers = state.csrf ? [
+      `function csrf_token(): string`,
+      `{`,
+      `    if (empty($_SESSION['_token'])) $_SESSION['_token'] = bin2hex(random_bytes(32));`,
+      `    return $_SESSION['_token'];`,
+      `}`,
+      ``,
+      `function verify_csrf(mixed $token): void`,
+      `{`,
+      `    if (!is_string($token) || !hash_equals(csrf_token(), $token)) {`,
+      `        throw new RuntimeException('De beveiligingscode is verlopen. Vernieuw de pagina.');`,
+      `    }`,
+      `}`,
+      ``
+    ] : [];
     const databaseSetup = state.stack === "php-mysql"
       ? [
           `// MYSQL-INSTELLINGEN: de standaard XAMPP-gebruiker is root zonder wachtwoord.`,
@@ -1595,19 +1623,7 @@ if (builder) {
       `    return (int) $id;`,
       `}`,
       ``,
-      `function csrf_token(): string`,
-      `{`,
-      `    if (empty($_SESSION['_token'])) $_SESSION['_token'] = bin2hex(random_bytes(32));`,
-      `    return $_SESSION['_token'];`,
-      `}`,
-      ``,
-      `function verify_csrf(mixed $token): void`,
-      `{`,
-      `    if (!is_string($token) || !hash_equals(csrf_token(), $token)) {`,
-      `        throw new RuntimeException('De beveiligingscode is verlopen. Vernieuw de pagina.');`,
-      `    }`,
-      `}`,
-      ``,
+      ...csrfHelpers,
       `function flash(string $type, string $message): void`,
       `{`,
       `    $_SESSION['flash'] = ['type' => $type, 'message' => $message];`,
@@ -1919,6 +1935,7 @@ if (builder) {
   }
 
   function updateBuilderOutput() {
+    if (csrfOption) csrfOption.hidden = stackSelect.value === "js-sqlite";
     const state = normalizedBuilderState();
     const output = builderOutputs(state)[currentBuilderTab];
     builderFile.textContent = output.file;
@@ -1941,6 +1958,7 @@ if (builder) {
 
   presetSelect.addEventListener("change", () => applyPreset(presetSelect.value));
   stackSelect.addEventListener("change", updateBuilderOutput);
+  csrfInput?.addEventListener("change", updateBuilderOutput);
   singularInput.addEventListener("input", updateBuilderOutput);
   tableInput.addEventListener("input", updateBuilderOutput);
   $("[data-add-field]", builder).addEventListener("click", () => {
@@ -1986,6 +2004,7 @@ if (builder) {
     localStorage.removeItem(builderStorageKey);
     presetSelect.value = "products";
     stackSelect.value = "php-sqlite";
+    if (csrfInput) csrfInput.checked = false;
     operationInputs.forEach((input) => { input.checked = true; });
     currentBuilderTab = "complete";
     builderTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === currentBuilderTab));

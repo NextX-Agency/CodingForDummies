@@ -136,6 +136,7 @@ if (!styles.includes('.stack-choice.is-recommended { border: 1px solid var(--lin
 const builder = window.document.querySelector('[data-crud-builder]');
 const code = () => builder.querySelector('[data-builder-code]').textContent;
 const clickTab = (name) => builder.querySelector(`[data-builder-tab="${name}"]`).click();
+const csrfToggle = builder.querySelector('[data-builder-csrf]');
 const change = (element, value) => {
   element.value = value;
   element.dispatchEvent(new window.Event('change', { bubbles: true }));
@@ -149,6 +150,9 @@ if (builder.querySelectorAll('[data-builder-operation]').length !== 4
   || [...builder.querySelectorAll('[data-builder-operation]')].some((input) => !input.checked)
   || !builder.querySelector('[data-builder-operation-summary]').textContent.includes('Create, Read, Update en Delete')) {
   throw new Error('De CRUD-generator start niet met vier afzonderlijk kiesbare CRUD-acties.');
+}
+if (!csrfToggle || csrfToggle.checked || builder.querySelector('[data-builder-csrf-option]').hidden) {
+  throw new Error('CSRF is niet als zichtbare, standaard uitgeschakelde PHP-optie beschikbaar.');
 }
 const generatedTypeLabels = [...builder.querySelectorAll('.builder-data-type b')].map((element) => element.textContent);
 if (!generatedTypeLabels.includes('float') || !generatedTypeLabels.includes('int') || !generatedTypeLabels.includes('bool → 0/1')) {
@@ -169,6 +173,11 @@ if (!completePhpSqliteCode.startsWith('<?php')
   || !['// STAP', '<!-- STAP', '/* STAP', '-- Dit bestand'].every((comment) => completePhpSqliteCode.includes(comment))) {
   throw new Error('De standaard PHP-complete-app mist CRUD, HTML, CSS of uitlegcomments.');
 }
+if (completePhpSqliteCode.includes('function csrf_token')
+  || completePhpSqliteCode.includes('verify_csrf(')
+  || completePhpSqliteCode.includes('name="_token"')) {
+  throw new Error('De standaard PHP-app bevat nog verplichte CSRF-code.');
+}
 const builderStackForComplete = builder.querySelector('[data-builder-stack]');
 change(builderStackForComplete, 'php-mysql');
 const completePhpMysqlCode = code();
@@ -179,6 +188,21 @@ if (!completePhpMysqlCode.includes('CREATE DATABASE IF NOT EXISTS producten_crud
   throw new Error('De complete PHP + MySQL-app maakt geen direct bruikbare XAMPP-verbinding.');
 }
 change(builderStackForComplete, 'php-sqlite');
+csrfToggle.click();
+const csrfProtectedPhpCode = code();
+if (!csrfProtectedPhpCode.includes('function csrf_token(): string')
+  || !csrfProtectedPhpCode.includes('function verify_csrf(mixed $token): void')
+  || !csrfProtectedPhpCode.includes("verify_csrf($_POST['_token'] ?? null)")
+  || !csrfProtectedPhpCode.includes('name="_token"')) {
+  throw new Error('De optionele CSRF-keuze voegt niet alle afhankelijke PHP-onderdelen samen toe.');
+}
+csrfToggle.click();
+for (const csrfFreeTab of ['complete', 'form', 'backend']) {
+  clickTab(csrfFreeTab);
+  if (code().includes('csrf_token(') || code().includes('verify_csrf(') || code().includes('name="_token"')) {
+    throw new Error(`Tab ${csrfFreeTab} houdt een losse CSRF-afhankelijkheid over terwijl de optie uitstaat.`);
+  }
+}
 
 clickTab('sql');
 if (!code().includes('CREATE TABLE IF NOT EXISTS producten')) {
@@ -221,36 +245,60 @@ try {
   execFileSync('php', ['-l', completeSqliteFile], { stdio: 'pipe' });
   const runCompletePhp = (filename, requestMethod, post = {}) => {
     const phpPost = Object.entries(post).map(([key, value]) => `${JSON.stringify(key)} => ${JSON.stringify(value)}`).join(', ');
-    const requestSetup = `session_start();\n$_SERVER['REQUEST_METHOD'] = '${requestMethod}';\n$_SESSION['_token'] = 'test-token';\n$_POST = [${phpPost}];`;
+    const requestSetup = `session_start();\n$_SERVER['REQUEST_METHOD'] = '${requestMethod}';\n$_POST = [${phpPost}];`;
     const runnableSource = completePhpSqliteCode.replace('session_start();', requestSetup);
     const runnableFile = join(temporaryDirectory, filename);
     writeFileSync(runnableFile, runnableSource, 'utf8');
     return execFileSync('php', [runnableFile], { encoding: 'utf8' });
   };
   runCompletePhp('complete-create.php', 'POST', {
-    _token: 'test-token', intent: 'create_product', naam: 'Testproduct', omschrijving: 'Eerste versie', prijs: '12.50', voorraad: '3', actief: '1'
+    intent: 'create_product', naam: 'Testproduct', omschrijving: 'Eerste versie', prijs: '12.50', voorraad: '3', actief: '1'
   });
   if (!runCompletePhp('complete-read.php', 'GET').includes('Testproduct')) {
     throw new Error('De complete PHP-app kan een aangemaakt item niet opnieuw lezen.');
   }
   runCompletePhp('complete-update.php', 'POST', {
-    _token: 'test-token', intent: 'update_product', id: '1', naam: 'Gewijzigd product', omschrijving: 'Tweede versie', prijs: '14.00', voorraad: '5', actief: '1'
+    intent: 'update_product', id: '1', naam: 'Gewijzigd product', omschrijving: 'Tweede versie', prijs: '14.00', voorraad: '5', actief: '1'
   });
   if (!runCompletePhp('complete-read-updated.php', 'GET').includes('Gewijzigd product')) {
     throw new Error('De complete PHP-app kan een item niet wijzigen.');
   }
-  runCompletePhp('complete-delete.php', 'POST', { _token: 'test-token', intent: 'delete_product', id: '1' });
+  runCompletePhp('complete-delete.php', 'POST', { intent: 'delete_product', id: '1' });
   if (runCompletePhp('complete-read-deleted.php', 'GET').includes('Gewijzigd product')) {
     throw new Error('De complete PHP-app kan een testitem niet verwijderen.');
   }
   const completeMysqlFile = join(temporaryDirectory, 'complete-mysql.php');
   writeFileSync(completeMysqlFile, completePhpMysqlCode, 'utf8');
   execFileSync('php', ['-l', completeMysqlFile], { stdio: 'pipe' });
+  const csrfProtectedFile = join(temporaryDirectory, 'complete-csrf.php');
+  writeFileSync(csrfProtectedFile, csrfProtectedPhpCode, 'utf8');
+  execFileSync('php', ['-l', csrfProtectedFile], { stdio: 'pipe' });
+  const runProtectedPhp = (filename, token) => {
+    const protectedPost = {
+      _token: token,
+      intent: 'create_product',
+      naam: 'CSRF-testproduct',
+      omschrijving: 'Beveiligde test',
+      prijs: '8.50',
+      voorraad: '2',
+      actief: '1',
+    };
+    const phpPost = Object.entries(protectedPost).map(([key, value]) => `${JSON.stringify(key)} => ${JSON.stringify(value)}`).join(', ');
+    const requestSetup = `session_start();\n$_SERVER['REQUEST_METHOD'] = 'POST';\n$_SESSION['_token'] = 'valid-token';\n$_POST = [${phpPost}];`;
+    const runnableSource = csrfProtectedPhpCode.replace('session_start();', requestSetup);
+    const runnableFile = join(temporaryDirectory, filename);
+    writeFileSync(runnableFile, runnableSource, 'utf8');
+    return execFileSync('php', [runnableFile], { encoding: 'utf8' });
+  };
+  runProtectedPhp('complete-csrf-valid.php', 'valid-token');
+  if (!runProtectedPhp('complete-csrf-invalid.php', 'invalid-token').includes('De beveiligingscode is verlopen')) {
+    throw new Error('De ingeschakelde CSRF-variant accepteert of meldt een ongeldig token niet correct.');
+  }
   const phpFile = join(temporaryDirectory, 'generated.php');
   writeFileSync(phpFile, `<?php\n${phpCode}`, 'utf8');
   execFileSync('php', ['-l', phpFile], { stdio: 'pipe' });
   const phpViewFile = join(temporaryDirectory, 'generated-view.php');
-  writeFileSync(phpViewFile, `<?php\n$rows = [];\nfunction e($value) { return $value; }\nfunction csrf_token() { return ''; }\n?>\n${phpViewCode}`, 'utf8');
+  writeFileSync(phpViewFile, `<?php\n$rows = [];\nfunction e($value) { return $value; }\n?>\n${phpViewCode}`, 'utf8');
   execFileSync('php', ['-l', phpViewFile], { stdio: 'pipe' });
   const integratedPhp = phpStarter
     .replace("if ($_SERVER['REQUEST_METHOD'] === 'POST') {", `${phpCode}\n\nif ($_SERVER['REQUEST_METHOD'] === 'POST') {`)
@@ -278,6 +326,9 @@ if (!completeJavaScriptCode.includes("app.listen(3000")
   || !builder.querySelector('[data-builder-test-title]').textContent.includes('JavaScript + SQLite')
   || !builder.querySelector('[data-builder-test-steps]').textContent.includes('npm install express better-sqlite3')) {
   throw new Error('De complete JavaScript-app mist server, frontend of SQLite-tabel.');
+}
+if (!builder.querySelector('[data-builder-csrf-option]').hidden) {
+  throw new Error('De PHP-specifieke CSRF-optie blijft onterecht zichtbaar bij JavaScript.');
 }
 new Function(completeJavaScriptCode);
 clickTab('form');
@@ -349,6 +400,21 @@ try {
     const phpCombinationFile = join(combinationDirectory, `combination-${mask}.php`);
     writeFileSync(phpCombinationFile, phpCombination, 'utf8');
     execFileSync('php', ['-l', phpCombinationFile], { stdio: 'pipe' });
+
+    csrfToggle.checked = true;
+    csrfToggle.dispatchEvent(new window.Event('change', { bubbles: true }));
+    const protectedCombination = code();
+    const needsCsrf = selected.some((operation) => ['create', 'update', 'delete'].includes(operation));
+    for (const csrfPart of ['function csrf_token(): string', 'function verify_csrf(mixed $token): void', "verify_csrf($_POST['_token'] ?? null)", 'name="_token"']) {
+      if (protectedCombination.includes(csrfPart) !== needsCsrf) {
+        throw new Error(`PHP-combinatie ${selected.join('+')} verwerkt de optionele CSRF-onderdelen niet consequent.`);
+      }
+    }
+    const protectedCombinationFile = join(combinationDirectory, `combination-${mask}-csrf.php`);
+    writeFileSync(protectedCombinationFile, protectedCombination, 'utf8');
+    execFileSync('php', ['-l', protectedCombinationFile], { stdio: 'pipe' });
+    csrfToggle.checked = false;
+    csrfToggle.dispatchEvent(new window.Event('change', { bubbles: true }));
 
     change(stack, 'js-sqlite');
     clickTab('complete');
@@ -451,6 +517,7 @@ try {
   builder.querySelector('[data-reset-builder]').click();
   if (builder.querySelectorAll('[data-builder-field-row]').length !== 5
     || builder.querySelector('[data-builder-stack]').value !== 'php-sqlite'
+    || builder.querySelector('[data-builder-csrf]').checked
     || [...builder.querySelectorAll('[data-builder-operation]')].some((input) => !input.checked)
     || !builder.querySelector('[data-builder-tab="complete"]').classList.contains('is-active')) {
     throw new Error('De herstelknop zet niet het volledige, werkende productvoorbeeld terug.');
@@ -641,6 +708,7 @@ if (window.document.documentElement.lang !== 'en'
   || !window.document.querySelector('[data-builder-test-title]').textContent.includes('app in one file')
   || window.document.querySelector('[data-reset-builder]').textContent !== 'Restore product example'
   || window.document.querySelector('[data-download-builder]').textContent !== 'Download file'
+  || !window.document.querySelector('[data-builder-csrf-option]').textContent.includes('Optional for PHP')
   || ![...window.document.querySelector('[data-field-key="type"]').options].some((option) => option.textContent === 'Long text')
   || window.localStorage.getItem('cfd-language') !== 'en'
   || englishButton.getAttribute('aria-pressed') !== 'true') {
