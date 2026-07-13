@@ -1,6 +1,6 @@
 # Studenten CRUD — PHP + SQLite
 
-Dit is het complete voorbeeldproject van CodingForDummies.
+Dit is het complete voorbeeldproject van CodingForDommies.
 
 ## Starten met XAMPP
 
@@ -32,4 +32,3 @@ Stop Apache, verwijder `data/app.sqlite` en start Apache opnieuw. De tabellen en
 - Zoeken, filteren, sorteren en paginering.
 - Dashboardcijfers en een SQLite-relatie tussen studenten en landen.
 - Prepared statements, servervalidatie, escaping en CSRF-beveiliging.
-

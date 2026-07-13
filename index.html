@@ -5,21 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Bouw stap voor stap een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL en XAMPP. Inclusief werkende copy-paste starters.">
     <meta name="theme-color" content="#f3f0e8">
-    <title>CodingForDummies — Bouw je eerste CRUD-app</title>
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CodingForDommies">
+    <meta property="og:title" content="CodingForDommies — Build a complete CRUD application">
+    <meta property="og:description" content="A bilingual, beginner-friendly CRUD guide with complete PHP, JavaScript, SQLite and MySQL starters.">
+    <meta property="og:url" content="https://www.codingfordommies.quest/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://www.codingfordommies.quest/">
+    <link rel="alternate" hreflang="nl" href="https://www.codingfordommies.quest/?lang=nl">
+    <link rel="alternate" hreflang="en" href="https://www.codingfordommies.quest/?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://www.codingfordommies.quest/">
+    <title>CodingForDommies — Bouw je eerste CRUD-app</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>document.documentElement.dataset.theme=localStorage.getItem('cfd-theme')||((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');</script>
     <link rel="stylesheet" href="./styles.css">
+    <script src="/translations-en.js"></script>
     <script type="module" src="./script.js"></script>
   </head>
   <body>
     <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
 
     <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="CodingForDummies startpagina">
+      <a class="wordmark" href="#top" aria-label="CodingForDommies startpagina">
         <span class="wordmark-mark">CFD/</span>
-        <span>CodingForDummies</span>
+        <span>CodingForDommies</span>
       </a>
 
       <nav class="top-nav" data-top-nav aria-label="Hoofdnavigatie">
@@ -32,6 +44,8 @@
 
       <div class="header-actions">
         <button class="current-route" type="button" data-header-route hidden><span data-header-route-code>Route</span><b data-header-route-name>Kies bouwroute</b></button>
+        <div class="language-switch" role="group" aria-label="Taal kiezen"><button class="is-active" type="button" data-language="nl" aria-pressed="true">NL</button><button type="button" data-language="en" aria-pressed="false">EN</button></div>
+        <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Donkere modus inschakelen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.2A8 8 0 1 1 8.8 4 6.5 6.5 0 0 0 20 15.2Z"></path></svg><span data-theme-label>Donker</span></button>
         <button class="icon-button search-trigger" type="button" data-open-search aria-label="Open zoeken">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
           <span>Zoeken</span><kbd>Ctrl K</kbd>
@@ -250,9 +264,29 @@
                   <label><span>Naam voor de hele lijst</span><input type="text" data-builder-table value="producten" placeholder="producten"><small>Voorbeeld: producten, boeken of medewerkers.</small></label>
                 </div>
 
-                <div class="builder-field-heading"><div><b>Welke gegevens wil je invullen?</b><small>Voorbeelden: naam, e-mailadres, prijs of datum.</small></div><button type="button" data-add-field>+ Gegeven toevoegen</button></div>
+                <fieldset class="builder-operation-picker">
+                  <legend>Welke CRUD-functionaliteiten wil je?</legend>
+                  <div class="builder-operation-heading"><p>Vink alleen aan wat jouw applicatie echt nodig heeft. De PHP, API, HTML en JavaScript worden overal samen aangepast.</p><div class="builder-operation-presets" role="group" aria-label="Snelle CRUD-keuzes"><button type="button" data-crud-preset="all">Alles</button><button type="button" data-crud-preset="read">Alleen bekijken</button><button type="button" data-crud-preset="create-read">Toevoegen + bekijken</button></div></div>
+                  <div class="builder-operations">
+                    <label><input type="checkbox" data-builder-operation="create" checked><span><b>C · Create</b><small>Nieuwe gegevens toevoegen</small></span></label>
+                    <label><input type="checkbox" data-builder-operation="read" checked><span><b>R · Read</b><small>Een overzicht bekijken</small></span></label>
+                    <label><input type="checkbox" data-builder-operation="update" checked><span><b>U · Update</b><small>Bestaande gegevens wijzigen</small></span></label>
+                    <label><input type="checkbox" data-builder-operation="delete" checked><span><b>D · Delete</b><small>Gegevens verwijderen</small></span></label>
+                  </div>
+                  <p class="builder-operation-summary" data-builder-operation-summary>Gekozen: Create, Read, Update en Delete.</p>
+                </fieldset>
+
+                <div class="builder-field-heading"><div><b>Welke gegevens wil je invullen?</b><small>Kies het invoertype; PHP, JavaScript en de database krijgen automatisch het passende datatype.</small></div><button type="button" data-add-field>+ Gegeven toevoegen</button></div>
                 <div class="builder-fields" data-builder-fields></div>
-                <p class="builder-hint">Technische velden voor het volgnummer en de aanmaakdatum worden automatisch toegevoegd. Je hoeft daar niets voor in te vullen.</p>
+                <p class="builder-hint"><strong>Vul geen los ID-veld in.</strong> <code>id</code>, <code>created_at</code> en <code>updated_at</code> worden veilig en automatisch toegevoegd. De naam in de database volgt de formuliertekst totdat je die technische naam zelf wijzigt.</p>
+                <section class="builder-type-reference" aria-label="Datatype-uitleg">
+                  <span>Voorbeeld van de automatische koppeling</span>
+                  <div><b>Heel getal</b><code>HTML number</code><code>PHP int</code><code>JavaScript number</code><code>SQL INTEGER / INT</code></div>
+                  <div><b>Prijs / decimaal</b><code>HTML number</code><code>PHP float</code><code>JavaScript number</code><code>SQL REAL / DECIMAL</code></div>
+                  <div><b>Ja / nee</b><code>HTML checkbox</code><code>PHP bool → 0/1</code><code>JavaScript boolean → 0/1</code><code>SQL INTEGER / TINYINT</code></div>
+                </section>
+                <div class="builder-php-note"><span>PHP-typecheck</span><p><strong><code>var</code> is geen PHP-datatype.</strong> PHP gebruikt onder andere <code>string</code>, <code>int</code>, <code>float</code> en <code>bool</code>. De generator valideert eerst het echte PHP-type en zet het daarna om naar het passende SQL-type. Een datum blijft bewust een streng gecontroleerde tekenreeks in databaseformaat.</p></div>
+                <div class="builder-validation"><p data-builder-validation role="status">Configuratie is geldig.</p><button type="button" data-reset-builder>Herstel productvoorbeeld</button></div>
               </div>
 
               <div class="builder-output">
@@ -270,7 +304,7 @@
                   <button type="button" data-builder-tab="steps">7. Exact plakplan</button>
                 </div>
                 <div class="code-block builder-code">
-                  <div class="code-toolbar"><span data-builder-file>database/schema.sql</span><button type="button" data-copy-builder>Kopieer resultaat</button></div>
+                  <div class="code-toolbar"><span data-builder-file>database/schema.sql</span><div class="code-toolbar-actions"><button type="button" data-download-builder>Download bestand</button><button type="button" data-copy-builder>Kopieer resultaat</button></div></div>
                   <pre><code data-builder-code></code></pre>
                 </div>
               </div>
@@ -2640,9 +2674,9 @@ $auditRows = $db-&gt;query(
     </main>
 
     <footer class="site-footer">
-      <div><a class="wordmark" href="#top"><span class="wordmark-mark">CFD/</span><span>CodingForDummies</span></a><p>Van “ik snap de fout niet” naar een CRUD die je zelf kunt uitleggen.</p></div>
+      <div><a class="wordmark" href="#top"><span class="wordmark-mark">CFD/</span><span>CodingForDommies</span></a><p>Van “ik snap de fout niet” naar een CRUD die je zelf kunt uitleggen.</p></div>
       <div class="footer-links"><div><b>Gids</b><a href="#stack">Bouwroute</a><a href="#codebank" data-route-link="php-sqlite">PHP-codebank</a><a href="#javascript-route" data-route-link="js-sqlite">JavaScript-route</a><a href="#foutzoeker">Foutzoeker</a></div><div><b>Downloads</b><a href="./downloads/studenten-crud.zip">PHP + SQLite</a><a href="./downloads/php-mysql-crud.zip">PHP + MySQL</a><a href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite</a></div></div>
-      <p class="footer-note">Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken.</p>
+      <p class="footer-note">Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken. Officiële site: <a href="https://www.codingfordommies.quest/">codingfordommies.quest</a>.</p>
     </footer>
 
     <dialog class="search-dialog" data-search-dialog>

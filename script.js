@@ -1,11 +1,119 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
+const englishTranslations = {
+  ...(window.CFD_TRANSLATIONS_EN || {}),
+  "Tekst op formulier": "Form label",
+  "Naam in database": "Database name",
+  "Soort invoer": "Input type",
+  "PHP / JavaScript": "PHP / JavaScript",
+  "Automatisch datatype": "Automatic data type",
+  "Moet ingevuld": "Required",
+  "Geen dubbele": "Unique",
+  "Verwijder": "Remove",
+  "Nieuw veld": "New field",
+  "Lange tekst": "Long text",
+  "E-mailadres": "Email address",
+  "Webadres / URL": "Website / URL",
+  "Telefoonnummer": "Phone number",
+  "Datum + tijd": "Date + time",
+  "string (datum)": "string (date)",
+  "string (datum/tijd)": "string (date/time)",
+  "Configuratie is geldig.": "Configuration is valid.",
+  "Herstel productvoorbeeld": "Restore product example",
+  "Download bestand": "Download file",
+  "Open exact dit bestand": "Open this exact file",
+  "Zoek dit begin met Ctrl+F": "Find this starting point with Ctrl+F",
+  "Stop met selecteren bij": "Stop selecting at",
+  "Dit doet het": "What this does",
+  "Jouw actie": "Your action",
+  "Zo test je het": "How to test it",
+  "Kopieer voorbeeld": "Copy example",
+  "Volg de plaatsingsstappen": "Follow the placement steps",
+  "Dit blok voert precies de functie uit die in de stap erboven wordt beschreven.": "This block performs exactly the function described in the step above.",
+  "Lees de stap boven het blok. Kopieer daarna het hele blok, plak het één keer op de genoemde plek, sla op en test meteen.": "Read the step above the block. Then copy the entire block, paste it once in the stated location, save and test immediately.",
+  "Vernieuw de pagina. Zie je een fout? Kopieer de volledige foutmelding en plak één belangrijk woord in de Foutzoeker.": "Refresh the page. If you see an error, copy the full message and paste one important word into the Error Finder.",
+  "Code gekopieerd": "Code copied",
+  "Donker": "Dark",
+  "Licht": "Light",
+  "Donkere modus inschakelen": "Enable dark mode",
+  "Lichte modus inschakelen": "Enable light mode",
+  "Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken. Officiële site:": "Built without framework lock-in. The starter code is meant to be read, changed and reused. Official site:"
+};
+const languageParameter = new URLSearchParams(window.location.search).get("lang");
+let activeLanguage = ["nl", "en"].includes(languageParameter)
+  ? languageParameter
+  : (localStorage.getItem("cfd-language") || "nl");
+const originalTextNodes = new WeakMap();
+const originalAttributes = new WeakMap();
+const translatableAttributes = ["alt", "aria-label", "placeholder", "title", "data-search-title", "data-code-method", "data-code-start", "data-code-end", "data-code-action", "data-code-check"];
+let languageMutationObserver;
+
+function translatedText(nlText) {
+  return activeLanguage === "en" ? (englishTranslations[nlText] || nlText) : nlText;
+}
+
+function translateSubtree(root = document.body) {
+  const elements = root.nodeType === 1 ? [root, ...root.querySelectorAll("*")] : [];
+  elements.forEach((element) => {
+    if (element.closest("pre, code, script, style, svg, [data-no-translate]")) return;
+    for (const attribute of translatableAttributes) {
+      if (!element.hasAttribute(attribute)) continue;
+      let originals = originalAttributes.get(element);
+      if (!originals) {
+        originals = new Map();
+        originalAttributes.set(element, originals);
+      }
+      if (!originals.has(attribute)) originals.set(attribute, element.getAttribute(attribute));
+      const original = originals.get(attribute);
+      element.setAttribute(attribute, activeLanguage === "en" ? (englishTranslations[original] || original) : original);
+    }
+  });
+
+  const walker = document.createTreeWalker(root, window.NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.parentElement?.closest("pre, code, script, style, svg, [data-no-translate]")) continue;
+    if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.nodeValue);
+    const original = originalTextNodes.get(node);
+    const trimmed = original.trim();
+    if (!trimmed) continue;
+    const leading = original.match(/^\s*/)?.[0] || "";
+    const trailing = original.match(/\s*$/)?.[0] || "";
+    node.nodeValue = activeLanguage === "en"
+      ? `${leading}${englishTranslations[trimmed] || trimmed}${trailing}`
+      : original;
+  }
+}
+
+const themeToggle = $("[data-theme-toggle]");
+const themeLabel = $("[data-theme-label]");
+
+function applyTheme(theme) {
+  const dark = theme === "dark";
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  themeToggle?.setAttribute("aria-pressed", String(dark));
+  themeToggle?.setAttribute("aria-label", translatedText(dark ? "Lichte modus inschakelen" : "Donkere modus inschakelen"));
+  if (themeLabel) themeLabel.textContent = translatedText(dark ? "Licht" : "Donker");
+  $("meta[name='theme-color']")?.setAttribute("content", dark ? "#091321" : "#f3f0e8");
+}
+
+applyTheme(document.documentElement.dataset.theme || "light");
+themeToggle?.addEventListener("click", () => {
+  const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  localStorage.setItem("cfd-theme", nextTheme);
+  applyTheme(nextTheme);
+});
+
+window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener?.("change", (event) => {
+  if (!localStorage.getItem("cfd-theme")) applyTheme(event.matches ? "dark" : "light");
+});
+
 const copyToast = $("[data-copy-toast]");
 let toastTimer;
 
 function showCopyToast(message = "Code gekopieerd") {
-  copyToast.textContent = message;
+  copyToast.textContent = translatedText(message);
   copyToast.classList.add("is-visible");
   window.clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => copyToast.classList.remove("is-visible"), 1800);
@@ -24,6 +132,18 @@ async function copyText(text) {
     area.remove();
     showCopyToast();
   }
+}
+
+function downloadTextFile(filename, content) {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename.replace(/^.*[\\/]/, "").split(" · ")[0] || "crud-code.txt";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 $$('[data-copy-target]').forEach((button) => {
@@ -62,6 +182,47 @@ const searchIndex = $$('[data-search-title]').map((section) => ({
   text: section.textContent.replace(/\s+/g, " ").trim(),
   element: section
 }));
+
+function applyLanguage(language, updateUrl = true) {
+  activeLanguage = language === "en" ? "en" : "nl";
+  document.documentElement.lang = activeLanguage;
+  translateSubtree(document.documentElement);
+  document.title = activeLanguage === "en"
+    ? (englishTranslations["CodingForDommies — Bouw je eerste CRUD-app"] || "CodingForDommies — Build your first CRUD app")
+    : "CodingForDommies — Bouw je eerste CRUD-app";
+  const description = $("meta[name='description']");
+  const dutchDescription = "Bouw stap voor stap een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL en XAMPP. Inclusief werkende copy-paste starters.";
+  description?.setAttribute("content", activeLanguage === "en" ? (englishTranslations[dutchDescription] || dutchDescription) : dutchDescription);
+  $$('[data-language]').forEach((button) => {
+    const selected = button.dataset.language === activeLanguage;
+    button.classList.toggle("is-active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  searchIndex.forEach((entry) => {
+    entry.title = entry.element.dataset.searchTitle;
+    entry.text = entry.element.textContent.replace(/\s+/g, " ").trim();
+  });
+  $("[data-crud-builder]")?.refreshLanguage?.();
+  applyTheme(document.documentElement.dataset.theme || "light");
+  localStorage.setItem("cfd-language", activeLanguage);
+  if (updateUrl) {
+    const url = new URL(window.location.href);
+    if (activeLanguage === "en") url.searchParams.set("lang", "en");
+    else url.searchParams.delete("lang");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+  if (!languageMutationObserver) {
+    languageMutationObserver = new MutationObserver((records) => {
+      if (activeLanguage !== "en") return;
+      records.forEach((record) => record.addedNodes.forEach((addedNode) => translateSubtree(addedNode)));
+    });
+    languageMutationObserver.observe(document.body, { childList: true, subtree: true });
+  }
+}
+
+$$('[data-language]').forEach((button) => {
+  button.addEventListener("click", () => applyLanguage(button.dataset.language));
+});
 
 function openSearch() {
   if (!searchDialog.open) searchDialog.showModal();
@@ -297,9 +458,9 @@ const themeData = {
   countries: { singular: "land", plural: "landen", fields: "naam, landcode, regio", create: "create_country", update: "update_country", table: "landen" }
 };
 
-$$('[data-theme]').forEach((button) => {
+$$('.theme-buttons [data-theme]').forEach((button) => {
   button.addEventListener("click", () => {
-    $$('[data-theme]').forEach((item) => item.classList.toggle("is-active", item === button));
+    $$('.theme-buttons [data-theme]').forEach((item) => item.classList.toggle("is-active", item === button));
     const values = themeData[button.dataset.theme];
     Object.entries(values).forEach(([key, value]) => {
       const target = $(`[data-map="${key}"]`);
@@ -424,10 +585,30 @@ if (builder) {
   const builderTestTitle = $("[data-builder-test-title]", builder);
   const builderTestIntro = $("[data-builder-test-intro]", builder);
   const builderTestSteps = $("[data-builder-test-steps]", builder);
+  const operationInputs = $$('[data-builder-operation]', builder);
+  const operationSummary = $("[data-builder-operation-summary]", builder);
+  const operationPresetButtons = $$('[data-crud-preset]', builder);
+  const builderValidation = $("[data-builder-validation]", builder);
+  const resetBuilderButton = $("[data-reset-builder]", builder);
   let currentBuilderTab = "complete";
   let builderFields = [];
+  let builderInitialized = false;
+  const builderStorageKey = "cfd-builder-configuration";
 
   const reservedWords = new Set(["select", "insert", "update", "delete", "from", "where", "order", "group", "table", "index", "user"]);
+  const protectedFieldNames = new Set(["id", "created_at", "updated_at"]);
+  const fieldTypeMeta = {
+    text: { label: "Korte tekst", php: "string", js: "string", html: "text" },
+    textarea: { label: "Lange tekst", php: "string", js: "string", html: "textarea" },
+    email: { label: "E-mailadres", php: "string", js: "string", html: "email" },
+    url: { label: "Webadres / URL", php: "string", js: "string", html: "url" },
+    telephone: { label: "Telefoonnummer", php: "string", js: "string", html: "tel" },
+    integer: { label: "Heel getal", php: "int", js: "number", html: "number" },
+    decimal: { label: "Prijs / decimaal", php: "float", js: "number", html: "number" },
+    date: { label: "Datum", php: "string (datum)", js: "string", html: "date" },
+    datetime: { label: "Datum + tijd", php: "string (datum/tijd)", js: "string", html: "datetime-local" },
+    boolean: { label: "Ja / nee", php: "bool → 0/1", js: "boolean → 0/1", html: "checkbox" }
+  };
 
   function sanitizeIdentifier(value, fallback) {
     let identifier = String(value || "")
@@ -443,6 +624,11 @@ if (builder) {
     return identifier;
   }
 
+  function sanitizeFieldIdentifier(value, fallback) {
+    const identifier = sanitizeIdentifier(value, fallback);
+    return protectedFieldNames.has(identifier) ? `eigen_${identifier}` : identifier;
+  }
+
   function escapeBuilderAttribute(value) {
     return String(value)
       .replace(/&/g, "&amp;")
@@ -452,39 +638,46 @@ if (builder) {
   }
 
   function typeOptions(selected) {
-    const types = {
-      text: "Korte tekst",
-      textarea: "Lange tekst",
-      email: "E-mailadres",
-      integer: "Heel getal",
-      decimal: "Prijs / decimaal",
-      date: "Datum",
-      boolean: "Ja / nee"
-    };
-
-    return Object.entries(types).map(([value, label]) =>
-      `<option value="${value}" ${value === selected ? "selected" : ""}>${label}</option>`
+    return Object.entries(fieldTypeMeta).map(([value, meta]) =>
+      `<option value="${value}" ${value === selected ? "selected" : ""}>${meta.label}</option>`
     ).join("");
   }
 
   function renderBuilderFields() {
-    fieldsContainer.innerHTML = builderFields.map((field, index) => `
+    fieldsContainer.innerHTML = builderFields.map((field, index) => {
+      const meta = fieldTypeMeta[field.type] || fieldTypeMeta.text;
+      return `
       <div class="builder-field-row" data-builder-field-row="${index}">
         <label><span>Tekst op formulier</span><input data-field-key="label" value="${escapeBuilderAttribute(field.label)}" aria-label="Tekst op formulier voor gegeven ${index + 1}"></label>
         <label><span>Naam in database</span><input data-field-key="name" value="${escapeBuilderAttribute(field.name)}" aria-label="Databasenaam van gegeven ${index + 1}"></label>
         <label><span>Soort invoer</span><select data-field-key="type" aria-label="Soort invoer van gegeven ${index + 1}">${typeOptions(field.type)}</select></label>
+        <div class="builder-data-type" aria-label="Automatisch datatype"><span>PHP / JavaScript</span><b>${meta.php}</b><small>JS: ${meta.js}</small></div>
         <label class="builder-check"><input type="checkbox" data-field-key="required" ${field.required ? "checked" : ""}><span>Moet ingevuld</span></label>
         <label class="builder-check"><input type="checkbox" data-field-key="unique" ${field.unique ? "checked" : ""}><span>Geen dubbele</span></label>
         <button class="builder-remove" type="button" data-remove-field="${index}" aria-label="Verwijder veld ${index + 1}">Verwijder</button>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     $$('[data-field-key]', fieldsContainer).forEach((control) => {
       const eventName = control.type === "checkbox" || control.tagName === "SELECT" ? "change" : "input";
       control.addEventListener(eventName, () => {
         const row = control.closest('[data-builder-field-row]');
         const field = builderFields[Number(row.dataset.builderFieldRow)];
-        field[control.dataset.fieldKey] = control.type === "checkbox" ? control.checked : control.value;
+        const key = control.dataset.fieldKey;
+        if (key === "label") {
+          field.label = control.value;
+          if (!field.nameTouched) {
+            field.name = sanitizeFieldIdentifier(control.value, `veld_${Number(row.dataset.builderFieldRow) + 1}`);
+            $("[data-field-key='name']", row).value = field.name;
+          }
+        } else if (key === "name") {
+          field.name = control.value;
+          field.nameTouched = true;
+        } else {
+          field[key] = control.type === "checkbox" ? control.checked : control.value;
+        }
+        if (key === "type") renderBuilderFields();
         updateBuilderOutput();
       });
     });
@@ -499,32 +692,153 @@ if (builder) {
     });
   }
 
+  function selectedOperations() {
+    return Object.fromEntries(operationInputs.map((input) => [input.dataset.builderOperation, input.checked]));
+  }
+
+  function updateOperationSummary() {
+    const labels = { create: "Create", read: "Read", update: "Update", delete: "Delete" };
+    const selected = operationInputs.filter((input) => input.checked).map((input) => labels[input.dataset.builderOperation]);
+    const readable = selected.join(", ").replace(/, ([^,]*)$/, activeLanguage === "en" ? " and $1" : " en $1");
+    operationSummary.textContent = activeLanguage === "en"
+      ? `Selected: ${readable}. The generator removes all unselected forms, buttons and backend actions.`
+      : `Gekozen: ${readable}. De generator verwijdert alle niet-gekozen formulieren, knoppen en backendacties.`;
+
+    const signature = operationInputs.filter((input) => input.checked).map((input) => input.dataset.builderOperation).join(",");
+    operationPresetButtons.forEach((button) => {
+      const presetSignature = {
+        all: "create,read,update,delete",
+        read: "read",
+        "create-read": "create,read"
+      }[button.dataset.crudPreset];
+      const selectedPreset = signature === presetSignature;
+      button.classList.toggle("is-active", selectedPreset);
+      button.setAttribute("aria-pressed", String(selectedPreset));
+    });
+  }
+
   function normalizedBuilderState() {
+    const usedNames = new Set();
+    const fields = builderFields.map((field, index) => {
+      const baseName = sanitizeFieldIdentifier(field.name, `veld_${index + 1}`);
+      let uniqueName = baseName;
+      let suffix = 2;
+      while (usedNames.has(uniqueName)) uniqueName = `${baseName}_${suffix++}`;
+      usedNames.add(uniqueName);
+      return {
+        label: String(field.label || `Veld ${index + 1}`).trim(),
+        name: uniqueName,
+        type: fieldTypeMeta[field.type] ? field.type : "text",
+        required: Boolean(field.required),
+        unique: Boolean(field.unique)
+      };
+    });
+
     return {
       stack: stackSelect.value,
       singular: sanitizeIdentifier(singularInput.value, "onderdeel"),
       table: sanitizeIdentifier(tableInput.value, "onderdelen"),
-      fields: builderFields.map((field, index) => ({
-        label: String(field.label || `Veld ${index + 1}`).trim(),
-        name: sanitizeIdentifier(field.name, `veld_${index + 1}`),
-        type: field.type,
-        required: Boolean(field.required),
-        unique: Boolean(field.unique)
-      })).filter((field, index, all) => all.findIndex((item) => item.name === field.name) === index)
+      operations: selectedOperations(),
+      fields
     };
+  }
+
+  function builderNormalizationNotes(state) {
+    const notes = [];
+    builderFields.forEach((field, index) => {
+      const enteredName = String(field.name || "").trim();
+      const basicName = sanitizeIdentifier(enteredName, `veld_${index + 1}`);
+      const safeName = sanitizeFieldIdentifier(enteredName, `veld_${index + 1}`);
+      const finalName = state.fields[index].name;
+      if (protectedFieldNames.has(basicName)) {
+        notes.push(activeLanguage === "en"
+          ? `${enteredName || basicName} is reserved and becomes ${safeName}`
+          : `${enteredName || basicName} is gereserveerd en wordt ${safeName}`);
+      } else if (finalName !== safeName) {
+        notes.push(activeLanguage === "en"
+          ? `duplicate ${safeName} becomes ${finalName}`
+          : `dubbele naam ${safeName} wordt ${finalName}`);
+      } else if (enteredName && enteredName !== safeName) {
+        notes.push(activeLanguage === "en"
+          ? `${enteredName} becomes the safe name ${safeName}`
+          : `${enteredName} wordt de veilige naam ${safeName}`);
+      }
+    });
+    return [...new Set(notes)];
+  }
+
+  function updateBuilderValidation(state) {
+    if (!builderValidation) return;
+    const actionCount = Object.values(state.operations).filter(Boolean).length;
+    const notes = builderNormalizationNotes(state);
+    builderValidation.classList.toggle("has-note", notes.length > 0);
+    builderValidation.textContent = notes.length
+      ? (activeLanguage === "en" ? `Safe correction: ${notes.join("; ")}.` : `Veilige correctie: ${notes.join("; ")}.`)
+      : (activeLanguage === "en"
+        ? `Configuration is valid: ${state.fields.length} field(s) and ${actionCount} CRUD action(s).`
+        : `Configuratie is geldig: ${state.fields.length} veld(en) en ${actionCount} CRUD-actie(s).`);
+  }
+
+  function saveBuilderConfiguration() {
+    if (!builderInitialized) return;
+    const configuration = {
+      preset: presetSelect.value,
+      stack: stackSelect.value,
+      singular: singularInput.value,
+      table: tableInput.value,
+      operations: selectedOperations(),
+      fields: builderFields,
+      tab: currentBuilderTab
+    };
+    try {
+      localStorage.setItem(builderStorageKey, JSON.stringify(configuration));
+    } catch {
+      // De generator blijft werken wanneer een browser lokale opslag blokkeert.
+    }
+  }
+
+  function restoreBuilderConfiguration() {
+    let saved;
+    try {
+      saved = JSON.parse(localStorage.getItem(builderStorageKey) || "null");
+    } catch {
+      return false;
+    }
+    if (!saved || !Array.isArray(saved.fields) || saved.fields.length < 1 || saved.fields.length > 12) return false;
+
+    if ([...presetSelect.options].some((option) => option.value === saved.preset)) presetSelect.value = saved.preset;
+    if ([...stackSelect.options].some((option) => option.value === saved.stack)) stackSelect.value = saved.stack;
+    singularInput.value = String(saved.singular || "onderdeel");
+    tableInput.value = String(saved.table || "onderdelen");
+    builderFields = saved.fields.map((field, index) => ({
+      label: String(field.label || `Veld ${index + 1}`),
+      name: String(field.name || `veld_${index + 1}`),
+      type: fieldTypeMeta[field.type] ? field.type : "text",
+      required: Boolean(field.required),
+      unique: Boolean(field.unique),
+      nameTouched: Boolean(field.nameTouched)
+    }));
+    const savedOperations = saved.operations || {};
+    operationInputs.forEach((input) => { input.checked = Boolean(savedOperations[input.dataset.builderOperation]); });
+    if (!operationInputs.some((input) => input.checked)) operationInputs[0].checked = true;
+    if (builderTabs.some((tab) => tab.dataset.builderTab === saved.tab)) currentBuilderTab = saved.tab;
+    builderTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === currentBuilderTab));
+    renderBuilderFields();
+    return true;
   }
 
   function sqlType(field, stack) {
     if (stack === "php-mysql") {
       return {
-        text: "VARCHAR(160)", textarea: "TEXT", email: "VARCHAR(160)", integer: "INT",
-        decimal: "DECIMAL(10,2)", date: "DATE", boolean: "TINYINT(1)"
+        text: "VARCHAR(160)", textarea: "TEXT", email: "VARCHAR(160)", url: field.unique ? "VARCHAR(512)" : "VARCHAR(2048)",
+        telephone: "VARCHAR(40)", integer: "INT", decimal: "DECIMAL(10,2)", date: "DATE",
+        datetime: "DATETIME", boolean: "TINYINT(1)"
       }[field.type];
     }
 
     return {
-      text: "TEXT", textarea: "TEXT", email: "TEXT", integer: "INTEGER",
-      decimal: "REAL", date: "TEXT", boolean: "INTEGER"
+      text: "TEXT", textarea: "TEXT", email: "TEXT", url: "TEXT", telephone: "TEXT",
+      integer: "INTEGER", decimal: "REAL", date: "TEXT", datetime: "TEXT", boolean: "INTEGER"
     }[field.type];
   }
 
@@ -565,8 +879,8 @@ if (builder) {
     return `-- Dit bestand maakt de tabel voor ${state.table}.\n-- SQLite bewaart deze tabel in één lokaal databasebestand.\nCREATE TABLE IF NOT EXISTS ${state.table} (\n${definitions.join(",\n")}\n);`;
   }
 
-  function htmlControl(field, state) {
-    const id = `${state.singular}-${field.name}`;
+  function htmlControl(field, state, scope = "") {
+    const id = `${state.singular}-${scope ? `${scope}-` : ""}${field.name}`;
     const required = field.required ? " required" : "";
     const label = escapeHtmlCode(field.label);
 
@@ -581,115 +895,197 @@ if (builder) {
       return `    <label class="generated-check"><input id="${id}" name="${field.name}" type="checkbox"> <span>${label}</span></label>`;
     }
 
-    const type = { email: "email", integer: "number", decimal: "number", date: "date" }[field.type] || "text";
-    const extra = field.type === "decimal" ? ' min="0" step="0.01"' : field.type === "integer" ? ' step="1"' : "";
+    const type = fieldTypeMeta[field.type]?.html || "text";
+    const extras = [];
+    if (field.type === "decimal") extras.push('step="0.01"');
+    if (field.type === "integer") extras.push('step="1"');
+    if (["text", "email"].includes(field.type)) extras.push('maxlength="160"');
+    if (field.type === "telephone") extras.push('maxlength="40"');
+    if (field.type === "url") extras.push('maxlength="2048"');
+    const extra = extras.length ? ` ${extras.join(" ")}` : "";
     return `    <label class="generated-field" for="${id}"><span>${label}</span>\n      <input id="${id}" name="${field.name}" type="${type}"${extra}${required}>\n    </label>`;
   }
 
   function generateForm(state) {
-    const controls = state.fields.map((field) => htmlControl(field, state)).join("\n\n");
+    const ops = state.operations;
+    const selectedNames = [ops.create && "Create", ops.read && "Read", ops.update && "Update", ops.delete && "Delete"].filter(Boolean).join(" + ");
+    const headers = state.fields.map((field) => `        <th>${escapeHtmlCode(field.label)}</th>`).join("\n");
+
     if (state.stack === "js-sqlite") {
-      const headers = state.fields.map((field) => `        <th>${escapeHtmlCode(field.label)}</th>`).join("\n");
+      const cards = [];
+      if (ops.create) {
+        const createControls = state.fields.map((field) => htmlControl(field, state, "create")).join("\n\n");
+        cards.push([
+          `  <!-- CREATE: dit formulier verstuurt een POST-request naar de API. -->`,
+          `  <form class="generated-card generated-form" id="${state.singular}-create-form">`,
+          `    <h3>Nieuwe ${state.singular}</h3>`,
+          createControls,
+          `    <button class="generated-primary" type="submit">${state.singular} toevoegen</button>`,
+          `  </form>`
+        ].join("\n"));
+      }
+      if (ops.update) {
+        const updateControls = state.fields.map((field) => htmlControl(field, state, "update")).join("\n\n");
+        cards.push([
+          `  <!-- UPDATE: met Read vult de knop Bewerk dit formulier; zonder Read vul je zelf een ID in. -->`,
+          `  <form class="generated-card generated-form" id="${state.singular}-update-form">`,
+          `    <h3>${state.singular} wijzigen</h3>`,
+          `    <label class="generated-field"><span>ID van de ${state.singular}</span><input name="id" type="number" min="1" step="1" ${ops.read ? "readonly" : "required"}></label>`,
+          updateControls,
+          `    <button class="generated-primary" type="submit">Wijzigingen opslaan</button>`,
+          `  </form>`
+        ].join("\n"));
+      }
+      if (ops.delete && !ops.read) {
+        cards.push([
+          `  <!-- DELETE ZONDER READ: vul het ID in van de rij die weg mag. -->`,
+          `  <form class="generated-card generated-form" id="${state.singular}-delete-form">`,
+          `    <h3>${state.singular} verwijderen</h3>`,
+          `    <label class="generated-field"><span>ID van de ${state.singular}</span><input name="id" type="number" min="1" step="1" required></label>`,
+          `    <button class="generated-danger" type="submit">Definitief verwijderen</button>`,
+          `  </form>`
+        ].join("\n"));
+      }
+      if (ops.read) {
+        const actionHeader = ops.update || ops.delete ? `\n        <th>Acties</th>` : "";
+        cards.push([
+          `  <!-- READ: deze tbody wordt door browser-JavaScript gevuld. -->`,
+          `  <div class="generated-card generated-list">`,
+          `    <h3>Overzicht ${state.table}</h3>`,
+          `    <div class="generated-table-scroll"><table>`,
+          `      <thead><tr>`,
+          headers,
+          actionHeader,
+          `      </tr></thead>`,
+          `      <tbody id="${state.table}-rows"></tbody>`,
+          `    </table></div>`,
+          `  </div>`
+        ].filter(Boolean).join("\n"));
+      }
+
       return [
-        `<!-- ZICHTBARE PAGINA: formulier links, overzicht rechts. -->`,
+        `<!-- GEKOZEN FUNCTIES: ${selectedNames}. Niet-gekozen acties staan niet in deze HTML. -->`,
         `<section class="generated-crud ${state.table}-beheer">`,
-        `  <header class="generated-crud-heading">`,
-        `    <p>Eigen administratie</p>`,
-        `    <h2>${state.table} beheren</h2>`,
-        `  </header>`,
+        `  <header class="generated-crud-heading"><p>Eigen administratie</p><h2>${state.table} beheren</h2></header>`,
         `  <div class="generated-crud-layout">`,
-        `  <form class="generated-card generated-form" id="${state.singular}-form">`,
-        `    <h3>Nieuwe ${state.singular}</h3>`,
-        controls,
-        `    <button class="generated-primary" type="submit" id="${state.singular}-submit">${state.singular} toevoegen</button>`,
-        `    <button class="generated-secondary" type="button" id="${state.singular}-cancel" hidden>Annuleer bewerken</button>`,
-        `  </form>`,
-        ``,
-        `  <div class="generated-card generated-list">`,
-        `  <h3>Overzicht ${state.table}</h3>`,
-        `  <div class="generated-table-scroll">`,
-        `  <table>`,
-        `    <thead>`,
-        `      <tr>`,
-        headers,
-        `        <th>Acties</th>`,
-        `      </tr>`,
-        `    </thead>`,
-        `    <tbody id="${state.table}-rows"></tbody>`,
-        `  </table>`,
-        `  </div>`,
-        `  </div>`,
+        cards.join("\n\n"),
         `  </div>`,
         `</section>`
       ].join("\n");
     }
 
-    const editControls = state.fields.map((field) => {
+    const phpEditControls = (rowExpression = null) => state.fields.map((field) => {
       const label = escapeHtmlCode(field.label);
+      const required = field.required ? " required" : "";
+      const value = rowExpression
+        ? (field.type === "datetime"
+          ? ` value="<?= e(str_replace(' ', 'T', substr((string) ${rowExpression}['${field.name}'], 0, 16))) ?>"`
+          : ` value="<?= e(${rowExpression}['${field.name}']) ?>"`)
+        : "";
       if (field.type === "textarea") {
-        return `      <label class="generated-field"><span>${label}</span>\n        <textarea name="${field.name}"${field.required ? " required" : ""}><?= e($row['${field.name}']) ?></textarea>\n      </label>`;
+        const content = rowExpression ? `<?= e(${rowExpression}['${field.name}']) ?>` : "";
+        return `      <label class="generated-field"><span>${label}</span><textarea name="${field.name}"${required}>${content}</textarea></label>`;
       }
       if (field.type === "boolean") {
-        return `      <input type="hidden" name="${field.name}" value="0">\n      <label class="generated-check"><input name="${field.name}" type="checkbox" value="1" <?= (int) $row['${field.name}'] === 1 ? 'checked' : '' ?>> <span>${label}</span></label>`;
+        const checked = rowExpression ? ` <?= (int) ${rowExpression}['${field.name}'] === 1 ? 'checked' : '' ?>` : "";
+        return `      <input type="hidden" name="${field.name}" value="0">\n      <label class="generated-check"><input name="${field.name}" type="checkbox" value="1"${checked}> <span>${label}</span></label>`;
       }
-      const type = { email: "email", integer: "number", decimal: "number", date: "date" }[field.type] || "text";
-      const extra = field.type === "decimal" ? ' min="0" step="0.01"' : field.type === "integer" ? ' step="1"' : "";
-      return `      <label class="generated-field"><span>${label}</span>\n        <input name="${field.name}" type="${type}" value="<?= e($row['${field.name}']) ?>"${extra}${field.required ? " required" : ""}>\n      </label>`;
+      const type = fieldTypeMeta[field.type]?.html || "text";
+      const extra = field.type === "decimal" ? ' step="0.01"' : field.type === "integer" ? ' step="1"' : "";
+      return `      <label class="generated-field"><span>${label}</span><input name="${field.name}" type="${type}"${value}${extra}${required}></label>`;
     }).join("\n");
-    const headers = state.fields.map((field) => `        <th>${escapeHtmlCode(field.label)}</th>`).join("\n");
-    const cells = state.fields.map((field) => `          <td><?= e($row['${field.name}']) ?></td>`).join("\n");
+
+    const cards = [];
+    if (ops.create) {
+      cards.push([
+        `  <!-- CREATE: dit formulier stuurt intent create_${state.singular}. -->`,
+        `  <div class="generated-card"><h3>Nieuwe ${state.singular}</h3>`,
+        `  <form class="generated-form" method="post">`,
+        `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+        `    <input type="hidden" name="intent" value="create_${state.singular}">`,
+        state.fields.map((field) => htmlControl(field, state, "create")).join("\n\n"),
+        `    <button class="generated-primary" type="submit">${state.singular} toevoegen</button>`,
+        `  </form></div>`
+      ].join("\n"));
+    }
+
+    if (ops.read) {
+      const cells = state.fields.map((field) => `          <td><?= e($row['${field.name}']) ?></td>`).join("\n");
+      const actionHeader = ops.update || ops.delete ? `\n        <th>Acties</th>` : "";
+      const actionCell = ops.update || ops.delete ? [
+        `          <td class="row-actions">`,
+        ops.update ? [
+          `            <details><summary>Bewerk</summary>`,
+          `              <form class="generated-form generated-edit-form" method="post">`,
+          `                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+          `                <input type="hidden" name="intent" value="update_${state.singular}">`,
+          `                <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
+          phpEditControls("$row"),
+          `                <button class="generated-primary" type="submit">Wijzigingen opslaan</button>`,
+          `              </form>`,
+          `            </details>`
+        ].join("\n") : "",
+        ops.delete ? [
+          `            <form method="post" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">`,
+          `              <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+          `              <input type="hidden" name="intent" value="delete_${state.singular}">`,
+          `              <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
+          `              <button class="generated-danger" type="submit">Verwijder</button>`,
+          `            </form>`
+        ].join("\n") : "",
+        `          </td>`
+      ].filter(Boolean).join("\n") : "";
+      cards.push([
+        `  <!-- READ${ops.update || ops.delete ? " + RIJACTIES" : ""}: PHP loopt door $rows. -->`,
+        `  <div class="generated-card generated-list"><h3>Overzicht</h3><div class="generated-table-scroll">`,
+        `  <table><thead><tr>`,
+        headers,
+        actionHeader,
+        `  </tr></thead><tbody>`,
+        `      <?php foreach ($rows as $row): ?>`,
+        `        <tr>`,
+        cells,
+        actionCell,
+        `        </tr>`,
+        `      <?php endforeach; ?>`,
+        `  </tbody></table>`,
+        `  </div></div>`
+      ].filter(Boolean).join("\n"));
+    }
+
+    if (ops.update && !ops.read) {
+      cards.push([
+        `  <!-- UPDATE ZONDER READ: vul het doel-ID en de nieuwe waarden in. -->`,
+        `  <div class="generated-card"><h3>${state.singular} wijzigen</h3>`,
+        `  <form class="generated-form" method="post">`,
+        `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+        `    <input type="hidden" name="intent" value="update_${state.singular}">`,
+        `    <label class="generated-field"><span>ID van de ${state.singular}</span><input name="id" type="number" min="1" step="1" required></label>`,
+        phpEditControls(),
+        `    <button class="generated-primary" type="submit">Wijzigingen opslaan</button>`,
+        `  </form></div>`
+      ].join("\n"));
+    }
+
+    if (ops.delete && !ops.read) {
+      cards.push([
+        `  <!-- DELETE ZONDER READ: verwijder één bestaande rij met het ID. -->`,
+        `  <div class="generated-card"><h3>${state.singular} verwijderen</h3>`,
+        `  <form class="generated-form" method="post" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">`,
+        `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
+        `    <input type="hidden" name="intent" value="delete_${state.singular}">`,
+        `    <label class="generated-field"><span>ID van de ${state.singular}</span><input name="id" type="number" min="1" step="1" required></label>`,
+        `    <button class="generated-danger" type="submit">Definitief verwijderen</button>`,
+        `  </form></div>`
+      ].join("\n"));
+    }
 
     return [
-      `<!-- ZICHTBARE CRUD: dit deel hoort in het HTML-gedeelte van index.php. -->`,
+      `<!-- GEKOZEN FUNCTIES: ${selectedNames}. Niet-gekozen acties staan niet in deze HTML. -->`,
       `<section class="generated-crud ${state.table}-beheer">`,
       `  <header class="generated-crud-heading"><p>Eigen CRUD</p><h2>${state.table} beheren</h2></header>`,
       `  <div class="generated-crud-layout">`,
-      ``,
-      `  <div class="generated-card">`,
-      `  <h3>Nieuwe ${state.singular}</h3>`,
-      `  <form class="generated-form" method="post">`,
-      `    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
-      `    <input type="hidden" name="intent" value="create_${state.singular}">`,
-      controls,
-      `    <button class="generated-primary" type="submit">${state.singular} toevoegen</button>`,
-      `  </form>`,
-      `  </div>`,
-      ``,
-      `  <div class="generated-card generated-list"><h3>Overzicht</h3><div class="generated-table-scroll">`,
-      `  <table>`,
-      `    <thead>`,
-      `      <tr>`,
-      headers,
-      `        <th>Acties</th>`,
-      `      </tr>`,
-      `    </thead>`,
-      `    <tbody>`,
-      `      <?php foreach ($rows as $row): ?>`,
-      `        <tr>`,
-      cells,
-      `          <td class="row-actions">`,
-      `            <details>`,
-      `              <summary>Bewerk</summary>`,
-      `              <form class="generated-form generated-edit-form" method="post">`,
-      `                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
-      `                <input type="hidden" name="intent" value="update_${state.singular}">`,
-      `                <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
-      editControls,
-      `                <button class="generated-primary" type="submit">Wijzigingen opslaan</button>`,
-      `              </form>`,
-      `            </details>`,
-      `            <form method="post" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">`,
-      `              <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">`,
-      `              <input type="hidden" name="intent" value="delete_${state.singular}">`,
-      `              <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">`,
-      `              <button class="generated-danger" type="submit">Verwijder</button>`,
-      `            </form>`,
-      `          </td>`,
-      `        </tr>`,
-      `      <?php endforeach; ?>`,
-      `    </tbody>`,
-      `  </table>`,
-      `  </div></div>`,
+      cards.join("\n\n"),
       `  </div>`,
       `</section>`
     ].join("\n");
@@ -712,7 +1108,7 @@ if (builder) {
       `.generated-crud-heading { margin-bottom: 22px; }`,
       `.generated-crud-heading p { margin: 0 0 6px; color: var(--generated-blue); font-size: 12px; font-weight: 700; text-transform: uppercase; }`,
       `.generated-crud-heading h2 { margin: 0; font-size: clamp(30px, 5vw, 48px); line-height: 1; }`,
-      `.generated-crud-layout { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); gap: 22px; align-items: start; }`,
+      `.generated-crud-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr)); gap: 22px; align-items: start; }`,
       `.generated-card { padding: 22px; border: 1px solid var(--generated-line); background: #fff; box-shadow: 0 16px 40px rgba(16, 35, 63, .08); }`,
       `.generated-card h3 { margin: 0 0 18px; font-size: 20px; }`,
       `.generated-form { display: grid; gap: 14px; }`,
@@ -727,6 +1123,7 @@ if (builder) {
       `.generated-primary:hover { background: #153fa7; }`,
       `.generated-secondary { border-color: var(--generated-line); background: #fff; color: var(--generated-ink); }`,
       `.generated-danger { background: #fff0f1; color: #b62935; }`,
+      `.generated-list { grid-column: 1 / -1; }`,
       `.generated-table-scroll { width: 100%; overflow-x: auto; }`,
       `.generated-list table { width: 100%; border-collapse: collapse; text-align: left; }`,
       `.generated-list th { padding: 11px 13px; border-bottom: 1px solid var(--generated-line); background: #f5f7fa; color: var(--generated-muted); font-size: 10px; text-transform: uppercase; }`,
@@ -741,78 +1138,165 @@ if (builder) {
     ].join("\n");
   }
 
-  function phpInputExpression(field) {
+  function phpInputExpression(field, state) {
     const label = escapeSingleQuoted(field.label);
-    if (field.type === "boolean") return `(int) ($_POST['${field.name}'] ?? 0)`;
-    if (field.type === "integer") return field.required ? `(int) required_text('${field.name}', '${label}', 20)` : `(int) ($_POST['${field.name}'] ?? 0)`;
-    if (field.type === "decimal") return field.required ? `(float) required_text('${field.name}', '${label}', 30)` : `(float) ($_POST['${field.name}'] ?? 0)`;
-    return field.required ? `required_text('${field.name}', '${label}', 160)` : `post_text('${field.name}')`;
+    const prefix = `read_${state.singular}`;
+    if (field.type === "boolean") return `${prefix}_bool('${field.name}') ? 1 : 0`;
+    if (field.type === "integer") return `${prefix}_int('${field.name}', '${label}', ${field.required ? "true" : "false"})`;
+    if (field.type === "decimal") return `${prefix}_float('${field.name}', '${label}', ${field.required ? "true" : "false"})`;
+    if (field.type === "date" || field.type === "datetime") return `${prefix}_date('${field.name}', '${label}', ${field.required ? "true" : "false"}, ${field.type === "datetime" ? "true" : "false"})`;
+    const maxLength = field.type === "textarea" ? 5000 : field.type === "url" ? 2048 : field.type === "telephone" ? 40 : 160;
+    return field.required ? `required_text('${field.name}', '${label}', ${maxLength})` : `post_text('${field.name}')`;
   }
 
   function generatePhpBackend(state) {
+    const ops = state.operations;
+    const needsInput = ops.create || ops.update;
     const columns = state.fields.map((field) => field.name);
     const placeholders = columns.map((column) => `:${column}`);
     const updateFields = columns.map((column) => `        ${column} = :${column}`).join(",\n");
-    const inputLines = state.fields.map((field) => `        '${field.name}' => ${phpInputExpression(field)},`);
-    const emailField = state.fields.find((field) => field.type === "email");
-    const emailValidation = emailField
-      ? `\n    if ($input['${emailField.name}'] !== '' && !filter_var($input['${emailField.name}'], FILTER_VALIDATE_EMAIL)) {\n        throw new RuntimeException('${escapeSingleQuoted(emailField.label)} is ongeldig.');\n    }\n`
-      : "";
+    const inputLines = state.fields.map((field) => `        '${field.name}' => ${phpInputExpression(field, state)},`);
+    const validationLines = [];
+    state.fields.filter((field) => field.type === "email").forEach((field) => {
+      validationLines.push(`    if ($input['${field.name}'] !== '' && !filter_var($input['${field.name}'], FILTER_VALIDATE_EMAIL)) throw new RuntimeException('${escapeSingleQuoted(field.label)} is ongeldig.');`);
+    });
+    state.fields.filter((field) => field.type === "url").forEach((field) => {
+      validationLines.push(`    if ($input['${field.name}'] !== '' && !filter_var($input['${field.name}'], FILTER_VALIDATE_URL)) throw new RuntimeException('${escapeSingleQuoted(field.label)} is geen geldige URL.');`);
+    });
 
-    return [
-      `// PHP CRUD: lees invoer, voer Create/Update/Delete uit en laad daarna alle rijen.`,
-      `function read_${state.singular}_input(): array`,
-      `{`,
-      `    $input = [`,
-      ...inputLines,
-      `    ];`,
-      emailValidation,
-      `    return $input;`,
-      `}`,
-      ``,
-      `if ($_SERVER['REQUEST_METHOD'] === 'POST') {`,
-      `    verify_csrf($_POST['_token'] ?? null);`,
-      `    $intent = post_text('intent');`,
-      ``,
-      `    if ($intent === 'create_${state.singular}') {`,
-      `        $input = read_${state.singular}_input();`,
-      `        $statement = $db->prepare(`,
-      `            'INSERT INTO ${state.table} (${columns.join(", ")})`,
-      `             VALUES (${placeholders.join(", ")})'`,
-      `        );`,
-      `        $statement->execute($input);`,
-      `        flash('success', '${state.singular} is toegevoegd.');`,
-      `        redirect('index.php');`,
-      `    }`,
-      ``,
-      `    if ($intent === 'update_${state.singular}') {`,
-      `        $input = read_${state.singular}_input();`,
-      `        $input['id'] = positive_id($_POST['id'] ?? null, 'ID');`,
-      `        $statement = $db->prepare(`,
-      `            'UPDATE ${state.table} SET`,
-      updateFields,
-      `             WHERE id = :id'`,
-      `        );`,
-      `        $statement->execute($input);`,
-      `        redirect('index.php');`,
-      `    }`,
-      ``,
-      `    if ($intent === 'delete_${state.singular}') {`,
-      `        $id = positive_id($_POST['id'] ?? null, 'ID');`,
-      `        $db->prepare('DELETE FROM ${state.table} WHERE id = ?')->execute([$id]);`,
-      `        redirect('index.php');`,
-      `    }`,
-      `}`,
-      ``,
-      `$rows = $db->query('SELECT * FROM ${state.table} ORDER BY id DESC')->fetchAll();`
-    ].join("\n");
+    const parts = [`// GEKOZEN PHP-ACTIES: ${[ops.create && "Create", ops.read && "Read", ops.update && "Update", ops.delete && "Delete"].filter(Boolean).join(", ")}.`];
+    if (needsInput) {
+      if (state.fields.some((field) => field.type === "integer")) {
+        parts.push(
+          `function read_${state.singular}_int(string $name, string $label, bool $required): ?int`,
+          `{`,
+          `    $raw = post_text($name);`,
+          `    if ($raw === '' && !$required) return null;`,
+          `    $value = filter_var($raw, FILTER_VALIDATE_INT);`,
+          `    if ($value === false) throw new RuntimeException($label . ' moet een heel getal zijn.');`,
+          `    return (int) $value;`,
+          `}`,
+          ``
+        );
+      }
+      if (state.fields.some((field) => field.type === "decimal")) {
+        parts.push(
+          `function read_${state.singular}_float(string $name, string $label, bool $required): ?float`,
+          `{`,
+          `    $raw = str_replace(',', '.', post_text($name));`,
+          `    if ($raw === '' && !$required) return null;`,
+          `    $value = filter_var($raw, FILTER_VALIDATE_FLOAT);`,
+          `    if ($value === false) throw new RuntimeException($label . ' moet een getal zijn.');`,
+          `    return (float) $value;`,
+          `}`,
+          ``
+        );
+      }
+      if (state.fields.some((field) => field.type === "boolean")) {
+        parts.push(
+          `function read_${state.singular}_bool(string $name): bool`,
+          `{`,
+          `    return filter_var($_POST[$name] ?? false, FILTER_VALIDATE_BOOLEAN);`,
+          `}`,
+          ``
+        );
+      }
+      if (state.fields.some((field) => field.type === "date" || field.type === "datetime")) {
+        parts.push(
+          `function read_${state.singular}_date(string $name, string $label, bool $required, bool $withTime): ?string`,
+          `{`,
+          `    $raw = post_text($name);`,
+          `    if ($raw === '' && !$required) return null;`,
+          `    $format = $withTime ? 'Y-m-d\\TH:i' : 'Y-m-d';`,
+          `    $date = DateTimeImmutable::createFromFormat($format, $raw);`,
+          `    if (!$date || $date->format($format) !== $raw) throw new RuntimeException($label . ' heeft geen geldige datum.');`,
+          `    return $withTime ? $date->format('Y-m-d H:i:s') : $date->format('Y-m-d');`,
+          `}`,
+          ``
+        );
+      }
+      parts.push(
+        `function read_${state.singular}_input(): array`,
+        `{`,
+        `    $input = [`,
+        ...inputLines,
+        `    ];`,
+        ...validationLines,
+        `    return $input;`,
+        `}`,
+        ``
+      );
+    }
+
+    if (ops.create || ops.update || ops.delete) {
+      parts.push(
+        `$pageError = '';`,
+        `if ($_SERVER['REQUEST_METHOD'] === 'POST') {`,
+        `    try {`,
+        `        verify_csrf($_POST['_token'] ?? null);`,
+        `        $intent = post_text('intent');`
+      );
+      if (ops.create) {
+        parts.push(
+          ``,
+          `        if ($intent === 'create_${state.singular}') {`,
+          `            $input = read_${state.singular}_input();`,
+          `            $statement = $db->prepare('INSERT INTO ${state.table} (${columns.join(", ")}) VALUES (${placeholders.join(", ")})');`,
+          `            $statement->execute($input);`,
+          `            flash('success', '${state.singular} is toegevoegd.');`,
+          `            redirect('index.php');`,
+          `        }`
+        );
+      }
+      if (ops.update) {
+        parts.push(
+          ``,
+          `        if ($intent === 'update_${state.singular}') {`,
+          `            $input = read_${state.singular}_input();`,
+          `            $input['id'] = positive_id($_POST['id'] ?? null, 'ID');`,
+          `            $statement = $db->prepare('UPDATE ${state.table} SET\n${updateFields},\n        updated_at = CURRENT_TIMESTAMP WHERE id = :id');`,
+          `            $statement->execute($input);`,
+          `            if ($statement->rowCount() === 0) throw new RuntimeException('${state.singular} niet gevonden of niets gewijzigd.');`,
+          `            flash('success', '${state.singular} is bijgewerkt.');`,
+          `            redirect('index.php');`,
+          `        }`
+        );
+      }
+      if (ops.delete) {
+        parts.push(
+          ``,
+          `        if ($intent === 'delete_${state.singular}') {`,
+          `            $id = positive_id($_POST['id'] ?? null, 'ID');`,
+          `            $statement = $db->prepare('DELETE FROM ${state.table} WHERE id = ?');`,
+          `            $statement->execute([$id]);`,
+          `            if ($statement->rowCount() === 0) throw new RuntimeException('${state.singular} niet gevonden.');`,
+          `            flash('success', '${state.singular} is verwijderd.');`,
+          `            redirect('index.php');`,
+          `        }`
+        );
+      }
+      parts.push(
+        `    } catch (Throwable $crudError) {`,
+        `        $pageError = $crudError->getMessage();`,
+        `    }`,
+        `}`,
+        ``
+      );
+    } else {
+      parts.push(`$pageError = '';`, ``);
+    }
+    if (ops.read) parts.push(`$rows = $db->query('SELECT * FROM ${state.table} ORDER BY id DESC')->fetchAll();`);
+    return parts.join("\n");
   }
 
   function jsInputExpression(field) {
     const label = escapeSingleQuoted(field.label);
     if (field.type === "boolean") return `body.${field.name} ? 1 : 0`;
-    if (field.type === "integer" || field.type === "decimal") return `Number(body.${field.name})`;
-    return field.required ? `requiredText(body.${field.name}, '${label}', 160)` : `String(body.${field.name} ?? '').trim()`;
+    if (field.type === "integer" || field.type === "decimal") return field.required
+      ? `Number(body.${field.name})`
+      : `(body.${field.name} === '' || body.${field.name} == null ? null : Number(body.${field.name}))`;
+    const maxLength = field.type === "textarea" ? 5000 : field.type === "url" ? 2048 : field.type === "telephone" ? 40 : 160;
+    return field.required ? `requiredText(body.${field.name}, '${label}', ${maxLength})` : `String(body.${field.name} ?? '').trim()`;
   }
 
   function toPascalCase(value) {
@@ -820,6 +1304,8 @@ if (builder) {
   }
 
   function generateJsBackend(state) {
+    const ops = state.operations;
+    const needsInput = ops.create || ops.update;
     const columns = state.fields.map((field) => field.name);
     const placeholders = columns.map((column) => `@${column}`);
     const updateFields = columns.map((column) => `${column} = @${column}`).join(", ");
@@ -827,84 +1313,94 @@ if (builder) {
     const inputLines = state.fields.map((field) => `    ${field.name}: ${jsInputExpression(field)},`);
     const numericChecks = state.fields
       .filter((field) => field.type === "integer" || field.type === "decimal")
-      .map((field) => `  if (!Number.isFinite(item.${field.name})) throw httpError(400, '${escapeSingleQuoted(field.label)} moet een getal zijn.');`);
+      .map((field) => {
+        const allowNull = field.required ? "" : `item.${field.name} !== null && `;
+        const check = field.type === "integer" ? `!Number.isInteger(item.${field.name})` : `!Number.isFinite(item.${field.name})`;
+        return `  if (${allowNull}${check}) throw httpError(400, '${escapeSingleQuoted(field.label)} moet ${field.type === "integer" ? "een heel getal" : "een getal"} zijn.');`;
+      });
     const emailChecks = state.fields
       .filter((field) => field.type === "email")
       .map((field) => `  if (item.${field.name} && !item.${field.name}.includes('@')) throw httpError(400, '${escapeSingleQuoted(field.label)} is ongeldig.');`);
+    const extraChecks = [];
+    state.fields.filter((field) => field.type === "url").forEach((field) => {
+      extraChecks.push(`  if (item.${field.name}) { try { new URL(item.${field.name}); } catch { throw httpError(400, '${escapeSingleQuoted(field.label)} is geen geldige URL.'); } }`);
+    });
+    state.fields.filter((field) => field.type === "date" || field.type === "datetime").forEach((field) => {
+      extraChecks.push(`  if (item.${field.name} && Number.isNaN(Date.parse(item.${field.name}))) throw httpError(400, '${escapeSingleQuoted(field.label)} heeft geen geldige datum.');`);
+    });
 
-    return [
-      `// EXPRESS API: deze routes voeren Create, Read, Update en Delete uit.`,
-      `function read${functionName}(body = {}) {`,
-      `  const item = {`,
-      ...inputLines,
-      `  };`,
-      ...numericChecks,
-      ...emailChecks,
-      `  return item;`,
-      `}`,
-      ``,
-      `app.get('/api/${state.table}', (req, res) => {`,
-      `  const rows = db.prepare('SELECT * FROM ${state.table} ORDER BY id DESC').all();`,
-      `  res.json(rows);`,
-      `});`,
-      ``,
-      `app.post('/api/${state.table}', (req, res) => {`,
-      `  const item = read${functionName}(req.body);`,
-      `  const result = db.prepare(`,
-      `    'INSERT INTO ${state.table} (${columns.join(", ")}) VALUES (${placeholders.join(", ")})'`,
-      `  ).run(item);`,
-      `  res.status(201).json(db.prepare('SELECT * FROM ${state.table} WHERE id = ?').get(result.lastInsertRowid));`,
-      `});`,
-      ``,
-      `app.put('/api/${state.table}/:id', (req, res) => {`,
-      `  const item = { ...read${functionName}(req.body), id: readId(req.params.id) };`,
-      `  const result = db.prepare('UPDATE ${state.table} SET ${updateFields} WHERE id = @id').run(item);`,
-      `  if (result.changes === 0) throw httpError(404, '${state.singular} niet gevonden.');`,
-      `  res.json(db.prepare('SELECT * FROM ${state.table} WHERE id = ?').get(item.id));`,
-      `});`,
-      ``,
-      `app.delete('/api/${state.table}/:id', (req, res) => {`,
-      `  const result = db.prepare('DELETE FROM ${state.table} WHERE id = ?').run(readId(req.params.id));`,
-      `  if (result.changes === 0) throw httpError(404, '${state.singular} niet gevonden.');`,
-      `  res.status(204).send();`,
-      `});`
-    ].join("\n");
+    const parts = [`// GEKOZEN API-ROUTES: ${[ops.create && "POST/Create", ops.read && "GET/Read", ops.update && "PUT/Update", ops.delete && "DELETE/Delete"].filter(Boolean).join(", ")}.`];
+    if (needsInput) {
+      parts.push(
+        `function read${functionName}(body = {}) {`,
+        `  const item = {`,
+        ...inputLines,
+        `  };`,
+        ...numericChecks,
+        ...emailChecks,
+        ...extraChecks,
+        `  return item;`,
+        `}`,
+        ``
+      );
+    }
+    if (ops.read) {
+      parts.push(
+        `app.get('/api/${state.table}', (req, res) => {`,
+        `  const rows = db.prepare('SELECT * FROM ${state.table} ORDER BY id DESC').all();`,
+        `  res.json(rows);`,
+        `});`,
+        ``
+      );
+    }
+    if (ops.create) {
+      parts.push(
+        `app.post('/api/${state.table}', (req, res) => {`,
+        `  const item = read${functionName}(req.body);`,
+        `  const result = db.prepare('INSERT INTO ${state.table} (${columns.join(", ")}) VALUES (${placeholders.join(", ")})').run(item);`,
+        `  res.status(201).json(db.prepare('SELECT * FROM ${state.table} WHERE id = ?').get(result.lastInsertRowid));`,
+        `});`,
+        ``
+      );
+    }
+    if (ops.update) {
+      parts.push(
+        `app.put('/api/${state.table}/:id', (req, res) => {`,
+        `  const item = { ...read${functionName}(req.body), id: readId(req.params.id) };`,
+        `  const result = db.prepare('UPDATE ${state.table} SET ${updateFields}, updated_at = CURRENT_TIMESTAMP WHERE id = @id').run(item);`,
+        `  if (result.changes === 0) throw httpError(404, '${state.singular} niet gevonden.');`,
+        `  res.json(db.prepare('SELECT * FROM ${state.table} WHERE id = ?').get(item.id));`,
+        `});`,
+        ``
+      );
+    }
+    if (ops.delete) {
+      parts.push(
+        `app.delete('/api/${state.table}/:id', (req, res) => {`,
+        `  const result = db.prepare('DELETE FROM ${state.table} WHERE id = ?').run(readId(req.params.id));`,
+        `  if (result.changes === 0) throw httpError(404, '${state.singular} niet gevonden.');`,
+        `  res.status(204).send();`,
+        `});`
+      );
+    }
+    return parts.join("\n");
   }
 
   function generateJsFrontend(state) {
+    const ops = state.operations;
     const functionName = toPascalCase(state.singular);
-    const elementLines = state.fields.map((field) => `  ${field.name}: document.querySelector('#${state.singular}-${field.name}'),`);
-    const inputLines = state.fields.map((field) => {
-      const source = `${state.singular}Elements.${field.name}`;
-      if (field.type === "boolean") return `    ${field.name}: ${source}.checked ? 1 : 0,`;
-      if (field.type === "integer" || field.type === "decimal") return `    ${field.name}: Number(${source}.value),`;
-      return `    ${field.name}: ${source}.value.trim(),`;
+    const needsInput = ops.create || ops.update;
+    const inputLines = state.fields.map((field) => field.type === "boolean"
+      ? `    ${field.name}: Boolean(form.elements.namedItem('${field.name}').checked),`
+      : `    ${field.name}: form.elements.namedItem('${field.name}').value.trim(),`);
+    const fillLines = state.fields.map((field) => {
+      if (field.type === "boolean") return `  form.elements.namedItem('${field.name}').checked = Number(item.${field.name}) === 1;`;
+      if (field.type === "datetime") return `  form.elements.namedItem('${field.name}').value = String(item.${field.name} ?? '').replace(' ', 'T').slice(0, 16);`;
+      return `  form.elements.namedItem('${field.name}').value = item.${field.name} ?? '';`;
     });
-    const resetLines = state.fields.map((field) => field.type === "boolean"
-      ? `  ${state.singular}Elements.${field.name}.checked = false;`
-      : `  ${state.singular}Elements.${field.name}.value = '';`);
-    const fillLines = state.fields.map((field) => field.type === "boolean"
-      ? `  ${state.singular}Elements.${field.name}.checked = Number(item.${field.name}) === 1;`
-      : `  ${state.singular}Elements.${field.name}.value = item.${field.name} ?? '';`);
     const cells = state.fields.map((field) => `      <td>\${escape${functionName}Html(item.${field.name})}</td>`).join("\n");
-
-    return [
-      `// BROWSER-JAVASCRIPT: koppel de HTML aan de API en werk het overzicht bij.`,
-      `const ${state.singular}Elements = {`,
-      `  form: document.querySelector('#${state.singular}-form'),`,
-      `  rows: document.querySelector('#${state.table}-rows'),`,
-      `  submit: document.querySelector('#${state.singular}-submit'),`,
-      `  cancel: document.querySelector('#${state.singular}-cancel'),`,
-      ...elementLines,
-      `};`,
-      `let editing${functionName}Id = null;`,
-      ``,
-      `function escape${functionName}Html(value) {`,
-      `  const element = document.createElement('div');`,
-      `  element.textContent = String(value ?? '');`,
-      `  return element.innerHTML;`,
-      `}`,
-      ``,
+    const parts = [`// GEKOZEN BROWSERACTIES: ${[ops.create && "Create", ops.read && "Read", ops.update && "Update", ops.delete && "Delete"].filter(Boolean).join(", ")}.`];
+    parts.push(
       `async function request${functionName}(url, options = {}) {`,
       `  const response = await fetch(url, options);`,
       `  if (response.status === 204) return null;`,
@@ -912,76 +1408,126 @@ if (builder) {
       `  if (!response.ok) throw new Error(data.error || 'Er ging iets mis.');`,
       `  return data;`,
       `}`,
-      ``,
-      `function read${functionName}Form() {`,
+      ``
+    );
+    if (needsInput) {
+      parts.push(
+      `function read${functionName}Form(form) {`,
       `  return {`,
       ...inputLines,
       `  };`,
       `}`,
-      ``,
-      `function reset${functionName}Form() {`,
-      `  editing${functionName}Id = null;`,
-      ...resetLines,
-      `  ${state.singular}Elements.submit.textContent = '${state.singular} toevoegen';`,
-      `  ${state.singular}Elements.cancel.hidden = true;`,
-      `}`,
-      ``,
-      `function start${functionName}Edit(item) {`,
-      `  editing${functionName}Id = item.id;`,
-      ...fillLines,
-      `  ${state.singular}Elements.submit.textContent = 'Wijzigingen opslaan';`,
-      `  ${state.singular}Elements.cancel.hidden = false;`,
-      `  ${state.singular}Elements.form.scrollIntoView({ behavior: 'smooth' });`,
+      ``
+      );
+    }
+    if (ops.read) {
+      const actionButtons = [
+        ops.update ? `        <button type="button" data-edit-${state.singular}="\${item.id}">Bewerk</button>` : "",
+        ops.delete ? `        <button type="button" data-delete-${state.singular}="\${item.id}">Verwijder</button>` : ""
+      ].filter(Boolean);
+      const actionCell = actionButtons.length ? [`      <td>`, ...actionButtons, `      </td>`] : [];
+      parts.push(
+      `function escape${functionName}Html(value) {`,
+      `  const element = document.createElement('div');`,
+      `  element.textContent = String(value ?? '');`,
+      `  return element.innerHTML;`,
       `}`,
       ``,
       `async function load${functionName}Rows() {`,
       `  const items = await request${functionName}('/api/${state.table}');`,
-      `  ${state.singular}Elements.rows.innerHTML = items.map((item) => \``,
+      `  const rows = document.querySelector('#${state.table}-rows');`,
+      `  rows.innerHTML = items.map((item) => \``,
       `    <tr>`,
       cells,
-      `      <td>`,
-      `        <button type="button" data-edit-${state.singular}="\${item.id}">Bewerk</button>`,
-      `        <button type="button" data-delete-${state.singular}="\${item.id}">Verwijder</button>`,
-      `      </td>`,
+      ...actionCell,
       `    </tr>`,
       `  \`).join('');`,
-      `  ${state.singular}Elements.rows.currentItems = items;`,
+      `  rows.currentItems = items;`,
       `}`,
-      ``,
-      `${state.singular}Elements.form.addEventListener('submit', async (event) => {`,
+      ``
+      );
+    }
+    if (ops.create) {
+      parts.push(
+      `document.querySelector('#${state.singular}-create-form').addEventListener('submit', async (event) => {`,
       `  event.preventDefault();`,
-      `  const url = editing${functionName}Id ? \`/api/${state.table}/\${editing${functionName}Id}\` : '/api/${state.table}';`,
-      `  const method = editing${functionName}Id ? 'PUT' : 'POST';`,
       `  try {`,
-      `    await request${functionName}(url, {`,
-      `      method,`,
+      `    await request${functionName}('/api/${state.table}', {`,
+      `      method: 'POST',`,
       `      headers: { 'Content-Type': 'application/json' },`,
-      `      body: JSON.stringify(read${functionName}Form())`,
+      `      body: JSON.stringify(read${functionName}Form(event.currentTarget))`,
       `    });`,
-      `    reset${functionName}Form();`,
-      `    await load${functionName}Rows();`,
+      `    event.currentTarget.reset();`,
+      ops.read ? `    await load${functionName}Rows();` : `    window.alert('${state.singular} is toegevoegd.');`,
       `  } catch (error) {`,
       `    window.alert(error.message);`,
       `  }`,
       `});`,
-      ``,
-      `${state.singular}Elements.cancel.addEventListener('click', reset${functionName}Form);`,
-      `${state.singular}Elements.rows.addEventListener('click', async (event) => {`,
-      `  const editButton = event.target.closest('[data-edit-${state.singular}]');`,
-      `  const deleteButton = event.target.closest('[data-delete-${state.singular}]');`,
-      `  const items = ${state.singular}Elements.rows.currentItems || [];`,
-      `  if (editButton) {`,
-      `    const item = items.find((row) => row.id === Number(editButton.dataset.edit${functionName}));`,
-      `    if (item) start${functionName}Edit(item);`,
-      `  }`,
-      `  if (deleteButton && window.confirm('Weet je zeker dat je dit wilt verwijderen?')) {`,
-      `    await request${functionName}(\`/api/${state.table}/\${deleteButton.dataset.delete${functionName}}\`, { method: 'DELETE' });`,
-      `    await load${functionName}Rows();`,
+      ``
+      );
+    }
+    if (ops.update) {
+      parts.push(
+      `document.querySelector('#${state.singular}-update-form').addEventListener('submit', async (event) => {`,
+      `  event.preventDefault();`,
+      `  const id = Number(event.currentTarget.elements.namedItem('id').value);`,
+      `  try {`,
+      `    await request${functionName}(\`/api/${state.table}/\${id}\`, {`,
+      `      method: 'PUT',`,
+      `      headers: { 'Content-Type': 'application/json' },`,
+      `      body: JSON.stringify(read${functionName}Form(event.currentTarget))`,
+      `    });`,
+      ops.read ? `    await load${functionName}Rows();` : `    window.alert('${state.singular} is bijgewerkt.');`,
+      `  } catch (error) {`,
+      `    window.alert(error.message);`,
       `  }`,
       `});`,
-      ``,
-      `load${functionName}Rows().catch((error) => window.alert(error.message));`
-    ].join("\n");
+      ``
+      );
+      if (ops.read) {
+        parts.push(
+        `function start${functionName}Edit(item) {`,
+        `  const form = document.querySelector('#${state.singular}-update-form');`,
+        `  form.elements.namedItem('id').value = item.id;`,
+        ...fillLines,
+        `  form.scrollIntoView({ behavior: 'smooth' });`,
+        `}`,
+        ``
+        );
+      }
+    }
+    if (ops.delete && !ops.read) {
+      parts.push(
+      `document.querySelector('#${state.singular}-delete-form').addEventListener('submit', async (event) => {`,
+      `  event.preventDefault();`,
+      `  const id = Number(event.currentTarget.elements.namedItem('id').value);`,
+      `  if (!window.confirm('Weet je zeker dat je dit wilt verwijderen?')) return;`,
+      `  try {`,
+      `    await request${functionName}(\`/api/${state.table}/\${id}\`, { method: 'DELETE' });`,
+      `    event.currentTarget.reset();`,
+      `    window.alert('${state.singular} is verwijderd.');`,
+      `  } catch (error) {`,
+      `    window.alert(error.message);`,
+      `  }`,
+      `});`,
+      ``
+      );
+    }
+    if (ops.read && (ops.update || ops.delete)) {
+      parts.push(
+      `document.querySelector('#${state.table}-rows').addEventListener('click', async (event) => {`,
+      `  const editButton = event.target.closest('[data-edit-${state.singular}]');`,
+      `  const deleteButton = event.target.closest('[data-delete-${state.singular}]');`,
+      `  const rows = event.currentTarget;`,
+      `  const items = rows.currentItems || [];`,
+      ops.update ? `  if (editButton) { const item = items.find((row) => row.id === Number(editButton.dataset.edit${functionName})); if (item) start${functionName}Edit(item); }` : "",
+      ops.delete ? `  if (deleteButton && window.confirm('Weet je zeker dat je dit wilt verwijderen?')) { await request${functionName}(\`/api/${state.table}/\${deleteButton.dataset.delete${functionName}}\`, { method: 'DELETE' }); await load${functionName}Rows(); }` : "",
+      `});`,
+      ``
+      );
+    }
+    if (ops.read) parts.push(`load${functionName}Rows().catch((error) => window.alert(error.message));`);
+    return parts.filter((line) => line !== "").join("\n");
   }
 
   function generateCompletePhpApp(state) {
@@ -990,6 +1536,7 @@ if (builder) {
     const pageHtml = generateForm(state);
     const componentCss = generateCss(state);
     const databaseName = `${state.table}_crud`;
+    const operationNames = [state.operations.create && "Create", state.operations.read && "Read", state.operations.update && "Update", state.operations.delete && "Delete"].filter(Boolean).join(" + ");
     const databaseSetup = state.stack === "php-mysql"
       ? [
           `// MYSQL-INSTELLINGEN: de standaard XAMPP-gebruiker is root zonder wachtwoord.`,
@@ -1016,7 +1563,7 @@ if (builder) {
       `session_start();`,
       ``,
       `// ============================================================`,
-      `// COMPLETE TESTAPP VOOR ${state.table.toUpperCase()}`,
+      `// COMPLETE TESTAPP VOOR ${state.table.toUpperCase()} · ${operationNames}`,
       `// Zet dit bestand als index.php in een nieuwe map onder htdocs.`,
       `// De comments leggen ieder onderdeel uit; je mag ze laten staan.`,
       `// ============================================================`,
@@ -1084,7 +1631,7 @@ if (builder) {
       schema,
       `SQL);`,
       ``,
-      `// STAP 4 — Volledige Create, Read, Update en Delete-verwerking.`,
+      `// STAP 4 — Alleen de gekozen acties: ${operationNames}.`,
       crudLogic,
       ``,
       `// STAP 5 — Haal een eenmalige succesmelding uit de sessie.`,
@@ -1106,13 +1653,17 @@ if (builder) {
       `    .complete-header small { display: block; color: #bdcbe0; }`,
       `    .complete-page { width: min(1280px, 92vw); margin: 0 auto; padding: 34px 0 70px; }`,
       `    .complete-message { margin-bottom: 18px; padding: 13px 16px; border-left: 4px solid #168451; background: #fff; }`,
+      `    .complete-message--error { border-left-color: #b62935; background: #fff0f1; color: #8f2029; }`,
       componentCss.split("\n").map((line) => `    ${line}`).join("\n"),
       `  </style>`,
       `</head>`,
       `<body>`,
       `  <!-- STAP 7 — Dit is het zichtbare gedeelte van de applicatie. -->`,
-      `  <header class="complete-header"><b>${state.table} administratie</b><small>Complete gegenereerde CRUD-testapp</small></header>`,
+      `  <header class="complete-header"><b>${state.table} administratie</b><small>Gekozen functies: ${operationNames}</small></header>`,
       `  <main class="complete-page">`,
+      `    <?php if ($pageError !== ''): ?>`,
+      `      <div class="complete-message complete-message--error"><?= e($pageError) ?></div>`,
+      `    <?php endif; ?>`,
       `    <?php if ($flashMessage): ?>`,
       `      <div class="complete-message"><?= e($flashMessage['message']) ?></div>`,
       `    <?php endif; ?>`,
@@ -1195,9 +1746,17 @@ if (builder) {
 
   function generatePastePlan(state) {
     const title = `EXACT PLAKPLAN VOOR: ${state.table.toUpperCase()}`;
+    const selectedActions = [state.operations.create && "Create", state.operations.read && "Read", state.operations.update && "Update", state.operations.delete && "Delete"].filter(Boolean);
+    const testActions = [
+      state.operations.create && `   CREATE: voeg één herkenbaar testitem toe.`,
+      state.operations.read && `   READ: vernieuw en controleer of bestaande rijen zichtbaar blijven.`,
+      state.operations.update && `   UPDATE: wijzig één veld van een bestaand testitem.`,
+      state.operations.delete && `   DELETE: verwijder alleen een testitem.`
+    ].filter(Boolean);
     if (state.stack === "js-sqlite") {
       return [
         title,
+        `Gekozen acties: ${selectedActions.join(", ")}.`,
         `Maak eerst een kopie van de hele projectmap.`,
         ``,
         `1. DATABASETABEL — tab 2`,
@@ -1230,7 +1789,7 @@ if (builder) {
         ``,
         `6. TEST`,
         `   Stop npm start met Ctrl+C en start opnieuw met npm start.`,
-        `   Test: toevoegen → vernieuwen → wijzigen → verwijderen.`,
+        ...testActions,
         `   Zoek bij een fout op de letterlijke foutmelding in de Foutzoeker.`
       ].join("\n");
     }
@@ -1240,6 +1799,7 @@ if (builder) {
       : `   Vernieuw de pagina; PHP maakt de nieuwe tabel in MySQL.`;
     return [
       title,
+      `Gekozen acties: ${selectedActions.join(", ")}.`,
       `Maak eerst een kopie van de hele projectmap.`,
       ``,
       `1. DATABASETABEL — tab 2`,
@@ -1261,7 +1821,7 @@ if (builder) {
       `   Ctrl+F: <footer><span>Campus Admin`,
       `   Klik aan het begin van die regel.`,
       `   Plak tab 3 DIRECT BOVEN deze footerregel.`,
-      `   Tab 3 bevat toevoegen, bekijken, bewerken én verwijderen.`,
+      `   Tab 3 bevat alleen: ${selectedActions.join(", ")}.`,
       ``,
       `4. CSS-OPMAAK — tab 4`,
       `   Open: assets/app.css`,
@@ -1273,10 +1833,7 @@ if (builder) {
       `   Voor PHP is geen extra browsercode nodig. Sla deze tab over.`,
       ``,
       `6. TEST IN DEZE VOLGORDE`,
-      `   Open localhost en voeg één testitem toe.`,
-      `   Vernieuw: het item moet blijven staan.`,
-      `   Wijzig één veld en vernieuw opnieuw.`,
-      `   Verwijder alleen het testitem.`,
+      ...testActions,
       ``,
       `KLAAR? Voeg pas daarna zoeken, relaties, uploads of login toe.`
     ].join("\n");
@@ -1295,7 +1852,7 @@ if (builder) {
   }
 
   function updateBuilderTestGuide(state) {
-    const guides = {
+    const dutchGuides = {
       "php-sqlite": {
         title: "Complete PHP + SQLite-app in één bestand",
         intro: "Kopieer tab 1. De database en tabel worden bij de eerste keer openen automatisch gemaakt.",
@@ -1327,7 +1884,24 @@ if (builder) {
         ]
       }
     };
-    const guide = guides[state.stack];
+    const englishGuides = {
+      "php-sqlite": {
+        title: "Complete PHP + SQLite app in one file",
+        intro: "Copy tab 1. The database and table are created automatically when you first open the app.",
+        steps: [["Step 1", "Create a project folder", "C:\\xampp\\htdocs\\my-crud"], ["Step 2", "Create one file", "Paste tab 1 into index.php"], ["Step 3", "Start Apache", "XAMPP → Apache → Start"], ["Step 4", "Open the app", "http://localhost/my-crud/"]]
+      },
+      "php-mysql": {
+        title: "Complete PHP + MySQL app in one file",
+        intro: "Copy tab 1. PHP automatically creates the MySQL database and table with the default XAMPP settings.",
+        steps: [["Step 1", "Start two services", "XAMPP → Apache and MySQL → Start"], ["Step 2", "Create a project folder", "C:\\xampp\\htdocs\\my-crud"], ["Step 3", "Create one file", "Paste tab 1 into index.php"], ["Step 4", "Open the app", "http://localhost/my-crud/"]]
+      },
+      "js-sqlite": {
+        title: "Complete JavaScript + SQLite app in one file",
+        intro: "Copy tab 1 to server.js. HTML, CSS, API and database code are already included in that file.",
+        steps: [["Step 1", "Create an empty folder", "Open that folder in VS Code"], ["Step 2", "Create one file", "Paste tab 1 into server.js"], ["Step 3", "Install and start", "npm init -y · npm install express better-sqlite3 · node server.js"], ["Step 4", "Open the app", "http://localhost:3000/"]]
+      }
+    };
+    const guide = (activeLanguage === "en" ? englishGuides : dutchGuides)[state.stack];
     builderTestTitle.textContent = guide.title;
     builderTestIntro.textContent = guide.intro;
     builderTestSteps.replaceChildren(...guide.steps.map(([number, title, detail]) => {
@@ -1349,14 +1923,17 @@ if (builder) {
     builderFile.textContent = output.file;
     builderCode.textContent = output.code;
     builder.currentCode = output.code;
+    builder.currentFilename = output.file;
+    updateBuilderValidation(state);
     updateBuilderTestGuide(state);
+    saveBuilderConfiguration();
   }
 
   function applyPreset(name) {
     const preset = presets[name] || presets.custom;
     singularInput.value = preset.singular;
     tableInput.value = preset.table;
-    builderFields = preset.fields.map((field) => ({ ...field }));
+    builderFields = preset.fields.map((field) => ({ ...field, nameTouched: false }));
     renderBuilderFields();
     updateBuilderOutput();
   }
@@ -1367,9 +1944,31 @@ if (builder) {
   tableInput.addEventListener("input", updateBuilderOutput);
   $("[data-add-field]", builder).addEventListener("click", () => {
     if (builderFields.length >= 12) return;
-    builderFields.push({ label: "Nieuw veld", name: `veld_${builderFields.length + 1}`, type: "text", required: false, unique: false });
+    builderFields.push({ label: "Nieuw veld", name: `veld_${builderFields.length + 1}`, type: "text", required: false, unique: false, nameTouched: false });
     renderBuilderFields();
     updateBuilderOutput();
+  });
+
+  operationInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      // Minstens één actie blijft gekozen, anders heeft de generator niets te bouwen.
+      if (!operationInputs.some((item) => item.checked)) input.checked = true;
+      updateOperationSummary();
+      updateBuilderOutput();
+    });
+  });
+
+  operationPresetButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const crudPreset = button.dataset.crudPreset;
+      operationInputs.forEach((input) => {
+        input.checked = crudPreset === "all"
+          || (crudPreset === "read" && input.dataset.builderOperation === "read")
+          || (crudPreset === "create-read" && ["create", "read"].includes(input.dataset.builderOperation));
+      });
+      updateOperationSummary();
+      updateBuilderOutput();
+    });
   });
 
   builderTabs.forEach((tab) => {
@@ -1381,7 +1980,28 @@ if (builder) {
   });
 
   $("[data-copy-builder]", builder).addEventListener("click", () => copyText(builder.currentCode || ""));
-  applyPreset("products");
+  $("[data-download-builder]", builder).addEventListener("click", () => downloadTextFile(builder.currentFilename || "crud-code.txt", builder.currentCode || ""));
+  resetBuilderButton?.addEventListener("click", () => {
+    localStorage.removeItem(builderStorageKey);
+    presetSelect.value = "products";
+    stackSelect.value = "php-sqlite";
+    operationInputs.forEach((input) => { input.checked = true; });
+    currentBuilderTab = "complete";
+    builderTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === currentBuilderTab));
+    updateOperationSummary();
+    applyPreset("products");
+  });
+  builder.refreshLanguage = () => {
+    updateOperationSummary();
+    const state = normalizedBuilderState();
+    updateBuilderValidation(state);
+    updateBuilderTestGuide(state);
+  };
+  updateOperationSummary();
+  const restoredBuilder = restoreBuilderConfiguration();
+  builderInitialized = true;
+  if (restoredBuilder) updateBuilderOutput();
+  else applyPreset("products");
 }
 
 const routeDefinitions = {
@@ -1959,8 +2579,8 @@ function codeLesson(label, code, container) {
 function addLabeledLine(parent, label, value) {
   const line = document.createElement("p");
   const strong = document.createElement("b");
-  strong.textContent = `${label}: `;
-  line.append(strong, document.createTextNode(value));
+  strong.textContent = `${translatedText(label)}: `;
+  line.append(strong, document.createTextNode(translatedText(value)));
   parent.append(line);
 }
 
@@ -1991,8 +2611,8 @@ $$('.code-block, .file-code').forEach((container) => {
   function refreshGuide() {
     const label = toolbar.querySelector("span")?.textContent.trim() || "dit codeblok";
     const lesson = codeLesson(label, code.textContent, container);
-    eyebrow.textContent = `Plaktype · ${lesson.method}`;
-    title.textContent = `1. Dit hoort bij: ${label}`;
+    eyebrow.textContent = activeLanguage === "en" ? `Paste type · ${translatedText(lesson.method)}` : `Plaktype · ${lesson.method}`;
+    title.textContent = activeLanguage === "en" ? `1. This belongs to: ${translatedText(label)}` : `1. Dit hoort bij: ${label}`;
     locationLine.replaceChildren();
     startLine.replaceChildren();
     endLine.replaceChildren();
@@ -2008,7 +2628,7 @@ $$('.code-block, .file-code').forEach((container) => {
 
     const copyButton = toolbar.querySelector("button");
     if (copyButton && lesson.copyReady === false && copyButton.dataset.originalCopyLabel !== "saved") {
-      copyButton.textContent = "Kopieer voorbeeld";
+      copyButton.textContent = translatedText("Kopieer voorbeeld");
       copyButton.dataset.originalCopyLabel = "saved";
     }
   }
@@ -2026,7 +2646,7 @@ $$('.mini-code').forEach((commandBlock) => {
   let instruction = "Open de terminal in je projectmap, plak deze opdracht, druk op Enter en wacht tot hij klaar is.";
   if (command.startsWith("npm install")) instruction = "Open de terminal in de uitgepakte JavaScript-projectmap, plak dit, druk op Enter en wacht tot de installatie klaar is.";
   if (command.startsWith("npm start")) instruction = "Open de terminal in je JavaScript-projectmap, plak dit en laat het venster open terwijl je de app gebruikt.";
-  if (command.startsWith("git ")) instruction = "Open de terminal in de map van CodingForDummies, plak deze opdracht en druk op Enter.";
+  if (command.startsWith("git ")) instruction = "Open de terminal in de map van CodingForDommies, plak deze opdracht en druk op Enter.";
 
   const guide = document.createElement("div");
   guide.className = "command-guide";
@@ -2172,3 +2792,6 @@ if (phpMap) {
   anatomyButtons.forEach((button) => button.addEventListener("click", () => renderPhpAnatomy(button.dataset.anatomyFile)));
   renderPhpAnatomy("index");
 }
+
+// Pas de gekozen taal pas toe nadat alle interactieve uitlegblokken zijn opgebouwd.
+applyLanguage(activeLanguage, false);

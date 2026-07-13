@@ -1,8 +1,8 @@
 {
-  "name": "coding-for-dummies-guide",
+  "name": "coding-for-dommies-guide",
   "version": "1.0.0",
   "private": true,
-  "description": "Nederlandstalige stap-voor-stap gids voor CRUD-applicaties met PHP, SQLite en XAMPP.",
+  "description": "Tweetalige stap-voor-stap CRUD-gids voor PHP, JavaScript, SQLite, MySQL en XAMPP.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

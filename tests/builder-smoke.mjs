@@ -2,19 +2,24 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { JSDOM } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const script = readFileSync(new URL('../script.js', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
+const englishLocale = readFileSync(new URL('../public/translations-en.js', import.meta.url), 'utf8');
 const phpStarter = readFileSync(new URL('../public/code/index.php.txt', import.meta.url), 'utf8');
 const jsServerStarter = readFileSync(new URL('../public/code/js-server.js.txt', import.meta.url), 'utf8');
 const jsHtmlStarter = readFileSync(new URL('../public/code/js-index.html.txt', import.meta.url), 'utf8');
 const jsAppStarter = readFileSync(new URL('../public/code/js-app.js.txt', import.meta.url), 'utf8');
+const jsdomErrors = [];
+const virtualConsole = new VirtualConsole();
+virtualConsole.on('jsdomError', (error) => jsdomErrors.push(error));
 const dom = new JSDOM(html, {
   url: 'http://localhost/',
   runScripts: 'outside-only',
   pretendToBeVisual: true,
+  virtualConsole,
 });
 
 const { window } = dom;
@@ -23,6 +28,7 @@ window.IntersectionObserver = class {
   observe() {}
   disconnect() {}
 };
+window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
 window.fetch = async () => ({ ok: true, text: async () => '// testbestand' });
 window.navigator.clipboard = { writeText: async () => {} };
 window.HTMLElement.prototype.scrollIntoView = () => {};
@@ -33,6 +39,7 @@ window.HTMLDialogElement.prototype.close = function close() {
   this.removeAttribute('open');
 };
 
+window.eval(englishLocale);
 window.eval(script);
 await new Promise((resolve) => window.setTimeout(resolve, 0));
 
@@ -128,6 +135,15 @@ if (!builder.querySelector('[data-builder-tab="complete"]').classList.contains('
   || builder.querySelectorAll('[data-builder-tab]').length !== 7) {
   throw new Error('De CRUD-generator opent niet direct met de complete testapp.');
 }
+if (builder.querySelectorAll('[data-builder-operation]').length !== 4
+  || [...builder.querySelectorAll('[data-builder-operation]')].some((input) => !input.checked)
+  || !builder.querySelector('[data-builder-operation-summary]').textContent.includes('Create, Read, Update en Delete')) {
+  throw new Error('De CRUD-generator start niet met vier afzonderlijk kiesbare CRUD-acties.');
+}
+const generatedTypeLabels = [...builder.querySelectorAll('.builder-data-type b')].map((element) => element.textContent);
+if (!generatedTypeLabels.includes('float') || !generatedTypeLabels.includes('int') || !generatedTypeLabels.includes('bool → 0/1')) {
+  throw new Error('De veldgenerator toont niet de echte PHP-datatypes int, float en bool.');
+}
 if (!builder.querySelector('[data-builder-test-title]').textContent.includes('PHP + SQLite')
   || builder.querySelectorAll('[data-builder-test-steps] li').length !== 4
   || !builder.querySelector('[data-builder-test-steps]').textContent.includes('index.php')) {
@@ -181,7 +197,10 @@ for (const className of ['generated-crud', 'generated-crud-layout', 'generated-c
 
 clickTab('backend');
 const phpCode = code();
-if (!phpCode.includes("INSERT INTO producten") || !phpCode.includes("DELETE FROM producten")) {
+if (!phpCode.includes("INSERT INTO producten") || !phpCode.includes("DELETE FROM producten")
+  || !phpCode.includes('function read_product_int')
+  || !phpCode.includes('function read_product_float')
+  || !phpCode.includes('function read_product_bool')) {
   throw new Error('PHP CRUD-blok is niet compleet.');
 }
 
@@ -253,7 +272,7 @@ if (!completeJavaScriptCode.includes("app.listen(3000")
 new Function(completeJavaScriptCode);
 clickTab('form');
 const javascriptViewCode = code();
-if (!javascriptViewCode.includes('id="product-form"') || !javascriptViewCode.includes('id="producten-rows"') || !javascriptViewCode.includes('class="generated-crud')) {
+if (!javascriptViewCode.includes('id="product-create-form"') || !javascriptViewCode.includes('id="producten-rows"') || !javascriptViewCode.includes('class="generated-crud')) {
   throw new Error('JavaScript-builder maakt geen passend formulier en overzicht.');
 }
 clickTab('css');
@@ -279,9 +298,63 @@ const integratedApp = `${jsAppStarter}\n\n${javascriptFrontendCode}`;
 const integratedHtml = jsHtmlStarter.replace('    </main>', `${javascriptViewCode}\n\n    </main>`);
 new Function(integratedServer);
 new Function(integratedApp);
-if (!integratedHtml.includes('id="product-form"')) {
+if (!integratedHtml.includes('id="product-create-form"')) {
   throw new Error('Het JavaScript-formulier kan niet via het genoemde anker worden geplaatst.');
 }
+
+const operationInputs = [...builder.querySelectorAll('[data-builder-operation]')];
+const setOperations = (selected) => {
+  operationInputs.forEach((input) => { input.checked = selected.includes(input.dataset.builderOperation); });
+  operationInputs.find((input) => input.checked).dispatchEvent(new window.Event('change', { bubbles: true }));
+};
+const operationNames = ['create', 'read', 'update', 'delete'];
+const operationTokens = {
+  php: {
+    create: 'INSERT INTO producten',
+    read: "$rows = $db->query('SELECT * FROM producten",
+    update: 'UPDATE producten SET',
+    delete: 'DELETE FROM producten',
+  },
+  js: {
+    create: "app.post('/api/producten'",
+    read: "app.get('/api/producten'",
+    update: "app.put('/api/producten/:id'",
+    delete: "app.delete('/api/producten/:id'",
+  },
+};
+const combinationDirectory = mkdtempSync(join(tmpdir(), 'cfd-operation-combinations-'));
+try {
+  for (let mask = 1; mask < 16; mask += 1) {
+    const selected = operationNames.filter((name, index) => mask & (1 << index));
+    setOperations(selected);
+
+    change(stack, 'php-sqlite');
+    clickTab('complete');
+    const phpCombination = code();
+    for (const operation of operationNames) {
+      if (phpCombination.includes(operationTokens.php[operation]) !== selected.includes(operation)) {
+        throw new Error(`PHP-combinatie ${selected.join('+')} bevat een verkeerde ${operation}-actie.`);
+      }
+    }
+    const phpCombinationFile = join(combinationDirectory, `combination-${mask}.php`);
+    writeFileSync(phpCombinationFile, phpCombination, 'utf8');
+    execFileSync('php', ['-l', phpCombinationFile], { stdio: 'pipe' });
+
+    change(stack, 'js-sqlite');
+    clickTab('complete');
+    const jsCombination = code();
+    for (const operation of operationNames) {
+      if (jsCombination.includes(operationTokens.js[operation]) !== selected.includes(operation)) {
+        throw new Error(`JavaScript-combinatie ${selected.join('+')} bevat een verkeerde ${operation}-route.`);
+      }
+    }
+    new Function(jsCombination);
+  }
+} finally {
+  rmSync(combinationDirectory, { recursive: true, force: true });
+}
+setOperations(operationNames);
+change(stack, 'js-sqlite');
 
 clickTab('steps');
 if (!code().includes('Ctrl+F: app.use((error') || !code().includes('frontend/app.js')) {
@@ -312,6 +385,13 @@ try {
 
   change(preset, 'custom');
   const label = builder.querySelector('[data-field-key="label"]');
+  label.value = 'id';
+  label.dispatchEvent(new window.Event('input', { bubbles: true }));
+  if (builder.querySelector('[data-field-key="name"]').value !== 'eigen_id'
+    || ![...builder.querySelector('[data-field-key="type"]').options].some((option) => option.value === 'datetime')
+    || ![...builder.querySelector('[data-field-key="type"]').options].some((option) => option.value === 'url')) {
+    throw new Error('Veldnamen synchroniseren niet veilig of de uitgebreide datatypes ontbreken.');
+  }
   label.value = "Klant's <naam>";
   label.dispatchEvent(new window.Event('input', { bubbles: true }));
 
@@ -324,6 +404,46 @@ try {
   clickTab('form');
   if (!code().includes('Klant&#39;s &lt;naam&gt;')) {
     throw new Error('Speciale tekens worden niet veilig in HTML gezet.');
+  }
+
+  builder.querySelector('[data-add-field]').click();
+  const customRows = [...builder.querySelectorAll('[data-builder-field-row]')];
+  const duplicateName = customRows[1].querySelector('[data-field-key="name"]');
+  duplicateName.value = customRows[0].querySelector('[data-field-key="name"]').value;
+  duplicateName.dispatchEvent(new window.Event('input', { bubbles: true }));
+  clickTab('backend');
+  if (!code().includes('klant_s_naam_2')
+    || !builder.querySelector('[data-builder-validation]').textContent.includes('dubbele naam')) {
+    throw new Error('Dubbele databasnamen worden niet veilig hernoemd en uitgelegd.');
+  }
+
+  change(builder.querySelectorAll('[data-field-key="type"]')[0], 'datetime');
+  change(builder.querySelectorAll('[data-field-key="type"]')[1], 'url');
+  builder.querySelectorAll('[data-builder-field-row]')[1].querySelector('[data-field-key="unique"]').click();
+  change(stack, 'php-mysql');
+  clickTab('sql');
+  if (!code().includes('DATETIME') || !code().includes('VARCHAR(512)') || !code().includes('UNIQUE')) {
+    throw new Error('Datumtijd en unieke URL krijgen geen veilige MySQL-datatypes.');
+  }
+  clickTab('backend');
+  const typedPhp = join(generatedDirectory, 'custom-types.php');
+  writeFileSync(typedPhp, `<?php\n${code()}`, 'utf8');
+  execFileSync('php', ['-l', typedPhp], { stdio: 'pipe' });
+  change(stack, 'js-sqlite');
+  clickTab('backend');
+  new Function(code());
+
+  const savedBuilder = JSON.parse(window.localStorage.getItem('cfd-builder-configuration'));
+  if (savedBuilder.fields.length !== 2 || savedBuilder.stack !== 'js-sqlite' || savedBuilder.tab !== 'backend') {
+    throw new Error('De gekozen builderconfiguratie wordt niet lokaal bewaard.');
+  }
+
+  builder.querySelector('[data-reset-builder]').click();
+  if (builder.querySelectorAll('[data-builder-field-row]').length !== 5
+    || builder.querySelector('[data-builder-stack]').value !== 'php-sqlite'
+    || [...builder.querySelectorAll('[data-builder-operation]')].some((input) => !input.checked)
+    || !builder.querySelector('[data-builder-tab="complete"]').classList.contains('is-active')) {
+    throw new Error('De herstelknop zet niet het volledige, werkende productvoorbeeld terug.');
   }
 } finally {
   rmSync(generatedDirectory, { recursive: true, force: true });
@@ -484,4 +604,44 @@ if (mysqlRoute.getAttribute('aria-pressed') !== 'true' || !window.document.query
   throw new Error('De snelle keuzehulp activeert PHP + MySQL niet correct.');
 }
 
-console.log('CRUD-builder + snippets + interactieve bouwroutes: PASS');
+const themeToggle = window.document.querySelector('[data-theme-toggle]');
+themeToggle.click();
+if (window.document.documentElement.dataset.theme !== 'dark'
+  || window.localStorage.getItem('cfd-theme') !== 'dark'
+  || themeToggle.getAttribute('aria-pressed') !== 'true'
+  || !styles.includes(':root[data-theme="dark"]')) {
+  throw new Error('Dark mode wordt niet volledig geactiveerd of onthouden.');
+}
+themeToggle.click();
+if (window.document.documentElement.dataset.theme !== 'light') {
+  throw new Error('Dark mode kan niet worden teruggeschakeld.');
+}
+
+const englishButton = window.document.querySelector('[data-language="en"]');
+const dutchButton = window.document.querySelector('[data-language="nl"]');
+englishButton.click();
+await new Promise((resolve) => window.setTimeout(resolve, 0));
+change(stack, 'js-sqlite');
+if (window.document.documentElement.lang !== 'en'
+  || !window.document.title.includes('Build your first CRUD app')
+  || !window.document.querySelector('.hero-copy').textContent.includes('From empty folder')
+  || !window.document.querySelector('[data-builder-test-title]').textContent.includes('app in one file')
+  || window.document.querySelector('[data-reset-builder]').textContent !== 'Restore product example'
+  || window.document.querySelector('[data-download-builder]').textContent !== 'Download file'
+  || ![...window.document.querySelector('[data-field-key="type"]').options].some((option) => option.textContent === 'Long text')
+  || window.localStorage.getItem('cfd-language') !== 'en'
+  || englishButton.getAttribute('aria-pressed') !== 'true') {
+  throw new Error('De professionele Engelse taalversie vertaalt niet alle belangrijke interfaceonderdelen.');
+}
+dutchButton.click();
+await new Promise((resolve) => window.setTimeout(resolve, 0));
+if (window.document.documentElement.lang !== 'nl'
+  || !window.document.querySelector('.hero-copy').textContent.includes('Van lege map')
+  || !window.document.querySelector('[data-builder-test-title]').textContent.includes('app in één bestand')) {
+  throw new Error('De Nederlandse taalversie kan niet volledig worden hersteld.');
+}
+if (jsdomErrors.length) {
+  throw new Error(`De interface veroorzaakte een browserfout: ${jsdomErrors[0].message}`);
+}
+
+console.log('CRUD-builder + datatypes + talen + dark mode + interactieve bouwroutes: PASS');
