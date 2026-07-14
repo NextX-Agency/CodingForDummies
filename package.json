@@ -3,13 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "description": "Tweetalige stap-voor-stap CRUD-gids voor PHP, JavaScript, SQLite, MySQL en XAMPP.",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "npm run test:builder",
+    "test": "npm run test:builder && npm run test:release",
     "test:builder": "node tests/builder-smoke.mjs",
-    "test:mysql": "php tests/mysql-smoke.php"
+    "test:release": "node tests/release-smoke.mjs",
+    "test:starters": "npm ci --prefix starter/javascript-sqlite-crud --no-audit --no-fund && node tests/starters-smoke.mjs",
+    "test:dist": "node tests/dist-smoke.mjs",
+    "test:mysql": "php tests/mysql-smoke.php",
+    "release:check": "npm test && npm run test:starters && npm run build && npm run test:dist && npm audit --audit-level=moderate"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",

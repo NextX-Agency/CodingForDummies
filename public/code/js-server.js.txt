@@ -10,7 +10,9 @@ const Database = require("better-sqlite3");
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const projectRoot = path.join(__dirname, "..");
-const dataDirectory = path.join(projectRoot, "data");
+const dataDirectory = process.env.CFD_DATA_DIR
+  ? path.resolve(process.env.CFD_DATA_DIR)
+  : path.join(projectRoot, "data");
 const frontendDirectory = path.join(projectRoot, "frontend");
 
 fs.mkdirSync(dataDirectory, { recursive: true });
@@ -353,4 +355,3 @@ const server = app.listen(PORT, () => {
 });
 
 module.exports = { app, db, server };
-

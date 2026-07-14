@@ -3,29 +3,65 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Bouw stap voor stap een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL en XAMPP. Inclusief werkende copy-paste starters.">
+    <meta name="description" content="Bouw een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL. Met CRUD-builder, appkern, relaties, 65 snippets en bookingpakket.">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="application-name" content="CodingForDommies">
+    <meta name="color-scheme" content="light dark">
+    <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#f3f0e8">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="CodingForDommies">
-    <meta property="og:title" content="CodingForDommies — Build a complete CRUD application">
-    <meta property="og:description" content="A bilingual, beginner-friendly CRUD guide with complete PHP, JavaScript, SQLite and MySQL starters.">
+    <meta property="og:title" content="CodingForDommies — Van lege map naar werkende CRUD">
+    <meta property="og:description" content="Bouw iedere CRUD-app met een builder, universele appkern, 65 recepten, bookingpakket en geteste PHP- en JavaScript-starters.">
     <meta property="og:url" content="https://www.codingfordommies.quest/">
+    <meta property="og:locale" content="nl_NL">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:image" content="https://www.codingfordommies.quest/og.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="CodingForDommies — van lege map naar werkende CRUD met formulier, tabel, database en code">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CodingForDommies — Van lege map naar werkende CRUD">
+    <meta name="twitter:description" content="Van resource naar complete CRUD-app met builder, appkern, relaties, snippets en bookingpatronen.">
+    <meta name="twitter:image" content="https://www.codingfordommies.quest/og.png">
+    <meta name="twitter:image:alt" content="CodingForDommies CRUD-gids met gekoppelde formulieren, tabellen, database en code">
     <link rel="canonical" href="https://www.codingfordommies.quest/">
-    <link rel="alternate" hreflang="nl" href="https://www.codingfordommies.quest/?lang=nl">
+    <link rel="alternate" hreflang="nl" href="https://www.codingfordommies.quest/">
     <link rel="alternate" hreflang="en" href="https://www.codingfordommies.quest/?lang=en">
     <link rel="alternate" hreflang="x-default" href="https://www.codingfordommies.quest/">
     <title>CodingForDommies — Bouw je eerste CRUD-app</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="./site.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script>document.documentElement.dataset.theme=localStorage.getItem('cfd-theme')||((window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');</script>
+    <script src="/theme-init.js"></script>
     <link rel="stylesheet" href="./styles.css">
-    <script src="/translations-en.js"></script>
+    <script defer src="/translations-en.js"></script>
     <script type="module" src="./script.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": "CodingForDommies — Bouw je eerste CRUD-app",
+        "description": "Beginnersvriendelijke gids voor CRUD, databaserelaties, PHP, JavaScript, SQLite en MySQL.",
+        "url": "https://www.codingfordommies.quest/",
+        "image": "https://www.codingfordommies.quest/og.png",
+        "inLanguage": ["nl", "en"],
+        "isAccessibleForFree": true,
+        "educationalLevel": "Beginner",
+        "provider": {
+          "@type": "Organization",
+          "name": "CodingForDommies",
+          "url": "https://www.codingfordommies.quest/"
+        }
+      }
+    </script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Ga direct naar de inhoud</a>
+    <noscript><div class="noscript-notice">JavaScript staat uit. De uitleg en code blijven leesbaar, maar de builder, zoekfunctie en interactieve voorbeelden werken dan niet.</div></noscript>
     <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
 
     <header class="site-header">
@@ -39,6 +75,7 @@
         <a href="#frontend-koppelen">HTML + CSS</a>
         <a href="#builder">CRUD-builder</a>
         <a href="#relaties">Relaties</a>
+        <a href="#boekingen">Booking snippets</a>
         <a href="#codebank" data-route-link="php-sqlite">Codebank</a>
         <a href="#foutzoeker">Foutzoeker</a>
       </nav>
@@ -56,7 +93,8 @@
       </div>
     </header>
 
-    <main id="top">
+    <main id="main-content" tabindex="-1">
+      <span id="top" class="page-anchor" aria-hidden="true"></span>
       <section class="hero">
         <div class="hero-copy">
           <p class="kicker"><span></span> 3 complete routes · voor beginners</p>
@@ -75,7 +113,7 @@
 
         <figure class="hero-visual">
           <div class="figure-label">Het herhaalbare patroon</div>
-          <img src="./assets/crud-blueprint.png" alt="Technische illustratie van een formulier, tabel, database en code die met elkaar verbonden zijn">
+          <img src="./assets/crud-blueprint.webp" width="1448" height="1086" fetchpriority="high" decoding="async" alt="Technische illustratie van een formulier, tabel, database en code die met elkaar verbonden zijn">
           <figcaption>
             <span><b>C</b>reate</span>
             <span><b>R</b>ead</span>
@@ -97,7 +135,7 @@
       <div class="guide-layout" id="bouwroute">
         <aside class="guide-sidebar" aria-label="Hoofdstukken">
           <div class="sidebar-progress">
-            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>10</span></strong></div>
+            <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>11</span></strong></div>
             <div class="progress-track"><span data-checklist-progress></span></div>
           </div>
           <button class="beginner-mode-toggle" type="button" data-beginner-toggle aria-pressed="true"><span>Beginnerstand</span><strong data-beginner-toggle-label>Aan · uitleg boven de code</strong><small>Je kunt dit altijd wijzigen.</small></button>
@@ -114,6 +152,7 @@
             <a href="#crud" data-route-link="php-sqlite php-mysql"><span>07</span> PHP CRUD bouwen</a>
             <a href="#javascript-route" data-route-link="js-sqlite"><span>08</span> JavaScript route</a>
             <a href="#relaties"><span>Relatie</span> CRUD-relaties</a>
+            <a href="#boekingen"><span>Booking</span> PHP CRUD-snippets</a>
             <a href="#snippets"><span>Bank</span> Snippetbibliotheek</a>
             <a href="#uitbreiden"><span>09</span> Uitbreiden</a>
             <a href="#eigen-maken"><span>10</span> Eigen thema</a>
@@ -1149,10 +1188,1149 @@ $students = $db-&gt;query(
             <label class="chapter-check"><input type="checkbox" data-progress-item="relations"><span><b>Ik heb een relatie toegevoegd, gewijzigd en veilig verwijderd</b><small>Ik begrijp waar de foreign key staat en waarom de READ-query een JOIN gebruikt.</small></span></label>
           </section>
 
+          <section id="boekingen" class="guide-section booking-section" data-search-title="Booking reservering afspraak PHP CRUD snippets SQLite MySQL PDO beschikbaarheid agenda hotel verhuur evenement">
+            <div class="section-number">Booking CRUD-bank · 48 recepten</div>
+            <h2>Bouw ieder type boekingswebsite met herbruikbare PHP-snippets.</h2>
+            <p class="section-intro">Van afspraak of hotelkamer tot verhuur, restaurant en evenement: combineer alleen de recepten die jouw applicatie nodig heeft. De voorbeelden gebruiken <strong>PDO, prepared statements en veilige statusovergangen</strong>; SQLite- en MySQL-verschillen zijn apart aangegeven.</p>
+
+            <div class="booking-overview" aria-label="Inhoud van de booking CRUD-bank">
+              <div><strong>48</strong><span>copy-paste recepten</span></div>
+              <div><strong>8</strong><span>praktische categorieën</span></div>
+              <div><strong>2</strong><span>databaseroutes</span></div>
+              <div><strong>1</strong><span>veilig CRUD-patroon</span></div>
+            </div>
+
+            <div class="booking-flow" aria-label="Aanbevolen bouwvolgorde">
+              <span><b>01</b> Schema</span><i>→</i><span><b>02</b> CRUD</span><i>→</i><span><b>03</b> Beschikbaarheid</span><i>→</i><span><b>04</b> Beveiliging</span><i>→</i><span><b>05</b> Integraties</span>
+            </div>
+
+            <aside class="booking-start">
+              <div><span>Snel starten</span><h3>Genereer eerst jouw basisbestanden.</h3><p>De afspraakpreset maakt een veilige PHP- of JavaScriptbasis. Voeg daarna de bookingregels uit deze bank toe.</p></div>
+              <button class="button button--primary" type="button" data-booking-builder>Open bookingpreset in de CRUD-builder <span aria-hidden="true">→</span></button>
+            </aside>
+
+            <div class="booking-tools">
+              <label class="booking-search"><span>Zoek in 48 recepten</span><input type="search" data-booking-search placeholder="Bijv. overlap, agenda, iCal of hotel" autocomplete="off"></label>
+              <div class="booking-filters" role="group" aria-label="Filter booking snippets">
+                <button class="is-active" type="button" data-booking-filter="all">Alles</button>
+                <button type="button" data-booking-filter="start">Start</button>
+                <button type="button" data-booking-filter="crud">CRUD</button>
+                <button type="button" data-booking-filter="availability">Beschikbaarheid</button>
+                <button type="button" data-booking-filter="relations">Relaties</button>
+                <button type="button" data-booking-filter="ui">UI</button>
+                <button type="button" data-booking-filter="security">Beveiliging</button>
+                <button type="button" data-booking-filter="integration">Integraties</button>
+                <button type="button" data-booking-filter="types">Website-types</button>
+              </div>
+              <p class="booking-result" data-booking-result aria-live="polite">48 recepten zichtbaar</p>
+            </div>
+
+            <div class="booking-snippet-grid" data-booking-list>
+              <details class="booking-snippet" data-booking-tags="start database relations sqlite">
+                <summary><span>01</span><span><b>Compleet SQLite-schema</b><small>Diensten, klanten, medewerkers en boekingen.</small></span><em>SQLite</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>database/schema.sql</code>. Zet foreign keys ook aan in je PDO-verbinding.</p><div class="code-block" data-code-file="database/schema.sql"><div class="code-toolbar"><span>SQLite · basisschema</span><button type="button" data-copy-target="booking-schema-sqlite">Kopieer</button></div><pre><code id="booking-schema-sqlite">PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS services (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  duration_minutes INTEGER NOT NULL CHECK (duration_minutes > 0),
+  price_cents INTEGER NOT NULL DEFAULT 0 CHECK (price_cents >= 0),
+  active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1))
+);
+
+CREATE TABLE IF NOT EXISTS customers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL COLLATE NOCASE UNIQUE,
+  phone TEXT
+);
+
+CREATE TABLE IF NOT EXISTS staff (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1))
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  customer_id INTEGER NOT NULL,
+  service_id INTEGER NOT NULL,
+  staff_id INTEGER,
+  start_at TEXT NOT NULL,
+  end_at TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending','confirmed','completed','cancelled','no_show')),
+  notes TEXT,
+  version INTEGER NOT NULL DEFAULT 1,
+  idempotency_key TEXT UNIQUE,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK (end_at > start_at),
+  FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT,
+  FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_bookings_period
+  ON bookings (staff_id, start_at, end_at, status);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="start database relations mysql">
+                <summary><span>02</span><span><b>Compleet MySQL-schema</b><small>Dezelfde basis met passende MySQL-datatypes.</small></span><em>MySQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> phpMyAdmin of <code>database/schema-mysql.sql</code>. Gebruik InnoDB voor transacties en foreign keys.</p><div class="code-block" data-code-file="database/schema-mysql.sql"><div class="code-toolbar"><span>MySQL · basisschema</span><button type="button" data-copy-target="booking-schema-mysql">Kopieer</button></div><pre><code id="booking-schema-mysql">CREATE TABLE services (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  duration_minutes SMALLINT UNSIGNED NOT NULL,
+  price_cents INT UNSIGNED NOT NULL DEFAULT 0,
+  active TINYINT(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE customers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL UNIQUE,
+  phone VARCHAR(40) NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE staff (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE bookings (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  customer_id INT UNSIGNED NOT NULL,
+  service_id INT UNSIGNED NOT NULL,
+  staff_id INT UNSIGNED NULL,
+  start_at DATETIME NOT NULL,
+  end_at DATETIME NOT NULL,
+  status ENUM('pending','confirmed','completed','cancelled','no_show') NOT NULL DEFAULT 'pending',
+  notes TEXT NULL,
+  version INT UNSIGNED NOT NULL DEFAULT 1,
+  idempotency_key CHAR(36) NULL UNIQUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_bookings_period (staff_id, start_at, end_at, status),
+  CONSTRAINT fk_booking_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_booking_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_booking_staff FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE SET NULL,
+  CONSTRAINT chk_booking_period CHECK (end_at > start_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="start database sqlite php">
+                <summary><span>03</span><span><b>PDO-verbinding met SQLite</b><small>Foutmodus, foreign keys en veilige fetch-modus.</small></span><em>PHP + SQLite</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>config/database.php</code>. De datamap moet schrijfbaar zijn voor PHP.</p><div class="code-block" data-code-file="config/database.php"><div class="code-toolbar"><span>PHP · SQLite PDO</span><button type="button" data-copy-target="booking-pdo-sqlite">Kopieer</button></div><pre><code id="booking-pdo-sqlite">&lt;?php
+declare(strict_types=1);
+
+function database(): PDO
+{
+    static $db;
+    if ($db instanceof PDO) return $db;
+
+    $path = dirname(__DIR__) . '/data/bookings.sqlite';
+    $db = new PDO('sqlite:' . $path, null, null, [
+        PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES =&gt; false,
+    ]);
+    $db-&gt;exec('PRAGMA foreign_keys = ON');
+    $db-&gt;exec('PRAGMA busy_timeout = 5000');
+    return $db;
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="start database mysql php">
+                <summary><span>04</span><span><b>PDO-verbinding met MySQL</b><small>Configuratie via omgevingsvariabelen.</small></span><em>PHP + MySQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>config/database.php</code>. Bewaar echte wachtwoorden buiten Git.</p><div class="code-block" data-code-file="config/database.php"><div class="code-toolbar"><span>PHP · MySQL PDO</span><button type="button" data-copy-target="booking-pdo-mysql">Kopieer</button></div><pre><code id="booking-pdo-mysql">&lt;?php
+declare(strict_types=1);
+
+function database(): PDO
+{
+    static $db;
+    if ($db instanceof PDO) return $db;
+
+    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $name = getenv('DB_NAME') ?: 'booking_app';
+    $dsn = "mysql:host={$host};dbname={$name};charset=utf8mb4";
+    $db = new PDO($dsn, getenv('DB_USER') ?: 'root', getenv('DB_PASS') ?: '', [
+        PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES =&gt; false,
+    ]);
+    return $db;
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="start security php">
+                <summary><span>05</span><span><b>Gedeelde validatiehelpers</b><small>Tekst, ids, datumtijd en veilige HTML-uitvoer.</small></span><em>PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>includes/functions.php</code>. Alle volgende CRUD-acties kunnen deze helpers gebruiken.</p><div class="code-block" data-code-file="includes/functions.php"><div class="code-toolbar"><span>PHP · helpers</span><button type="button" data-copy-target="booking-helpers">Kopieer</button></div><pre><code id="booking-helpers">function e(mixed $value): string
+{
+    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function requiredText(string $key, int $max = 190): string
+{
+    $value = trim((string) ($_POST[$key] ?? ''));
+    if ($value === '' || mb_strlen($value) > $max) {
+        throw new InvalidArgumentException("Ongeldige waarde voor {$key}.");
+    }
+    return $value;
+}
+
+function positiveId(string $key): int
+{
+    $id = filter_input(INPUT_POST, $key, FILTER_VALIDATE_INT,
+        ['options' =&gt; ['min_range' =&gt; 1]]);
+    if ($id === false || $id === null) throw new InvalidArgumentException("Ongeldig {$key}.");
+    return (int) $id;
+}
+
+function localDateTime(string $key, DateTimeZone $zone): DateTimeImmutable
+{
+    $date = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', requiredText($key), $zone);
+    if (!$date) throw new InvalidArgumentException('Ongeldige datum of tijd.');
+    return $date;
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud ui html">
+                <summary><span>06</span><span><b>Toegankelijk boekingsformulier</b><small>Klant, dienst, medewerker en startmoment.</small></span><em>HTML + PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/create.php</code>, nadat <code>$services</code> en <code>$staffMembers</code> zijn geladen.</p><div class="code-block" data-code-file="bookings/create.php"><div class="code-toolbar"><span>HTML · boekingsformulier</span><button type="button" data-copy-target="booking-form-html">Kopieer</button></div><pre><code id="booking-form-html">&lt;form class="booking-form" method="post" action="store.php"&gt;
+  &lt;input type="hidden" name="_token" value="&lt;?= e(csrfToken()) ?&gt;"&gt;
+  &lt;label&gt;Klantnaam &lt;input name="customer_name" maxlength="120" required&gt;&lt;/label&gt;
+  &lt;label&gt;E-mail &lt;input type="email" name="customer_email" maxlength="190" required&gt;&lt;/label&gt;
+  &lt;label&gt;Dienst
+    &lt;select name="service_id" required&gt;
+      &lt;option value=""&gt;Kies een dienst&lt;/option&gt;
+      &lt;?php foreach ($services as $service): ?&gt;
+        &lt;option value="&lt;?= e($service['id']) ?&gt;"&gt;&lt;?= e($service['name']) ?&gt;&lt;/option&gt;
+      &lt;?php endforeach; ?&gt;
+    &lt;/select&gt;
+  &lt;/label&gt;
+  &lt;label&gt;Medewerker
+    &lt;select name="staff_id" required&gt;
+      &lt;?php foreach ($staffMembers as $member): ?&gt;
+        &lt;option value="&lt;?= e($member['id']) ?&gt;"&gt;&lt;?= e($member['name']) ?&gt;&lt;/option&gt;
+      &lt;?php endforeach; ?&gt;
+    &lt;/select&gt;
+  &lt;/label&gt;
+  &lt;label&gt;Startmoment &lt;input type="datetime-local" name="start_at" required&gt;&lt;/label&gt;
+  &lt;label&gt;Notities &lt;textarea name="notes" maxlength="1000"&gt;&lt;/textarea&gt;&lt;/label&gt;
+  &lt;button type="submit"&gt;Boeking maken&lt;/button&gt;
+&lt;/form&gt;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="ui css">
+                <summary><span>07</span><span><b>Responsive booking-CSS</b><small>Een bruikbare vormgeving zonder framework.</small></span><em>CSS</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>assets/app.css</code>. De selectors zijn bewust beperkt tot bookingclasses.</p><div class="code-block" data-code-file="assets/app.css"><div class="code-toolbar"><span>CSS · formulier en lijst</span><button type="button" data-copy-target="booking-ui-css">Kopieer</button></div><pre><code id="booking-ui-css">.booking-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding:24px; border:1px solid #d9dee8; background:#fff; }
+.booking-form label { display:grid; gap:6px; color:#344054; font-weight:700; }
+.booking-form input, .booking-form select, .booking-form textarea { width:100%; min-height:44px; padding:10px 12px; border:1px solid #b8c0cc; border-radius:4px; background:#fff; }
+.booking-form textarea { min-height:110px; resize:vertical; }
+.booking-form button { min-height:46px; border:0; background:#1e56dc; color:#fff; font-weight:800; cursor:pointer; }
+.booking-list { width:100%; border-collapse:collapse; background:#fff; }
+.booking-list th, .booking-list td { padding:12px; border-bottom:1px solid #e4e7ec; text-align:left; }
+.booking-status { display:inline-flex; padding:3px 8px; border-radius:999px; background:#edf2ff; color:#1e56dc; font-size:12px; font-weight:800; }
+@media (max-width:720px) { .booking-form { grid-template-columns:1fr; } .booking-list { display:block; overflow-x:auto; } }</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud php database">
+                <summary><span>08</span><span><b>Create: boeking opslaan</b><small>Valideren, eindtijd berekenen en prepared INSERT.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/store.php</code>. Roep vóór dit blok ook je CSRF-controle aan.</p><div class="code-block" data-code-file="bookings/store.php"><div class="code-toolbar"><span>PHP · CREATE</span><button type="button" data-copy-target="booking-create">Kopieer</button></div><pre><code id="booking-create">$db = database();
+$serviceId = positiveId('service_id');
+$staffId = positiveId('staff_id');
+$start = localDateTime('start_at', new DateTimeZone('America/Paramaribo'));
+
+$service = $db-&gt;prepare('SELECT id, duration_minutes FROM services WHERE id = ? AND active = 1');
+$service-&gt;execute([$serviceId]);
+$serviceRow = $service-&gt;fetch();
+if (!$serviceRow) throw new RuntimeException('Dienst niet gevonden.');
+
+$end = $start-&gt;modify('+' . (int) $serviceRow['duration_minutes'] . ' minutes');
+$statement = $db-&gt;prepare(
+    'INSERT INTO bookings (customer_id, service_id, staff_id, start_at, end_at, status, notes)
+     VALUES (:customer, :service, :staff, :start, :end, :status, :notes)'
+);
+$statement-&gt;execute([
+    'customer' =&gt; positiveId('customer_id'), 'service' =&gt; $serviceId, 'staff' =&gt; $staffId,
+    'start' =&gt; $start-&gt;format('Y-m-d H:i:s'), 'end' =&gt; $end-&gt;format('Y-m-d H:i:s'),
+    'status' =&gt; 'confirmed', 'notes' =&gt; trim((string) ($_POST['notes'] ?? '')) ?: null,
+]);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud php database relations">
+                <summary><span>09</span><span><b>Read: overzicht met JOINs</b><small>Leesbare klant-, dienst- en medewerkernamen.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/index.php</code>, vóór de HTML-tabel.</p><div class="code-block" data-code-file="bookings/index.php"><div class="code-toolbar"><span>PHP · READ overzicht</span><button type="button" data-copy-target="booking-read-list">Kopieer</button></div><pre><code id="booking-read-list">$statement = database()-&gt;query(
+    "SELECT b.id, b.start_at, b.end_at, b.status, b.version,
+            c.name AS customer_name, c.email AS customer_email,
+            s.name AS service_name, st.name AS staff_name
+       FROM bookings b
+       JOIN customers c ON c.id = b.customer_id
+       JOIN services s ON s.id = b.service_id
+  LEFT JOIN staff st ON st.id = b.staff_id
+   ORDER BY b.start_at ASC"
+);
+$bookings = $statement-&gt;fetchAll();</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud php database relations">
+                <summary><span>10</span><span><b>Read: veilige detailpagina</b><small>Eén boeking ophalen of een echte 404 geven.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/show.php</code>. Escape ieder veld met <code>e()</code> bij HTML-uitvoer.</p><div class="code-block" data-code-file="bookings/show.php"><div class="code-toolbar"><span>PHP · READ detail</span><button type="button" data-copy-target="booking-read-detail">Kopieer</button></div><pre><code id="booking-read-detail">$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT,
+    ['options' =&gt; ['min_range' =&gt; 1]]);
+if (!$id) { http_response_code(404); exit('Boeking niet gevonden.'); }
+
+$statement = database()-&gt;prepare(
+    'SELECT b.*, c.name AS customer_name, c.email, s.name AS service_name,
+            st.name AS staff_name
+       FROM bookings b
+       JOIN customers c ON c.id = b.customer_id
+       JOIN services s ON s.id = b.service_id
+  LEFT JOIN staff st ON st.id = b.staff_id
+      WHERE b.id = :id'
+);
+$statement-&gt;execute(['id' =&gt; $id]);
+$booking = $statement-&gt;fetch();
+if (!$booking) { http_response_code(404); exit('Boeking niet gevonden.'); }</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud php database">
+                <summary><span>11</span><span><b>Update: boeking wijzigen</b><small>Alle aanpasbare velden expliciet allowlisten.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/update.php</code>. Gebruik apart een overlapcontrole als het tijdvak verandert.</p><div class="code-block" data-code-file="bookings/update.php"><div class="code-toolbar"><span>PHP · UPDATE</span><button type="button" data-copy-target="booking-update">Kopieer</button></div><pre><code id="booking-update">$id = positiveId('id');
+$allowedStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'];
+$status = requiredText('status', 20);
+if (!in_array($status, $allowedStatuses, true)) {
+    throw new InvalidArgumentException('Ongeldige status.');
+}
+
+$statement = database()-&gt;prepare(
+    'UPDATE bookings
+        SET service_id = :service, staff_id = :staff, start_at = :start,
+            end_at = :end, status = :status, notes = :notes, version = version + 1,
+            updated_at = CURRENT_TIMESTAMP
+      WHERE id = :id'
+);
+$statement-&gt;execute([
+    'service' =&gt; positiveId('service_id'), 'staff' =&gt; positiveId('staff_id'),
+    'start' =&gt; requiredText('start_at', 19), 'end' =&gt; requiredText('end_at', 19),
+    'status' =&gt; $status, 'notes' =&gt; trim((string) ($_POST['notes'] ?? '')) ?: null, 'id' =&gt; $id,
+]);
+if ($statement-&gt;rowCount() === 0) throw new RuntimeException('Boeking niet gevonden.');</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud security php database">
+                <summary><span>12</span><span><b>Delete: definitief verwijderen</b><small>Alleen toegestaan voor reeds geannuleerde records.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/delete.php</code>. Gebruik POST, CSRF en een bevestigingsscherm; nooit een delete via GET.</p><div class="code-block" data-code-file="bookings/delete.php"><div class="code-toolbar"><span>PHP · DELETE</span><button type="button" data-copy-target="booking-delete">Kopieer</button></div><pre><code id="booking-delete">verifyCsrf($_POST['_token'] ?? null);
+$statement = database()-&gt;prepare(
+    "DELETE FROM bookings WHERE id = :id AND status = 'cancelled'"
+);
+$statement-&gt;execute(['id' =&gt; positiveId('id')]);
+if ($statement-&gt;rowCount() !== 1) {
+    throw new RuntimeException('Annuleer de boeking voordat je haar definitief verwijdert.');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud php database">
+                <summary><span>13</span><span><b>Annuleren zonder dataverlies</b><small>Soft delete bewaart historie en rapportages.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/cancel.php</code>. Dit is voor boekingen meestal beter dan direct verwijderen.</p><div class="code-block" data-code-file="bookings/cancel.php"><div class="code-toolbar"><span>PHP · annuleren</span><button type="button" data-copy-target="booking-cancel">Kopieer</button></div><pre><code id="booking-cancel">verifyCsrf($_POST['_token'] ?? null);
+$statement = database()-&gt;prepare(
+    "UPDATE bookings
+        SET status = 'cancelled', version = version + 1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = :id AND status IN ('pending', 'confirmed')"
+);
+$statement-&gt;execute(['id' =&gt; positiveId('id')]);
+if ($statement-&gt;rowCount() !== 1) {
+    throw new RuntimeException('Deze boeking kan niet meer worden geannuleerd.');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud php database">
+                <summary><span>14</span><span><b>Geannuleerde boeking herstellen</b><small>Alleen als het tijdvak nog beschikbaar is.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/restore.php</code>. Voer eerst snippet 17 uit om opnieuw op overlap te controleren.</p><div class="code-block" data-code-file="bookings/restore.php"><div class="code-toolbar"><span>PHP · herstellen</span><button type="button" data-copy-target="booking-restore">Kopieer</button></div><pre><code id="booking-restore">$id = positiveId('id');
+$db = database();
+$row = $db-&gt;prepare('SELECT staff_id, start_at, end_at FROM bookings WHERE id = ? AND status = ?');
+$row-&gt;execute([$id, 'cancelled']);
+$booking = $row-&gt;fetch();
+if (!$booking) throw new RuntimeException('Geannuleerde boeking niet gevonden.');
+if (hasOverlap($db, (int) $booking['staff_id'], $booking['start_at'], $booking['end_at'], $id)) {
+    throw new RuntimeException('Het oude tijdvak is inmiddels bezet.');
+}
+$update = $db-&gt;prepare("UPDATE bookings SET status = 'confirmed', version = version + 1 WHERE id = ?");
+$update-&gt;execute([$id]);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="crud security php">
+                <summary><span>15</span><span><b>Veilige statusovergangen</b><small>Voorkom bijvoorbeeld completed → pending.</small></span><em>PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>includes/booking-status.php</code> en roep de functie aan vóór iedere statuswijziging.</p><div class="code-block" data-code-file="includes/booking-status.php"><div class="code-toolbar"><span>PHP · statusmachine</span><button type="button" data-copy-target="booking-status-machine">Kopieer</button></div><pre><code id="booking-status-machine">function assertBookingTransition(string $from, string $to): void
+{
+    $allowed = [
+        'pending' =&gt; ['confirmed', 'cancelled'],
+        'confirmed' =&gt; ['completed', 'cancelled', 'no_show'],
+        'completed' =&gt; [],
+        'cancelled' =&gt; ['confirmed'],
+        'no_show' =&gt; [],
+    ];
+    if (!isset($allowed[$from]) || !in_array($to, $allowed[$from], true)) {
+        throw new DomainException("Statusovergang {$from} → {$to} is niet toegestaan.");
+    }
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability database sqlite">
+                <summary><span>16</span><span><b>Uniek exact tijdslot</b><small>Blokkeer dubbele actieve starts in SQLite.</small></span><em>SQLite</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>database/schema.sql</code>. Gebruik dit alleen als iedere medewerker maximaal één start op hetzelfde moment heeft.</p><div class="code-block" data-code-file="database/schema.sql"><div class="code-toolbar"><span>SQLite · unieke actieve start</span><button type="button" data-copy-target="booking-unique-slot">Kopieer</button></div><pre><code id="booking-unique-slot">CREATE UNIQUE INDEX IF NOT EXISTS uq_booking_active_start
+ON bookings (staff_id, start_at)
+WHERE status IN ('pending', 'confirmed');</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability php database">
+                <summary><span>17</span><span><b>Overlap van tijdvakken controleren</b><small>Werkt ook bij verschillende duurtijden.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>includes/availability.php</code>. De voorwaarde <code>start &lt; bestaand einde</code> én <code>einde &gt; bestaande start</code> is het kernpatroon.</p><div class="code-block" data-code-file="includes/availability.php"><div class="code-toolbar"><span>PHP · overlapfunctie</span><button type="button" data-copy-target="booking-overlap">Kopieer</button></div><pre><code id="booking-overlap">function hasOverlap(
+    PDO $db, int $staffId, string $start, string $end, ?int $ignoreId = null
+): bool {
+    $sql = "SELECT COUNT(*) FROM bookings
+             WHERE staff_id = :staff
+               AND status IN ('pending', 'confirmed')
+               AND start_at &lt; :end
+               AND end_at > :start";
+    $params = ['staff' =&gt; $staffId, 'start' =&gt; $start, 'end' =&gt; $end];
+    if ($ignoreId !== null) {
+        $sql .= ' AND id != :ignore_id';
+        $params['ignore_id'] = $ignoreId;
+    }
+    $statement = $db-&gt;prepare($sql);
+    $statement-&gt;execute($params);
+    return (int) $statement-&gt;fetchColumn() > 0;
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability security crud php database">
+                <summary><span>18</span><span><b>Atomisch beschikbaar én opslaan</b><small>Voorkomt race conditions bij gelijktijdig boeken.</small></span><em>PHP + transactie</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> je CREATE-actie. Gebruik in MySQL eventueel eerst een geschikte rij met <code>FOR UPDATE</code>.</p><div class="code-block" data-code-file="bookings/store.php"><div class="code-toolbar"><span>PHP · transactieve CREATE</span><button type="button" data-copy-target="booking-atomic-create">Kopieer</button></div><pre><code id="booking-atomic-create">$db = database();
+try {
+    $db-&gt;beginTransaction();
+    if (hasOverlap($db, $staffId, $startSql, $endSql)) {
+        throw new DomainException('Dit tijdvak is zojuist bezet geraakt.');
+    }
+    $insert = $db-&gt;prepare(
+        "INSERT INTO bookings (customer_id, service_id, staff_id, start_at, end_at, status)
+         VALUES (:customer, :service, :staff, :start, :end, 'confirmed')"
+    );
+    $insert-&gt;execute([
+        'customer' =&gt; $customerId, 'service' =&gt; $serviceId, 'staff' =&gt; $staffId,
+        'start' =&gt; $startSql, 'end' =&gt; $endSql,
+    ]);
+    $db-&gt;commit();
+} catch (Throwable $error) {
+    if ($db-&gt;inTransaction()) $db-&gt;rollBack();
+    throw $error;
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability crud php database">
+                <summary><span>19</span><span><b>Veilig verplaatsen</b><small>Negeer de huidige boeking in de overlapcheck.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/reschedule.php</code>. Combineer met optimistic locking uit snippet 37.</p><div class="code-block" data-code-file="bookings/reschedule.php"><div class="code-toolbar"><span>PHP · reschedule</span><button type="button" data-copy-target="booking-reschedule">Kopieer</button></div><pre><code id="booking-reschedule">$id = positiveId('id');
+$staffId = positiveId('staff_id');
+$startSql = requiredText('start_at', 19);
+$endSql = requiredText('end_at', 19);
+$db = database();
+if (hasOverlap($db, $staffId, $startSql, $endSql, $id)) {
+    throw new DomainException('Het nieuwe tijdvak overlapt een andere boeking.');
+}
+$statement = $db-&gt;prepare(
+    'UPDATE bookings SET staff_id = ?, start_at = ?, end_at = ?,
+     version = version + 1, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+);
+$statement-&gt;execute([$staffId, $startSql, $endSql, $id]);
+if ($statement-&gt;rowCount() !== 1) throw new RuntimeException('Boeking niet gevonden.');</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability php">
+                <summary><span>20</span><span><b>Openingstijden valideren</b><small>Stop boekingen buiten kantooruren.</small></span><em>PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>includes/availability.php</code>. Pas de weekdagen en tijden aan je bedrijf aan.</p><div class="code-block" data-code-file="includes/availability.php"><div class="code-toolbar"><span>PHP · openingstijden</span><button type="button" data-copy-target="booking-hours">Kopieer</button></div><pre><code id="booking-hours">function assertWithinBusinessHours(DateTimeImmutable $start, DateTimeImmutable $end): void
+{
+    $hours = [
+        1 =&gt; ['09:00', '17:00'], 2 =&gt; ['09:00', '17:00'],
+        3 =&gt; ['09:00', '17:00'], 4 =&gt; ['09:00', '17:00'],
+        5 =&gt; ['09:00', '15:00'],
+    ];
+    $day = (int) $start-&gt;format('N');
+    if (!isset($hours[$day]) || $start-&gt;format('Y-m-d') !== $end-&gt;format('Y-m-d')) {
+        throw new DomainException('Gesloten op deze dag.');
+    }
+    [$open, $close] = $hours[$day];
+    if ($start-&gt;format('H:i') &lt; $open || $end-&gt;format('H:i') > $close) {
+        throw new DomainException('Het tijdvak valt buiten de openingstijden.');
+    }
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability database php">
+                <summary><span>21</span><span><b>Blokdagen en vakanties</b><small>Sluit feestdagen, onderhoud of verlof uit.</small></span><em>SQL + PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en beschikbaarheidscontrole. Een NULL medewerker betekent dat de blokkade voor iedereen geldt.</p><div class="code-block" data-code-file="database/schema.sql + includes/availability.php"><div class="code-toolbar"><span>SQL + PHP · blokkades</span><button type="button" data-copy-target="booking-blackouts">Kopieer</button></div><pre><code id="booking-blackouts">CREATE TABLE blackout_periods (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  staff_id INTEGER,
+  start_at TEXT NOT NULL,
+  end_at TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE
+);
+
+// PHP: controleer algemene én medewerkersblokkades.
+$blocked = $db-&gt;prepare(
+    'SELECT COUNT(*) FROM blackout_periods
+      WHERE (staff_id IS NULL OR staff_id = :staff)
+        AND start_at &lt; :end AND end_at > :start'
+);
+$blocked-&gt;execute(['staff' =&gt; $staffId, 'start' =&gt; $startSql, 'end' =&gt; $endSql]);
+if ((int) $blocked-&gt;fetchColumn() > 0) throw new DomainException('Dit tijdvak is geblokkeerd.');</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability relations database php">
+                <summary><span>22</span><span><b>Werkrooster per medewerker</b><small>Beschikbare weekdagen en tijden uit de database.</small></span><em>SQL + PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en beschikbaarheidsfunctie. Weekdag 1 is maandag en 7 is zondag.</p><div class="code-block" data-code-file="database/schema.sql + includes/availability.php"><div class="code-toolbar"><span>SQL + PHP · medewerkersrooster</span><button type="button" data-copy-target="booking-staff-hours">Kopieer</button></div><pre><code id="booking-staff-hours">CREATE TABLE staff_hours (
+  staff_id INTEGER NOT NULL,
+  weekday INTEGER NOT NULL CHECK (weekday BETWEEN 1 AND 7),
+  opens_at TEXT NOT NULL,
+  closes_at TEXT NOT NULL,
+  PRIMARY KEY (staff_id, weekday),
+  FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE
+);
+
+$weekday = (int) $start-&gt;format('N');
+$shift = $db-&gt;prepare('SELECT opens_at, closes_at FROM staff_hours WHERE staff_id = ? AND weekday = ?');
+$shift-&gt;execute([$staffId, $weekday]);
+$hours = $shift-&gt;fetch();
+if (!$hours || $start-&gt;format('H:i') &lt; $hours['opens_at'] || $end-&gt;format('H:i') > $hours['closes_at']) {
+    throw new DomainException('Medewerker is dan niet ingeroosterd.');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability relations database">
+                <summary><span>23</span><span><b>Kamer of hulpmiddel reserveren</b><small>Controleer naast medewerker ook een resource.</small></span><em>SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en voeg <code>resource_id</code> aan je formulier toe. Geschikt voor kamers, voertuigen of apparaten.</p><div class="code-block" data-code-file="database/schema.sql"><div class="code-toolbar"><span>SQL · resources</span><button type="button" data-copy-target="booking-resources">Kopieer</button></div><pre><code id="booking-resources">CREATE TABLE resources (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1
+);
+
+ALTER TABLE bookings ADD COLUMN resource_id INTEGER REFERENCES resources(id);
+
+SELECT COUNT(*)
+FROM bookings
+WHERE resource_id = :resource
+  AND status IN ('pending', 'confirmed')
+  AND start_at &lt; :end AND end_at > :start;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability relations php database">
+                <summary><span>24</span><span><b>Capaciteit voor groepsboekingen</b><small>Meerdere deelnemers in hetzelfde tijdvak toelaten.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en CREATE-validatie. Dit vervangt de één-boeking-per-slotregel voor lessen en tours.</p><div class="code-block" data-code-file="database/schema.sql + bookings/store.php"><div class="code-toolbar"><span>SQL + PHP · capaciteit</span><button type="button" data-copy-target="booking-capacity">Kopieer</button></div><pre><code id="booking-capacity">ALTER TABLE services ADD COLUMN capacity INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE bookings ADD COLUMN party_size INTEGER NOT NULL DEFAULT 1;
+
+$capacity = $db-&gt;prepare(
+    "SELECT s.capacity - COALESCE(SUM(b.party_size), 0) AS remaining
+       FROM services s
+  LEFT JOIN bookings b ON b.service_id = s.id
+        AND b.start_at = :start AND b.status IN ('pending','confirmed')
+      WHERE s.id = :service GROUP BY s.id"
+);
+$capacity-&gt;execute(['start' =&gt; $startSql, 'service' =&gt; $serviceId]);
+$remaining = (int) $capacity-&gt;fetchColumn();
+if ($partySize &lt; 1 || $partySize > $remaining) throw new DomainException('Onvoldoende plaatsen beschikbaar.');</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="relations database crud">
+                <summary><span>25</span><span><b>Diensten beheren</b><small>Prijs en duur als aparte oudertabel.</small></span><em>Relatie</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> je service-CRUD. Bewaar geld als centen om afrondingsfouten te vermijden.</p><div class="code-block" data-code-file="services/store.php"><div class="code-toolbar"><span>PHP · service CREATE</span><button type="button" data-copy-target="booking-service-crud">Kopieer</button></div><pre><code id="booking-service-crud">$name = requiredText('name', 120);
+$duration = filter_input(INPUT_POST, 'duration_minutes', FILTER_VALIDATE_INT,
+    ['options' =&gt; ['min_range' =&gt; 5, 'max_range' =&gt; 1440]]);
+$price = filter_input(INPUT_POST, 'price_cents', FILTER_VALIDATE_INT,
+    ['options' =&gt; ['min_range' =&gt; 0]]);
+if ($duration === false || $price === false) throw new InvalidArgumentException('Ongeldige duur of prijs.');
+
+$statement = database()-&gt;prepare(
+    'INSERT INTO services (name, duration_minutes, price_cents, active) VALUES (?, ?, ?, 1)'
+);
+$statement-&gt;execute([$name, $duration, $price]);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="relations database crud php">
+                <summary><span>26</span><span><b>Klant vinden of aanmaken</b><small>Voorkom dubbele klanten op hetzelfde e-mailadres.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>includes/customers.php</code>. Gebruik het geretourneerde id in je boeking.</p><div class="code-block" data-code-file="includes/customers.php"><div class="code-toolbar"><span>PHP · find-or-create</span><button type="button" data-copy-target="booking-customer-find">Kopieer</button></div><pre><code id="booking-customer-find">function findOrCreateCustomer(PDO $db, string $name, string $email, ?string $phone): int
+{
+    $email = mb_strtolower(trim($email));
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) throw new InvalidArgumentException('Ongeldig e-mailadres.');
+    $find = $db-&gt;prepare('SELECT id FROM customers WHERE email = ?');
+    $find-&gt;execute([$email]);
+    $id = $find-&gt;fetchColumn();
+    if ($id) return (int) $id;
+
+    $insert = $db-&gt;prepare('INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)');
+    $insert-&gt;execute([$name, $email, $phone]);
+    return (int) $db-&gt;lastInsertId();
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="relations database crud">
+                <summary><span>27</span><span><b>Diensten aan medewerkers koppelen</b><small>Niet iedere medewerker hoeft alles te kunnen.</small></span><em>Many-to-many</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema. Vul de koppeltabel via een apart beheerformulier.</p><div class="code-block" data-code-file="database/schema.sql"><div class="code-toolbar"><span>SQL · staff_services</span><button type="button" data-copy-target="booking-staff-services">Kopieer</button></div><pre><code id="booking-staff-services">CREATE TABLE staff_services (
+  staff_id INTEGER NOT NULL,
+  service_id INTEGER NOT NULL,
+  PRIMARY KEY (staff_id, service_id),
+  FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+);
+
+SELECT st.id, st.name
+FROM staff st
+JOIN staff_services ss ON ss.staff_id = st.id
+WHERE ss.service_id = :service_id AND st.active = 1
+ORDER BY st.name;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="relations database crud">
+                <summary><span>28</span><span><b>Extra opties en add-ons</b><small>Many-to-many met prijs op het boekingsmoment.</small></span><em>SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema. De pivot bewaart de prijs zodat latere prijswijzigingen oude boekingen niet aanpassen.</p><div class="code-block" data-code-file="database/schema.sql"><div class="code-toolbar"><span>SQL · booking_addons</span><button type="button" data-copy-target="booking-addons">Kopieer</button></div><pre><code id="booking-addons">CREATE TABLE addons (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  price_cents INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE booking_addons (
+  booking_id INTEGER NOT NULL,
+  addon_id INTEGER NOT NULL,
+  quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  unit_price_cents INTEGER NOT NULL,
+  PRIMARY KEY (booking_id, addon_id),
+  FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+  FOREIGN KEY (addon_id) REFERENCES addons(id) ON DELETE RESTRICT
+);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability relations database php">
+                <summary><span>29</span><span><b>Terugkerende boekingen</b><small>Maak een serie met een gedeelde sleutel.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en een aparte serieactie. Controleer ieder voorkomen op beschikbaarheid.</p><div class="code-block" data-code-file="bookings/store-series.php"><div class="code-toolbar"><span>PHP · herhaalreeks</span><button type="button" data-copy-target="booking-recurring">Kopieer</button></div><pre><code id="booking-recurring">// Schema: ALTER TABLE bookings ADD COLUMN series_id TEXT;
+$seriesId = bin2hex(random_bytes(16));
+$occurrence = $firstStart;
+for ($week = 0; $week &lt; $numberOfWeeks; $week++) {
+    $end = $occurrence-&gt;modify("+{$durationMinutes} minutes");
+    $startSql = $occurrence-&gt;format('Y-m-d H:i:s');
+    $endSql = $end-&gt;format('Y-m-d H:i:s');
+    if (hasOverlap($db, $staffId, $startSql, $endSql)) {
+        throw new DomainException('De reeks botst in week ' . ($week + 1));
+    }
+    $insert-&gt;execute([$customerId, $serviceId, $staffId, $startSql, $endSql, $seriesId]);
+    $occurrence = $occurrence-&gt;modify('+1 week');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="availability relations database crud">
+                <summary><span>30</span><span><b>Wachtlijst met positie</b><small>Bewaar aanvragen wanneer capaciteit vol is.</small></span><em>SQL + PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en je volgeboekte pad. Promoot de oudste rij wanneer een boeking annuleert.</p><div class="code-block" data-code-file="database/schema.sql + bookings/waitlist.php"><div class="code-toolbar"><span>SQL + PHP · wachtlijst</span><button type="button" data-copy-target="booking-waitlist">Kopieer</button></div><pre><code id="booking-waitlist">CREATE TABLE waitlist (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  customer_id INTEGER NOT NULL,
+  service_id INTEGER NOT NULL,
+  desired_start_at TEXT NOT NULL,
+  party_size INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (customer_id, service_id, desired_start_at)
+);
+
+$next = $db-&gt;prepare(
+    'SELECT * FROM waitlist WHERE service_id = ? AND desired_start_at = ? ORDER BY created_at LIMIT 1'
+);
+$next-&gt;execute([$serviceId, $startSql]);
+$candidate = $next-&gt;fetch();</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="ui crud php database">
+                <summary><span>31</span><span><b>Zoeken en statusfilter</b><small>Dynamische WHERE met alleen veilige parameters.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/index.php</code>. Voeg de filters als GET-velden aan je overzicht toe.</p><div class="code-block" data-code-file="bookings/index.php"><div class="code-toolbar"><span>PHP · filterquery</span><button type="button" data-copy-target="booking-filters">Kopieer</button></div><pre><code id="booking-filters">$where = [];
+$params = [];
+$search = trim((string) ($_GET['q'] ?? ''));
+$status = (string) ($_GET['status'] ?? '');
+if ($search !== '') {
+    $where[] = '(c.name LIKE :q OR c.email LIKE :q OR s.name LIKE :q)';
+    $params['q'] = '%' . $search . '%';
+}
+$allowed = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'];
+if (in_array($status, $allowed, true)) {
+    $where[] = 'b.status = :status';
+    $params['status'] = $status;
+}
+$sql = 'SELECT b.*, c.name customer_name, s.name service_name FROM bookings b
+        JOIN customers c ON c.id=b.customer_id JOIN services s ON s.id=b.service_id';
+if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
+$sql .= ' ORDER BY b.start_at DESC';
+$statement = $db-&gt;prepare($sql);
+$statement-&gt;execute($params);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="ui crud php database">
+                <summary><span>32</span><span><b>Paginering voor veel boekingen</b><small>COUNT, LIMIT en OFFSET zonder SQL-injectie.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> het overzicht. Bind LIMIT en OFFSET als integers.</p><div class="code-block" data-code-file="bookings/index.php"><div class="code-toolbar"><span>PHP · paginering</span><button type="button" data-copy-target="booking-pagination">Kopieer</button></div><pre><code id="booking-pagination">$perPage = 25;
+$total = (int) $db-&gt;query('SELECT COUNT(*) FROM bookings')-&gt;fetchColumn();
+$pages = max(1, (int) ceil($total / $perPage));
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT,
+    ['options' =&gt; ['default' =&gt; 1, 'min_range' =&gt; 1]]);
+$page = min((int) $page, $pages);
+$statement = $db-&gt;prepare(
+    'SELECT * FROM bookings ORDER BY start_at DESC LIMIT :limit OFFSET :offset'
+);
+$statement-&gt;bindValue('limit', $perPage, PDO::PARAM_INT);
+$statement-&gt;bindValue('offset', ($page - 1) * $perPage, PDO::PARAM_INT);
+$statement-&gt;execute();
+$bookings = $statement-&gt;fetchAll();</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="ui availability php database">
+                <summary><span>33</span><span><b>Dagagenda ophalen</b><small>Alle afspraken van één lokale kalenderdag.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>agenda.php</code>. Grenzen zijn veiliger dan <code>DATE(start_at)</code> en benutten de index beter.</p><div class="code-block" data-code-file="agenda.php"><div class="code-toolbar"><span>PHP · dagagenda</span><button type="button" data-copy-target="booking-day-agenda">Kopieer</button></div><pre><code id="booking-day-agenda">$zone = new DateTimeZone('America/Paramaribo');
+$day = DateTimeImmutable::createFromFormat('!Y-m-d', (string) ($_GET['date'] ?? ''), $zone)
+    ?: new DateTimeImmutable('today', $zone);
+$from = $day-&gt;format('Y-m-d H:i:s');
+$until = $day-&gt;modify('+1 day')-&gt;format('Y-m-d H:i:s');
+$statement = $db-&gt;prepare(
+    "SELECT b.*, c.name customer_name, s.name service_name
+       FROM bookings b JOIN customers c ON c.id=b.customer_id JOIN services s ON s.id=b.service_id
+      WHERE b.start_at >= :from AND b.start_at &lt; :until AND b.status != 'cancelled'
+      ORDER BY b.start_at"
+);
+$statement-&gt;execute(['from' =&gt; $from, 'until' =&gt; $until]);
+$agenda = $statement-&gt;fetchAll();</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="ui php database">
+                <summary><span>34</span><span><b>Dashboardcijfers</b><small>Vandaag, bevestigd, omzet en no-shows.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>dashboard.php</code>. Voor omzet is een vastgelegde boekingsprijs beter dan de actuele serviceprijs.</p><div class="code-block" data-code-file="dashboard.php"><div class="code-toolbar"><span>SQL · dashboard</span><button type="button" data-copy-target="booking-dashboard">Kopieer</button></div><pre><code id="booking-dashboard">SELECT
+  COUNT(*) AS total,
+  SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed,
+  SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled,
+  SUM(CASE WHEN status = 'no_show' THEN 1 ELSE 0 END) AS no_shows
+FROM bookings
+WHERE start_at >= :day_start AND start_at &lt; :day_end;
+
+SELECT s.name, COUNT(*) AS booking_count
+FROM bookings b
+JOIN services s ON s.id = b.service_id
+WHERE b.status != 'cancelled'
+GROUP BY s.id, s.name
+ORDER BY booking_count DESC;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="security php">
+                <summary><span>35</span><span><b>CSRF-token voor alle mutaties</b><small>Bescherm Create, Update en Delete-formulieren.</small></span><em>PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>includes/security.php</code>. Start de sessie vóór HTML-uitvoer.</p><div class="code-block" data-code-file="includes/security.php"><div class="code-toolbar"><span>PHP · CSRF</span><button type="button" data-copy-target="booking-csrf">Kopieer</button></div><pre><code id="booking-csrf">function csrfToken(): string
+{
+    if (empty($_SESSION['_token'])) $_SESSION['_token'] = bin2hex(random_bytes(32));
+    return $_SESSION['_token'];
+}
+
+function verifyCsrf(mixed $token): void
+{
+    if (!is_string($token) || !hash_equals($_SESSION['_token'] ?? '', $token)) {
+        throw new RuntimeException('Ongeldig of verlopen formulier.');
+    }
+}
+
+// In elk POST-formulier:
+// &lt;input type="hidden" name="_token" value="&lt;?= e(csrfToken()) ?&gt;"&gt;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="security users php database">
+                <summary><span>36</span><span><b>Eigenaarschap en rollen</b><small>Klant ziet eigen boeking; medewerker beheert toegewezen werk.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> je autorisatielaag. Verberg knoppen niet alleen; controleer de actie altijd op de server.</p><div class="code-block" data-code-file="includes/authorization.php"><div class="code-toolbar"><span>PHP · autorisatie</span><button type="button" data-copy-target="booking-authorization">Kopieer</button></div><pre><code id="booking-authorization">function bookingForUser(PDO $db, int $bookingId, array $user): array
+{
+    $sql = 'SELECT * FROM bookings WHERE id = :id';
+    $params = ['id' =&gt; $bookingId];
+    if ($user['role'] === 'customer') {
+        $sql .= ' AND customer_id = :customer';
+        $params['customer'] = $user['customer_id'];
+    } elseif ($user['role'] === 'staff') {
+        $sql .= ' AND staff_id = :staff';
+        $params['staff'] = $user['staff_id'];
+    } elseif ($user['role'] !== 'admin') {
+        throw new RuntimeException('Geen toegang.');
+    }
+    $statement = $db-&gt;prepare($sql);
+    $statement-&gt;execute($params);
+    return $statement-&gt;fetch() ?: throw new RuntimeException('Boeking niet gevonden.');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="security crud php database">
+                <summary><span>37</span><span><b>Optimistic locking</b><small>Voorkom dat twee beheerders elkaars wijziging overschrijven.</small></span><em>PHP + PDO</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> iedere UPDATE-actie en voeg een verborgen <code>version</code>-veld aan het formulier toe.</p><div class="code-block" data-code-file="bookings/update.php"><div class="code-toolbar"><span>PHP · versiecontrole</span><button type="button" data-copy-target="booking-optimistic-lock">Kopieer</button></div><pre><code id="booking-optimistic-lock">$statement = $db-&gt;prepare(
+    'UPDATE bookings
+        SET start_at = :start, end_at = :end, version = version + 1,
+            updated_at = CURRENT_TIMESTAMP
+      WHERE id = :id AND version = :version'
+);
+$statement-&gt;execute([
+    'start' =&gt; $startSql, 'end' =&gt; $endSql,
+    'id' =&gt; positiveId('id'), 'version' =&gt; positiveId('version'),
+]);
+if ($statement-&gt;rowCount() !== 1) {
+    throw new RuntimeException('Deze boeking is intussen gewijzigd. Vernieuw en probeer opnieuw.');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="security crud integration php database">
+                <summary><span>38</span><span><b>Dubbel verzenden voorkomen</b><small>Idempotency key voor formulieren en API-clients.</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> CREATE-formulier en opslagactie. De unieke databasekolom uit het basisschema is de laatste verdediging.</p><div class="code-block" data-code-file="bookings/store.php"><div class="code-toolbar"><span>PHP · idempotency</span><button type="button" data-copy-target="booking-idempotency">Kopieer</button></div><pre><code id="booking-idempotency">// Formulier: &lt;input type="hidden" name="request_id" value="&lt;?= e(bin2hex(random_bytes(16))) ?&gt;"&gt;
+$requestId = requiredText('request_id', 64);
+$existing = $db-&gt;prepare('SELECT id FROM bookings WHERE idempotency_key = ?');
+$existing-&gt;execute([$requestId]);
+if ($id = $existing-&gt;fetchColumn()) {
+    header('Location: show.php?id=' . (int) $id, true, 303);
+    exit;
+}
+
+$insert = $db-&gt;prepare(
+    'INSERT INTO bookings (customer_id, service_id, start_at, end_at, idempotency_key)
+     VALUES (?, ?, ?, ?, ?)'
+);
+$insert-&gt;execute([$customerId, $serviceId, $startSql, $endSql, $requestId]);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="security users database php">
+                <summary><span>39</span><span><b>Auditlog bij iedere wijziging</b><small>Wie veranderde wat en wanneer?</small></span><em>PHP + SQL</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en roep <code>auditBooking()</code> binnen dezelfde transactie als de wijziging aan.</p><div class="code-block" data-code-file="database/schema.sql + includes/audit.php"><div class="code-toolbar"><span>SQL + PHP · auditlog</span><button type="button" data-copy-target="booking-audit">Kopieer</button></div><pre><code id="booking-audit">CREATE TABLE booking_audit (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  booking_id INTEGER NOT NULL,
+  user_id INTEGER,
+  action TEXT NOT NULL,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+function auditBooking(PDO $db, int $bookingId, ?int $userId, string $action, array $payload): void
+{
+    $statement = $db-&gt;prepare(
+        'INSERT INTO booking_audit (booking_id, user_id, action, payload_json) VALUES (?, ?, ?, ?)'
+    );
+    $statement-&gt;execute([$bookingId, $userId, $action,
+        json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)]);
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="integration crud php database">
+                <summary><span>40</span><span><b>JSON API-endpoint</b><small>Geef boekingen veilig terug aan frontend of app.</small></span><em>PHP API</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>api/bookings/index.php</code>. Voeg authenticatie, CORS-beleid en paginering toe voor publiek gebruik.</p><div class="code-block" data-code-file="api/bookings/index.php"><div class="code-toolbar"><span>PHP · JSON READ</span><button type="button" data-copy-target="booking-json-api">Kopieer</button></div><pre><code id="booking-json-api">&lt;?php
+declare(strict_types=1);
+require dirname(__DIR__, 2) . '/bootstrap.php';
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    $from = (string) ($_GET['from'] ?? date('Y-m-d 00:00:00'));
+    $statement = database()-&gt;prepare(
+        'SELECT id, service_id, staff_id, start_at, end_at, status
+           FROM bookings WHERE start_at >= :from ORDER BY start_at LIMIT 100'
+    );
+    $statement-&gt;execute(['from' =&gt; $from]);
+    echo json_encode(['data' =&gt; $statement-&gt;fetchAll()], JSON_THROW_ON_ERROR);
+} catch (Throwable $error) {
+    http_response_code(500);
+    echo json_encode(['error' =&gt; 'De boekingen konden niet worden geladen.']);
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="integration php database">
+                <summary><span>41</span><span><b>CSV-export</b><small>Download een beheerselectie voor Excel.</small></span><em>PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/export.php</code>. Autoriseer de gebruiker vóór je headers verstuurt.</p><div class="code-block" data-code-file="bookings/export.php"><div class="code-toolbar"><span>PHP · CSV</span><button type="button" data-copy-target="booking-csv">Kopieer</button></div><pre><code id="booking-csv">$rows = $db-&gt;query(
+    'SELECT b.id, c.name customer, c.email, s.name service, b.start_at, b.end_at, b.status
+       FROM bookings b JOIN customers c ON c.id=b.customer_id
+       JOIN services s ON s.id=b.service_id ORDER BY b.start_at'
+)-&gt;fetchAll();
+
+header('Content-Type: text/csv; charset=utf-8');
+header('Content-Disposition: attachment; filename="bookings.csv"');
+$output = fopen('php://output', 'wb');
+fputcsv($output, ['ID', 'Klant', 'E-mail', 'Dienst', 'Start', 'Einde', 'Status']);
+foreach ($rows as $row) fputcsv($output, array_values($row));
+fclose($output);
+exit;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="integration php">
+                <summary><span>42</span><span><b>iCalendar-download</b><small>Open de boeking in Apple, Google of Outlook Calendar.</small></span><em>PHP · iCal</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> <code>bookings/calendar.php</code>. Geef tijden in UTC door en verwijder regeleindes uit gebruikerdata.</p><div class="code-block" data-code-file="bookings/calendar.php"><div class="code-toolbar"><span>PHP · .ics</span><button type="button" data-copy-target="booking-ical">Kopieer</button></div><pre><code id="booking-ical">function icsText(string $value): string
+{
+    return str_replace(["\r", "\n", ',', ';'], ['', '', '\\,', '\\;'], $value);
+}
+$start = new DateTimeImmutable($booking['start_at'], new DateTimeZone('UTC'));
+$end = new DateTimeImmutable($booking['end_at'], new DateTimeZone('UTC'));
+$lines = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//My Booking App//NL', 'BEGIN:VEVENT',
+    'UID:booking-' . $booking['id'] . '@example.com',
+    'DTSTAMP:' . gmdate('Ymd\THis\Z'),
+    'DTSTART:' . $start-&gt;format('Ymd\THis\Z'), 'DTEND:' . $end-&gt;format('Ymd\THis\Z'),
+    'SUMMARY:' . icsText($booking['service_name']), 'END:VEVENT', 'END:VCALENDAR',
+];
+header('Content-Type: text/calendar; charset=utf-8');
+header('Content-Disposition: attachment; filename="booking.ics"');
+echo implode("\r\n", $lines);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="integration security php">
+                <summary><span>43</span><span><b>Tijdzones correct opslaan</b><small>Lokale invoer naar UTC, UTC terug naar bezoeker.</small></span><em>PHP</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> je invoer- en presentatielaag. Bewaar één consistente tijdzone in de database.</p><div class="code-block" data-code-file="includes/dates.php"><div class="code-toolbar"><span>PHP · UTC-conversie</span><button type="button" data-copy-target="booking-timezones">Kopieer</button></div><pre><code id="booking-timezones">$userZone = new DateTimeZone($_SESSION['timezone'] ?? 'America/Paramaribo');
+$utc = new DateTimeZone('UTC');
+
+// Formulier → database.
+$localStart = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $_POST['start_at'], $userZone);
+if (!$localStart) throw new InvalidArgumentException('Ongeldig startmoment.');
+$databaseValue = $localStart-&gt;setTimezone($utc)-&gt;format('Y-m-d H:i:s');
+
+// Database → scherm.
+$displayValue = (new DateTimeImmutable($booking['start_at'], $utc))
+    -&gt;setTimezone($userZone)
+    -&gt;format('d-m-Y H:i');</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="integration php database">
+                <summary><span>44</span><span><b>Herinneringen met een queue</b><small>Cron verwerkt mails zonder de boekingspagina te vertragen.</small></span><em>PHP + cron</em></summary>
+                <div class="booking-snippet-body"><p><strong>Plak in:</strong> schema en <code>cron/send-reminders.php</code>. Gebruik in productie een betrouwbare mailprovider.</p><div class="code-block" data-code-file="cron/send-reminders.php"><div class="code-toolbar"><span>PHP · reminderqueue</span><button type="button" data-copy-target="booking-reminders">Kopieer</button></div><pre><code id="booking-reminders">CREATE TABLE notification_queue (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  booking_id INTEGER NOT NULL,
+  channel TEXT NOT NULL,
+  send_at TEXT NOT NULL,
+  sent_at TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+);
+
+// Cronworker: claim maximaal 25 openstaande berichten.
+$jobs = $db-&gt;prepare(
+    'SELECT * FROM notification_queue WHERE sent_at IS NULL AND send_at &lt;= CURRENT_TIMESTAMP
+     AND attempts &lt; 5 ORDER BY send_at LIMIT 25'
+);
+$jobs-&gt;execute();
+foreach ($jobs-&gt;fetchAll() as $job) {
+    // sendReminder($job); markeer sent_at alleen na succes.
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="types availability php database">
+                <summary><span>45</span><span><b>Hotel: nachten en uitcheckdatum</b><small>Een verblijf bezet [check-in, check-out).</small></span><em>Hotel CRUD</em></summary>
+                <div class="booking-snippet-body"><p><strong>Gebruik voor:</strong> hotelkamers, vakantiehuizen en bedden. De uitcheckdag kan direct weer als nieuwe check-in dienen.</p><div class="code-block" data-code-file="bookings/hotel-availability.php"><div class="code-toolbar"><span>PHP · hoteladapter</span><button type="button" data-copy-target="booking-hotel">Kopieer</button></div><pre><code id="booking-hotel">$checkIn = new DateTimeImmutable(requiredText('check_in', 10));
+$checkOut = new DateTimeImmutable(requiredText('check_out', 10));
+if ($checkOut &lt;= $checkIn) throw new InvalidArgumentException('Uitcheck moet na check-in liggen.');
+$nights = (int) $checkIn-&gt;diff($checkOut)-&gt;days;
+
+$occupied = $db-&gt;prepare(
+    "SELECT COUNT(*) FROM bookings
+      WHERE resource_id = :room AND status IN ('pending','confirmed')
+        AND start_at &lt; :checkout AND end_at > :checkin"
+);
+$occupied-&gt;execute([
+    'room' =&gt; $roomId, 'checkin' =&gt; $checkIn-&gt;format('Y-m-d'),
+    'checkout' =&gt; $checkOut-&gt;format('Y-m-d'),
+]);</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="types availability relations php database">
+                <summary><span>46</span><span><b>Verhuur: voorraad per periode</b><small>Bereken hoeveel exemplaren tegelijk in gebruik zijn.</small></span><em>Rental CRUD</em></summary>
+                <div class="booking-snippet-body"><p><strong>Gebruik voor:</strong> fietsen, gereedschap, apparatuur en voertuigen met meerdere gelijke exemplaren.</p><div class="code-block" data-code-file="rentals/availability.php"><div class="code-toolbar"><span>PHP · verhuuradapter</span><button type="button" data-copy-target="booking-rental">Kopieer</button></div><pre><code id="booking-rental">// resources.stock_count bevat het totale aantal exemplaren.
+$statement = $db-&gt;prepare(
+    "SELECT r.stock_count - COALESCE(SUM(b.party_size), 0) AS available
+       FROM resources r
+  LEFT JOIN bookings b ON b.resource_id = r.id
+        AND b.status IN ('pending','confirmed')
+        AND b.start_at &lt; :end AND b.end_at > :start
+      WHERE r.id = :resource GROUP BY r.id"
+);
+$statement-&gt;execute(['resource' =&gt; $resourceId, 'start' =&gt; $startSql, 'end' =&gt; $endSql]);
+if ($quantity > (int) $statement-&gt;fetchColumn()) {
+    throw new DomainException('Niet genoeg exemplaren beschikbaar.');
+}</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="types availability relations php database">
+                <summary><span>47</span><span><b>Restaurant: tafel toewijzen</b><small>Kies de kleinste vrije tafel met genoeg stoelen.</small></span><em>Restaurant CRUD</em></summary>
+                <div class="booking-snippet-body"><p><strong>Gebruik voor:</strong> restaurants en vergaderruimtes. Resources krijgen een capaciteit in stoelen.</p><div class="code-block" data-code-file="reservations/assign-table.php"><div class="code-toolbar"><span>SQL · tafeladapter</span><button type="button" data-copy-target="booking-restaurant">Kopieer</button></div><pre><code id="booking-restaurant">SELECT r.id, r.name, r.capacity
+FROM resources r
+WHERE r.type = 'table'
+  AND r.active = 1
+  AND r.capacity >= :party_size
+  AND NOT EXISTS (
+    SELECT 1 FROM bookings b
+    WHERE b.resource_id = r.id
+      AND b.status IN ('pending','confirmed')
+      AND b.start_at &lt; :end AND b.end_at > :start
+  )
+ORDER BY r.capacity ASC
+LIMIT 1;</code></pre></div></div>
+              </details>
+
+              <details class="booking-snippet" data-booking-tags="types availability relations php database">
+                <summary><span>48</span><span><b>Evenement: tickets en capaciteit</b><small>Reserveer meerdere plaatsen zonder overboeking.</small></span><em>Event CRUD</em></summary>
+                <div class="booking-snippet-body"><p><strong>Gebruik voor:</strong> workshops, tours, lessen en evenementen. Verlaag capaciteit atomisch in MySQL.</p><div class="code-block" data-code-file="events/book.php"><div class="code-toolbar"><span>PHP · eventadapter</span><button type="button" data-copy-target="booking-event">Kopieer</button></div><pre><code id="booking-event">$db-&gt;beginTransaction();
+try {
+    $event = $db-&gt;prepare('SELECT capacity, booked_count FROM events WHERE id = ? FOR UPDATE');
+    $event-&gt;execute([$eventId]);
+    $row = $event-&gt;fetch() ?: throw new RuntimeException('Evenement niet gevonden.');
+    if ((int) $row['booked_count'] + $quantity > (int) $row['capacity']) {
+        throw new DomainException('Onvoldoende tickets beschikbaar.');
+    }
+    $db-&gt;prepare('UPDATE events SET booked_count = booked_count + ? WHERE id = ?')
+       -&gt;execute([$quantity, $eventId]);
+    $insertBooking-&gt;execute([$eventId, $customerId, $quantity]);
+    $db-&gt;commit();
+} catch (Throwable $error) {
+    if ($db-&gt;inTransaction()) $db-&gt;rollBack();
+    throw $error;
+}</code></pre></div></div>
+              </details>
+            </div>
+
+            <div class="booking-rule"><span>Belangrijk</span><p>Een beschikbaarheidscheck en de uiteindelijke INSERT of UPDATE horen in <strong>dezelfde transactie</strong>. Alleen zo voorkom je dubbele boekingen wanneer twee bezoekers tegelijk klikken.</p></div>
+            <label class="chapter-check"><input type="checkbox" data-progress-item="bookings"><span><b>Ik heb mijn bookingtype gekozen en de kernsnippets getest</b><small>Test minimaal aanmaken, wijzigen, annuleren én een botsend tijdvak.</small></span></label>
+          </section>
+
           <section id="snippets" class="guide-section snippet-section" data-search-title="Universele snippets login relaties uploads CSV soft delete detailpagina transacties">
             <div class="section-number">Universele snippetbibliotheek</div>
             <h2>Voeg functies toe zonder opnieuw te beginnen.</h2>
             <p class="section-intro">Deze recepten zijn aanvullingen op de starters. Ieder recept bevat nu niet alleen de functionaliteit, maar ook het <strong>HTML-deel dat je gebruiker ziet</strong> en de <strong>CSS die daarbij hoort</strong>. Voer de delen altijd in de aangegeven volgorde uit.</p>
+
+            <div class="appkit" data-appkit>
+              <header class="appkit-heading"><span>Complete applicatieroute</span><h3>Van één resource naar een volledige CRUD-app.</h3><p>De builder maakt de kern voor ieder onderwerp. Deze route voegt daarna de gedeelde appstructuur, relaties, gebruikers, beheerfuncties en releasecontrole toe. Zo werkt dezelfde bibliotheek voor studenten, producten, klanten, voorraad, voertuigen, boekingen of een zelfgekozen resource.</p></header>
+
+              <div class="appkit-contract" aria-label="Onderdelen van een complete CRUD-applicatie">
+                <article><b>Gegevenslaag</b><span>Schema · PDO · migraties · relaties</span></article>
+                <article><b>Applicatielaag</b><span>Validatie · CRUD · transacties · rechten</span></article>
+                <article><b>Presentatielaag</b><span>Layout · formulieren · lijsten · meldingen</span></article>
+                <article><b>Productielaag</b><span>Configuratie · logging · tests · beveiliging</span></article>
+              </div>
+
+              <ol class="appkit-route">
+                <li><span>01</span><div><b>Kies stack en download starter</b><small>PHP + SQLite is het eenvoudigst; PHP + MySQL past bij gedeelde hosting.</small></div><a href="#stack">Kies route</a></li>
+                <li><span>02</span><div><b>Genereer jouw hoofdresource</b><small>Vul enkelvoud, tabelnaam en velden in; kies de complete-app tab.</small></div><a href="#builder">Open builder</a></li>
+                <li><span>03</span><div><b>Plaats de universele appkern</b><small>Configuratie, bootstrap en layout worden hieronder als complete bestanden geleverd.</small></div><a href="#app-core-files">Open appkern</a></li>
+                <li><span>04</span><div><b>Test alle vier CRUD-acties</b><small>Create, Read, Update en Delete moeten eerst zonder uitbreidingen werken.</small></div><a href="#crud">Test CRUD</a></li>
+                <li><span>05</span><div><b>Voeg relaties toe</b><small>One-to-many en many-to-many verbinden je resources.</small></div><a href="#relaties">Open relaties</a></li>
+                <li><span>06</span><div><b>Voeg login en gebruikersbeheer toe</b><small>Gebruik daarna rollen, rechten en een profielpagina.</small></div><a href="#snippet-login">Open login</a></li>
+                <li><span>07</span><div><b>Bouw het beheerwerk</b><small>Zoeken, filters, paginering, bulkacties en prullenbak.</small></div><a href="#snippet-search-filter">Open beheer</a></li>
+                <li><span>08</span><div><b>Voeg domeinregels toe</b><small>Gebruik bijvoorbeeld voorraadtransacties of het booking-domeinpakket.</small></div><a href="#boekingen">Open domeinpakket</a></li>
+                <li><span>09</span><div><b>Maak gegevens overdraagbaar</b><small>CSV import/export, uploads en detailpagina's.</small></div><a href="#snippet-csv">Open datafuncties</a></li>
+                <li><span>10</span><div><b>Controleer en publiceer</b><small>Auditlog, foutafhandeling, beveiligingsheaders en releasechecks.</small></div><a href="#foutzoeker">Controleer app</a></li>
+              </ol>
+
+              <div class="resource-map">
+                <div><span>Vervangbaar begrip</span><span>Voorraadapp</span><span>CRM</span><span>Booking</span></div>
+                <div><b>Resource enkelvoud</b><code>product</code><code>klant</code><code>boeking</code></div>
+                <div><b>Tabel meervoud</b><code>producten</code><code>klanten</code><code>boekingen</code></div>
+                <div><b>Unieke sleutel</b><code>sku</code><code>email</code><code>startmoment + resource</code></div>
+                <div><b>Belangrijkste relatie</b><code>categorie_id</code><code>bedrijf_id</code><code>service_id</code></div>
+                <div><b>Domeinregel</b><code>voorraad ≥ 0</code><code>e-mail uniek</code><code>geen overlap</code></div>
+              </div>
+
+              <div class="app-core-files" id="app-core-files">
+                <article>
+                  <div><span>Bestand 1/5</span><h4>Appconfiguratie</h4><p>Eén plek voor naam, basis-URL, tijdzone en productiegedrag.</p></div>
+                  <div class="code-block" data-code-file="config/app.php"><div class="code-toolbar"><span>config/app.php · compleet bestand</span><button type="button" data-copy-target="universal-app-config">Kopieer</button></div><pre><code id="universal-app-config">&lt;?php
+declare(strict_types=1);
+
+return [
+    'name' =&gt; getenv('APP_NAME') ?: 'Mijn CRUD-app',
+    'env' =&gt; getenv('APP_ENV') ?: 'production',
+    'base_url' =&gt; rtrim(getenv('APP_URL') ?: 'http://localhost/mijn-app', '/'),
+    'timezone' =&gt; getenv('APP_TIMEZONE') ?: 'America/Paramaribo',
+    'session_name' =&gt; 'crud_app_session',
+];</code></pre></div>
+                </article>
+                <article>
+                  <div><span>Bestand 2/5</span><h4>Universele bootstrap</h4><p>Iedere pagina laadt dezelfde sessie, database, helpers en foutinstellingen.</p></div>
+                  <div class="code-block" data-code-file="bootstrap.php"><div class="code-toolbar"><span>bootstrap.php · compleet bestand</span><button type="button" data-copy-target="universal-bootstrap">Kopieer</button></div><pre><code id="universal-bootstrap">&lt;?php
+declare(strict_types=1);
+
+$config = require __DIR__ . '/config/app.php';
+date_default_timezone_set($config['timezone']);
+ini_set('display_errors', $config['env'] === 'local' ? '1' : '0');
+error_reporting(E_ALL);
+
+session_name($config['session_name']);
+session_set_cookie_params([
+    'httponly' =&gt; true,
+    'secure' =&gt; (!empty($_SERVER['HTTPS']) &amp;&amp; $_SERVER['HTTPS'] !== 'off'),
+    'samesite' =&gt; 'Lax',
+]);
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/security.php';
+
+$db = database();</code></pre></div>
+                </article>
+                <article>
+                  <div><span>Bestand 3/5</span><h4>Herbruikbare pagina-layout</h4><p>Alle CRUD-pagina's krijgen dezelfde navigatie, titel en veilige uitvoer.</p></div>
+                  <div class="code-block" data-code-file="includes/header.php"><div class="code-toolbar"><span>includes/header.php · compleet bestand</span><button type="button" data-copy-target="universal-header">Kopieer</button></div><pre><code id="universal-header">&lt;?php
+declare(strict_types=1);
+$pageTitle = $pageTitle ?? $config['name'];
+?&gt;&lt;!doctype html&gt;
+&lt;html lang="nl"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;&lt;?= e($pageTitle) ?&gt; · &lt;?= e($config['name']) ?&gt;&lt;/title&gt;
+  &lt;link rel="stylesheet" href="&lt;?= e($config['base_url']) ?&gt;/assets/app.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;a class="skip-link" href="#content"&gt;Ga naar inhoud&lt;/a&gt;
+  &lt;header class="app-header"&gt;
+    &lt;a href="&lt;?= e($config['base_url']) ?&gt;"&gt;&lt;?= e($config['name']) ?&gt;&lt;/a&gt;
+    &lt;nav aria-label="Hoofdnavigatie"&gt;
+      &lt;a href="&lt;?= e($config['base_url']) ?&gt;/dashboard.php"&gt;Dashboard&lt;/a&gt;
+      &lt;a href="&lt;?= e($config['base_url']) ?&gt;/index.php"&gt;Overzicht&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main id="content"&gt;
+    &lt;h1&gt;&lt;?= e($pageTitle) ?&gt;&lt;/h1&gt;</code></pre></div>
+                </article>
+                <article>
+                  <div><span>Bestand 4/5</span><h4>Gedeelde footer</h4><p>Sluit de layout correct af en laad scripts op één vaste plek.</p></div>
+                  <div class="code-block" data-code-file="includes/footer.php"><div class="code-toolbar"><span>includes/footer.php · compleet bestand</span><button type="button" data-copy-target="universal-footer">Kopieer</button></div><pre><code id="universal-footer">  &lt;/main&gt;
+  &lt;footer class="app-footer"&gt;
+    &lt;small&gt;&amp;copy; &lt;?= date('Y') ?&gt; &lt;?= e($config['name']) ?&gt;&lt;/small&gt;
+  &lt;/footer&gt;
+  &lt;script src="&lt;?= e($config['base_url']) ?&gt;/assets/app.js" defer&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+                </article>
+                <article>
+                  <div><span>Bestand 5/5</span><h4>Formulierbeveiliging en meldingen</h4><p>CSRF, flashmeldingen en een vaste redirect voor iedere CRUD-resource.</p></div>
+                  <div class="code-block" data-code-file="includes/security.php"><div class="code-toolbar"><span>includes/security.php · compleet bestand</span><button type="button" data-copy-target="universal-security">Kopieer</button></div><pre><code id="universal-security">&lt;?php
+declare(strict_types=1);
+
+function csrfToken(): string
+{
+    if (empty($_SESSION['_token'])) $_SESSION['_token'] = bin2hex(random_bytes(32));
+    return $_SESSION['_token'];
+}
+
+function verifyCsrf(mixed $token): void
+{
+    if (!is_string($token) || !hash_equals($_SESSION['_token'] ?? '', $token)) {
+        throw new RuntimeException('Het formulier is verlopen. Vernieuw de pagina.');
+    }
+}
+
+function flash(string $type, string $message): void
+{
+    $_SESSION['flash'] = ['type' =&gt; $type, 'message' =&gt; $message];
+}
+
+function redirect(string $path): never
+{
+    header('Location: ' . $path, true, 303);
+    exit;
+}</code></pre></div>
+                </article>
+              </div>
+            </div>
 
             <div class="snippet-three-parts">
               <div><span>1</span><b>Functionaliteit</b><small>Database, PHP of JavaScript</small></div>
@@ -2905,7 +4083,7 @@ $auditRows = $db-&gt;query(
     <footer class="site-footer">
       <div><a class="wordmark" href="#top"><span class="wordmark-mark">CFD/</span><span>CodingForDommies</span></a><p>Van “ik snap de fout niet” naar een CRUD die je zelf kunt uitleggen.</p></div>
       <div class="footer-links"><div><b>Gids</b><a href="#stack">Bouwroute</a><a href="#codebank" data-route-link="php-sqlite">PHP-codebank</a><a href="#javascript-route" data-route-link="js-sqlite">JavaScript-route</a><a href="#foutzoeker">Foutzoeker</a></div><div><b>Downloads</b><a href="./downloads/studenten-crud.zip">PHP + SQLite</a><a href="./downloads/php-mysql-crud.zip">PHP + MySQL</a><a href="./downloads/javascript-sqlite-crud.zip">JavaScript + SQLite</a></div></div>
-      <p class="footer-note">Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken. Officiële site: <a href="https://www.codingfordommies.quest/">codingfordommies.quest</a>.</p>
+      <p class="footer-note"><span class="release-status"><i aria-hidden="true"></i> Release 1.0 · SQLite-starters automatisch getest</span> Gebouwd zonder framework-lock-in. De code in de starter is bedoeld om te lezen, te veranderen en opnieuw te gebruiken. Officiële site: <a href="https://www.codingfordommies.quest/">codingfordommies.quest</a>.</p>
     </footer>
 
     <dialog class="search-dialog" data-search-dialog>

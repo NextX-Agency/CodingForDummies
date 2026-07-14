@@ -1,5 +1,16 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+const safeStorage = {
+  getItem(key) {
+    try { return window.localStorage.getItem(key); } catch { return null; }
+  },
+  setItem(key, value) {
+    try { window.localStorage.setItem(key, value); } catch { /* Voorkeuren blijven alleen voor deze pagina actief. */ }
+  },
+  removeItem(key) {
+    try { window.localStorage.removeItem(key); } catch { /* Er is niets blijvends om te verwijderen. */ }
+  }
+};
 
 const englishTranslations = {
   ...(window.CFD_TRANSLATIONS_EN || {}),
@@ -45,7 +56,7 @@ const englishTranslations = {
 const languageParameter = new URLSearchParams(window.location.search).get("lang");
 let activeLanguage = ["nl", "en"].includes(languageParameter)
   ? languageParameter
-  : (localStorage.getItem("cfd-language") || "nl");
+  : (safeStorage.getItem("cfd-language") || "nl");
 const originalTextNodes = new WeakMap();
 const originalAttributes = new WeakMap();
 const translatableAttributes = ["alt", "aria-label", "placeholder", "title", "data-search-title", "data-code-method", "data-code-start", "data-code-end", "data-code-action", "data-code-check"];
@@ -103,12 +114,12 @@ function applyTheme(theme) {
 applyTheme(document.documentElement.dataset.theme || "light");
 themeToggle?.addEventListener("click", () => {
   const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  localStorage.setItem("cfd-theme", nextTheme);
+  safeStorage.setItem("cfd-theme", nextTheme);
   applyTheme(nextTheme);
 });
 
 window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener?.("change", (event) => {
-  if (!localStorage.getItem("cfd-theme")) applyTheme(event.matches ? "dark" : "light");
+  if (!safeStorage.getItem("cfd-theme")) applyTheme(event.matches ? "dark" : "light");
 });
 
 const copyToast = $("[data-copy-toast]");
@@ -162,15 +173,57 @@ $$('[data-copy-text]').forEach((button) => {
 const menuButton = $("[data-menu-button]");
 const topNavigation = $("[data-top-nav]");
 
+function closeMenu() {
+  topNavigation?.classList.remove("is-open");
+  menuButton?.setAttribute("aria-expanded", "false");
+}
+
 menuButton?.addEventListener("click", () => {
   const isOpen = topNavigation.classList.toggle("is-open");
   menuButton.setAttribute("aria-expanded", String(isOpen));
 });
 
 $$('a[href^="#"]', topNavigation).forEach((link) => {
-  link.addEventListener("click", () => {
-    topNavigation.classList.remove("is-open");
-    menuButton?.setAttribute("aria-expanded", "false");
+  link.addEventListener("click", closeMenu);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && topNavigation?.classList.contains("is-open")) {
+    closeMenu();
+    menuButton?.focus();
+  }
+});
+
+$$('[role="tablist"]').forEach((tablist) => {
+  const tabs = $$(':scope > button', tablist);
+  if (tabs.length < 2) return;
+
+  function syncTabs(activeTab = tabs.find((tab) => tab.classList.contains("is-active")) || tabs[0]) {
+    tabs.forEach((tab) => {
+      const selected = tab === activeTab;
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    });
+  }
+
+  syncTabs();
+  tablist.addEventListener("click", (event) => {
+    const tab = event.target.closest("button");
+    if (tab && tabs.includes(tab)) window.setTimeout(() => syncTabs(tab), 0);
+  });
+  tablist.addEventListener("keydown", (event) => {
+    const currentIndex = tabs.indexOf(document.activeElement);
+    if (currentIndex < 0) return;
+    let nextIndex = null;
+    if (["ArrowRight", "ArrowDown"].includes(event.key)) nextIndex = (currentIndex + 1) % tabs.length;
+    if (["ArrowLeft", "ArrowUp"].includes(event.key)) nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = tabs.length - 1;
+    if (nextIndex === null) return;
+    event.preventDefault();
+    tabs[nextIndex].click();
+    tabs[nextIndex].focus();
   });
 });
 
@@ -193,7 +246,7 @@ function applyLanguage(language, updateUrl = true) {
     ? (englishTranslations["CodingForDommies — Bouw je eerste CRUD-app"] || "CodingForDommies — Build your first CRUD app")
     : "CodingForDommies — Bouw je eerste CRUD-app";
   const description = $("meta[name='description']");
-  const dutchDescription = "Bouw stap voor stap een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL en XAMPP. Inclusief werkende copy-paste starters.";
+  const dutchDescription = "Bouw een complete CRUD-webapp met PHP of JavaScript, SQLite of MySQL. Met CRUD-builder, appkern, relaties, 65 snippets en bookingpakket.";
   description?.setAttribute("content", activeLanguage === "en" ? (englishTranslations[dutchDescription] || dutchDescription) : dutchDescription);
   $$('[data-language]').forEach((button) => {
     const selected = button.dataset.language === activeLanguage;
@@ -206,9 +259,10 @@ function applyLanguage(language, updateUrl = true) {
   });
   $("[data-crud-builder]")?.refreshLanguage?.();
   $("[data-relation-lab]")?.refreshLanguage?.();
+  $("[data-booking-library]")?.refreshLanguage?.();
   if (activeRoute && routeDefinitions[activeRoute]) updateRouteDownloads(routeDefinitions[activeRoute]);
   applyTheme(document.documentElement.dataset.theme || "light");
-  localStorage.setItem("cfd-language", activeLanguage);
+  safeStorage.setItem("cfd-language", activeLanguage);
   if (updateUrl) {
     const url = new URL(window.location.href);
     if (activeLanguage === "en") url.searchParams.set("lang", "en");
@@ -304,7 +358,7 @@ function progressItemsForRoute() {
 function loadProgress() {
   let saved = {};
   try {
-    saved = JSON.parse(localStorage.getItem("cfd-progress") || "{}");
+    saved = JSON.parse(safeStorage.getItem("cfd-progress") || "{}");
   } catch {
     saved = {};
   }
@@ -319,7 +373,7 @@ function updateProgress() {
   const saved = {};
   progressItems.forEach((input) => { saved[input.dataset.progressItem] = input.checked; });
   try {
-    localStorage.setItem("cfd-progress", JSON.stringify(saved));
+    safeStorage.setItem("cfd-progress", JSON.stringify(saved));
   } catch {
     // De checklist blijft werken wanneer browseropslag is uitgeschakeld.
   }
@@ -356,7 +410,10 @@ const chapterObserver = new IntersectionObserver((entries) => {
 
   if (!visible) return;
   chapterLinks.forEach((link) => {
-    link.classList.toggle("is-active", link.getAttribute("href") === `#${visible.target.id}`);
+    const active = link.getAttribute("href") === `#${visible.target.id}`;
+    link.classList.toggle("is-active", active);
+    if (active) link.setAttribute("aria-current", "location");
+    else link.removeAttribute("aria-current");
   });
 }, { rootMargin: "-18% 0px -65%", threshold: [0.01, 0.2] });
 
@@ -366,8 +423,26 @@ const crudTabs = $$('[data-crud-tab]');
 const crudPanels = $$('[data-crud-panel]');
 
 crudTabs.forEach((tab) => {
+  const key = tab.dataset.crudTab;
+  const panel = crudPanels.find((item) => item.dataset.crudPanel === key);
+  tab.id = `crud-tab-${key}`;
+  tab.setAttribute("aria-controls", `crud-panel-${key}`);
+  if (panel) {
+    panel.id = `crud-panel-${key}`;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", tab.id);
+    panel.tabIndex = 0;
+  }
+});
+
+crudTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
-    crudTabs.forEach((item) => item.classList.toggle("is-active", item === tab));
+    crudTabs.forEach((item) => {
+      const active = item === tab;
+      item.classList.toggle("is-active", active);
+      item.setAttribute("aria-selected", String(active));
+      item.tabIndex = active ? 0 : -1;
+    });
     crudPanels.forEach((panel) => {
       const isActive = panel.dataset.crudPanel === tab.dataset.crudTab;
       panel.classList.toggle("is-active", isActive);
@@ -509,6 +584,58 @@ snippetFilterButtons.forEach((button) => {
   });
 });
 
+const bookingLibrary = $("#boekingen");
+if (bookingLibrary) {
+  bookingLibrary.dataset.bookingLibrary = "ready";
+  const bookingSearch = $("[data-booking-search]", bookingLibrary);
+  const bookingFilterButtons = $$('[data-booking-filter]', bookingLibrary);
+  const bookingSnippets = $$('.booking-snippet[data-booking-tags]', bookingLibrary);
+  const bookingResult = $("[data-booking-result]", bookingLibrary);
+  let activeBookingFilter = "all";
+
+  function filterBookingSnippets() {
+    const needle = bookingSearch.value.trim().toLocaleLowerCase(activeLanguage === "en" ? "en" : "nl");
+    let visible = 0;
+    bookingSnippets.forEach((snippet) => {
+      const tags = snippet.dataset.bookingTags.split(" ");
+      const matchesFilter = activeBookingFilter === "all" || tags.includes(activeBookingFilter);
+      const matchesSearch = !needle || snippet.textContent.toLocaleLowerCase(activeLanguage === "en" ? "en" : "nl").includes(needle);
+      snippet.hidden = !(matchesFilter && matchesSearch);
+      if (!snippet.hidden) visible += 1;
+    });
+    const label = visible === 1 ? translatedText("recept zichtbaar") : translatedText("recepten zichtbaar");
+    bookingResult.textContent = `${visible} ${label}`;
+  }
+
+  bookingSearch.addEventListener("input", filterBookingSnippets);
+  bookingFilterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeBookingFilter = button.dataset.bookingFilter;
+      bookingFilterButtons.forEach((item) => {
+        const selected = item === button;
+        item.classList.toggle("is-active", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
+      filterBookingSnippets();
+    });
+  });
+
+  $("[data-booking-builder]", bookingLibrary)?.addEventListener("click", () => {
+    const preset = $("[data-builder-preset]");
+    if (preset) {
+      preset.value = "appointments";
+      preset.dispatchEvent(new Event("change", { bubbles: true }));
+      $("#builder")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.setTimeout(() => preset.focus(), 450);
+    }
+  });
+
+  bookingLibrary.refreshLanguage = filterBookingSnippets;
+  bookingFilterButtons[0]?.setAttribute("aria-pressed", "true");
+  bookingFilterButtons.slice(1).forEach((button) => button.setAttribute("aria-pressed", "false"));
+  filterBookingSnippets();
+}
+
 const builder = $("[data-crud-builder]");
 
 if (builder) {
@@ -548,14 +675,15 @@ if (builder) {
       ]
     },
     appointments: {
-      singular: "afspraak",
-      table: "afspraken",
+      singular: "boeking",
+      table: "boekingen",
       fields: [
-        { label: "Onderwerp", name: "onderwerp", type: "text", required: true, unique: false },
-        { label: "Datum", name: "datum", type: "date", required: true, unique: false },
-        { label: "Locatie", name: "locatie", type: "text", required: true, unique: false },
+        { label: "Klantnaam", name: "klantnaam", type: "text", required: true, unique: false },
+        { label: "E-mailadres", name: "email", type: "email", required: true, unique: false },
+        { label: "Dienst", name: "dienst", type: "text", required: true, unique: false },
+        { label: "Startmoment", name: "startmoment", type: "datetime", required: true, unique: false },
+        { label: "Status", name: "status", type: "text", required: true, unique: false },
         { label: "Notities", name: "notities", type: "textarea", required: false, unique: false },
-        { label: "Afgerond", name: "afgerond", type: "boolean", required: true, unique: false }
       ]
     },
     vehicles: {
@@ -586,6 +714,7 @@ if (builder) {
   const builderCode = $("[data-builder-code]", builder);
   const builderFile = $("[data-builder-file]", builder);
   const builderTabs = $$('[data-builder-tab]', builder);
+  const builderOutputPanel = builderCode.closest(".builder-code");
   const builderTestTitle = $("[data-builder-test-title]", builder);
   const builderTestIntro = $("[data-builder-test-intro]", builder);
   const builderTestSteps = $("[data-builder-test-steps]", builder);
@@ -594,6 +723,22 @@ if (builder) {
   const operationPresetButtons = $$('[data-crud-preset]', builder);
   const builderValidation = $("[data-builder-validation]", builder);
   const resetBuilderButton = $("[data-reset-builder]", builder);
+
+  if (builderOutputPanel) {
+    builderOutputPanel.id = "builder-code-panel";
+    builderOutputPanel.setAttribute("role", "tabpanel");
+    builderOutputPanel.tabIndex = 0;
+    builderTabs.forEach((tab) => tab.setAttribute("aria-controls", builderOutputPanel.id));
+  }
+
+  function setBuilderTabState(tabKey) {
+    builderTabs.forEach((tab) => {
+      const active = tab.dataset.builderTab === tabKey;
+      tab.classList.toggle("is-active", active);
+      tab.setAttribute("aria-selected", String(active));
+      tab.tabIndex = active ? 0 : -1;
+    });
+  }
   const csrfInput = $("[data-builder-csrf]", builder);
   const csrfOption = $("[data-builder-csrf-option]", builder);
   let currentBuilderTab = "complete";
@@ -802,7 +947,7 @@ if (builder) {
       tab: currentBuilderTab
     };
     try {
-      localStorage.setItem(builderStorageKey, JSON.stringify(configuration));
+      safeStorage.setItem(builderStorageKey, JSON.stringify(configuration));
     } catch {
       // De generator blijft werken wanneer een browser lokale opslag blokkeert.
     }
@@ -811,7 +956,7 @@ if (builder) {
   function restoreBuilderConfiguration() {
     let saved;
     try {
-      saved = JSON.parse(localStorage.getItem(builderStorageKey) || "null");
+      saved = JSON.parse(safeStorage.getItem(builderStorageKey) || "null");
     } catch {
       return false;
     }
@@ -834,7 +979,7 @@ if (builder) {
     if (csrfInput) csrfInput.checked = Boolean(saved.csrf);
     if (!operationInputs.some((input) => input.checked)) operationInputs[0].checked = true;
     if (builderTabs.some((tab) => tab.dataset.builderTab === saved.tab)) currentBuilderTab = saved.tab;
-    builderTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === currentBuilderTab));
+    setBuilderTabState(currentBuilderTab);
     renderBuilderFields();
     return true;
   }
@@ -1994,7 +2139,7 @@ if (builder) {
   builderTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       currentBuilderTab = tab.dataset.builderTab;
-      builderTabs.forEach((item) => item.classList.toggle("is-active", item === tab));
+      setBuilderTabState(currentBuilderTab);
       updateBuilderOutput();
     });
   });
@@ -2002,13 +2147,13 @@ if (builder) {
   $("[data-copy-builder]", builder).addEventListener("click", () => copyText(builder.currentCode || ""));
   $("[data-download-builder]", builder).addEventListener("click", () => downloadTextFile(builder.currentFilename || "crud-code.txt", builder.currentCode || ""));
   resetBuilderButton?.addEventListener("click", () => {
-    localStorage.removeItem(builderStorageKey);
+    safeStorage.removeItem(builderStorageKey);
     presetSelect.value = "products";
     stackSelect.value = "php-sqlite";
     if (csrfInput) csrfInput.checked = false;
     operationInputs.forEach((input) => { input.checked = true; });
     currentBuilderTab = "complete";
-    builderTabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.builderTab === currentBuilderTab));
+    setBuilderTabState(currentBuilderTab);
     updateOperationSummary();
     applyPreset("products");
   });
@@ -2151,7 +2296,7 @@ function selectRoute(routeKey, { scrollResult = false } = {}) {
 
   activeRoute = routeKey;
   try {
-    localStorage.setItem("cfd-selected-route", routeKey);
+    safeStorage.setItem("cfd-selected-route", routeKey);
   } catch {
     // De route blijft voor deze sessie actief zonder browseropslag.
   }
@@ -2213,7 +2358,7 @@ $$('[data-recommend-route]').forEach((button) => {
 
 routeFocus?.addEventListener("change", () => {
   try {
-    localStorage.setItem("cfd-route-focus", String(routeFocus.checked));
+    safeStorage.setItem("cfd-route-focus", String(routeFocus.checked));
   } catch {
     // Focus blijft voor deze sessie werken zonder browseropslag.
   }
@@ -2230,8 +2375,8 @@ $("[data-header-route]")?.addEventListener("click", scrollToRouteChooser);
 $("[data-sidebar-route]")?.addEventListener("click", scrollToRouteChooser);
 
 try {
-  routeFocus.checked = localStorage.getItem("cfd-route-focus") !== "false";
-  const savedRoute = localStorage.getItem("cfd-selected-route");
+  routeFocus.checked = safeStorage.getItem("cfd-route-focus") !== "false";
+  const savedRoute = safeStorage.getItem("cfd-selected-route");
   if (routeDefinitions[savedRoute]) selectRoute(savedRoute);
 } catch {
   routeFocus.checked = true;
@@ -2239,7 +2384,7 @@ try {
 
 let beginnerModeEnabled = true;
 try {
-  beginnerModeEnabled = localStorage.getItem("cfd-beginner-mode") !== "false";
+  beginnerModeEnabled = safeStorage.getItem("cfd-beginner-mode") !== "false";
 } catch {
   beginnerModeEnabled = true;
 }
@@ -2255,7 +2400,7 @@ function setBeginnerMode(enabled, persist = true) {
 
   if (persist) {
     try {
-      localStorage.setItem("cfd-beginner-mode", String(enabled));
+      safeStorage.setItem("cfd-beginner-mode", String(enabled));
     } catch {
       // De instelling blijft voor deze sessie actief zonder browseropslag.
     }

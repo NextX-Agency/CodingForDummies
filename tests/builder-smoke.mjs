@@ -120,6 +120,18 @@ if (!createGuide.includes("case 'create_student':") || !createGuide.includes('st
   throw new Error('Het Create-blok noemt geen exact bestand en zoekanker.');
 }
 
+const createCrudTab = window.document.querySelector('[data-crud-tab="create"]');
+const readCrudTab = window.document.querySelector('[data-crud-tab="read"]');
+createCrudTab.focus();
+createCrudTab.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+await new Promise((resolve) => window.setTimeout(resolve, 0));
+if (window.document.activeElement !== readCrudTab
+  || readCrudTab.getAttribute('aria-selected') !== 'true'
+  || window.document.querySelector('[data-crud-panel="read"]').hidden) {
+  throw new Error('CRUD-tabs ondersteunen geen pijltjestoetsen of correcte ARIA-status.');
+}
+createCrudTab.click();
+
 const normalizePhpBlock = (value) => value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join('\n');
 const normalizedStarter = normalizePhpBlock(phpStarter);
 for (const id of ['create-code', 'read-code', 'update-code', 'delete-code']) {
@@ -143,6 +155,7 @@ const change = (element, value) => {
 };
 
 if (!builder.querySelector('[data-builder-tab="complete"]').classList.contains('is-active')
+  || builder.querySelector('[data-builder-tab="complete"]').getAttribute('aria-selected') !== 'true'
   || builder.querySelectorAll('[data-builder-tab]').length !== 7) {
   throw new Error('De CRUD-generator opent niet direct met de complete testapp.');
 }
@@ -623,6 +636,103 @@ $db->exec("INSERT OR IGNORE INTO landen (id, naam) VALUES (1, 'Suriname'), (2, '
   rmSync(relationTemplateDirectory, { recursive: true, force: true });
 }
 
+const bookingLibrary = window.document.querySelector('#boekingen');
+const bookingSnippets = [...bookingLibrary.querySelectorAll('.booking-snippet[data-booking-tags]')];
+if (bookingSnippets.length !== 48
+  || !window.document.getElementById('booking-schema-sqlite').textContent.includes('FOREIGN KEY (service_id)')
+  || !window.document.getElementById('booking-schema-mysql').textContent.includes('ENGINE=InnoDB')
+  || !window.document.getElementById('booking-overlap').textContent.includes('start_at < :end')
+  || !window.document.getElementById('booking-atomic-create').textContent.includes('beginTransaction')
+  || bookingLibrary.querySelector('[data-booking-result]').textContent !== '48 recepten zichtbaar') {
+  throw new Error('De booking CRUD-bank mist recepten, databaseschema, overlapcontrole, transactie of resultaatstatus.');
+}
+
+bookingLibrary.querySelector('[data-booking-filter="availability"]').click();
+const visibleAvailability = bookingSnippets.filter((snippet) => !snippet.hidden);
+if (visibleAvailability.length < 10
+  || visibleAvailability.some((snippet) => !snippet.dataset.bookingTags.split(' ').includes('availability'))) {
+  throw new Error('Het beschikbaarheidsfilter van de bookingbank toont niet uitsluitend passende recepten.');
+}
+
+const bookingSearch = bookingLibrary.querySelector('[data-booking-search]');
+bookingLibrary.querySelector('[data-booking-filter="all"]').click();
+bookingSearch.value = 'iCalendar';
+bookingSearch.dispatchEvent(new window.Event('input', { bubbles: true }));
+if (bookingSnippets.filter((snippet) => !snippet.hidden).length !== 1
+  || !bookingSnippets.find((snippet) => !snippet.hidden).textContent.includes('iCalendar-download')) {
+  throw new Error('Zoeken in bookingrecepten vindt niet het juiste iCalendar-recept.');
+}
+bookingSearch.value = '';
+bookingSearch.dispatchEvent(new window.Event('input', { bubbles: true }));
+
+bookingLibrary.querySelector('[data-booking-builder]').click();
+if (builder.querySelector('[data-builder-preset]').value !== 'appointments'
+  || builder.querySelector('[data-builder-table]').value !== 'boekingen'
+  || ![...builder.querySelectorAll('[data-builder-field-row]')]
+    .some((row) => row.querySelector('[data-field-key="name"]').value === 'startmoment')) {
+  throw new Error('De bookingbank opent geen bruikbare boekingspreset in de CRUD-builder.');
+}
+
+if (window.document.querySelectorAll('#app-core-files .code-block').length !== 5
+  || !window.document.getElementById('universal-bootstrap').textContent.includes('session_set_cookie_params')
+  || window.document.querySelectorAll('.appkit-route li').length !== 10) {
+  throw new Error('De universele complete-app route mist kernbestanden of integratiestappen.');
+}
+
+const bookingSnippetDirectory = mkdtempSync(join(tmpdir(), 'cfd-booking-snippets-'));
+try {
+  const phpBookingIds = [
+    'booking-pdo-sqlite', 'booking-pdo-mysql', 'booking-helpers', 'booking-create',
+    'booking-read-list', 'booking-read-detail', 'booking-update', 'booking-delete',
+    'booking-cancel', 'booking-restore', 'booking-status-machine', 'booking-overlap',
+    'booking-atomic-create', 'booking-reschedule', 'booking-hours', 'booking-service-crud',
+    'booking-customer-find', 'booking-recurring', 'booking-filters', 'booking-pagination',
+    'booking-day-agenda', 'booking-csrf', 'booking-authorization', 'booking-optimistic-lock',
+    'booking-idempotency', 'booking-json-api', 'booking-csv', 'booking-ical',
+    'booking-timezones', 'booking-hotel', 'booking-rental', 'booking-event',
+    'universal-app-config', 'universal-bootstrap', 'universal-security'
+  ];
+  for (const snippetId of phpBookingIds) {
+    const source = window.document.getElementById(snippetId).textContent;
+    const filename = join(bookingSnippetDirectory, `${snippetId}.php`);
+    writeFileSync(filename, source.includes('<?php') ? source : `<?php\n${source}`, 'utf8');
+    execFileSync('php', ['-l', filename], { stdio: 'pipe' });
+  }
+  for (const snippetId of ['booking-form-html', 'universal-header', 'universal-footer']) {
+    const filename = join(bookingSnippetDirectory, `${snippetId}.php`);
+    writeFileSync(filename, window.document.getElementById(snippetId).textContent, 'utf8');
+    execFileSync('php', ['-l', filename], { stdio: 'pipe' });
+  }
+
+  const sqliteSchema = Buffer.from(window.document.getElementById('booking-schema-sqlite').textContent).toString('base64');
+  const overlapFunction = window.document.getElementById('booking-overlap').textContent;
+  const runtimeDatabase = join(bookingSnippetDirectory, 'runtime.sqlite').replaceAll('\\', '\\\\');
+  const runtimeFile = join(bookingSnippetDirectory, 'booking-runtime.php');
+  writeFileSync(runtimeFile, `<?php
+declare(strict_types=1);
+$db = new PDO('sqlite:${runtimeDatabase}');
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$db->exec(base64_decode('${sqliteSchema}'));
+$db->exec("INSERT INTO services (id,name,duration_minutes,price_cents) VALUES (1,'Review',60,5000)");
+$db->exec("INSERT INTO customers (id,name,email) VALUES (1,'Testklant','test@example.com')");
+$db->exec("INSERT INTO staff (id,name) VALUES (1,'Tester')");
+$db->exec("INSERT INTO bookings (id,customer_id,service_id,staff_id,start_at,end_at,status) VALUES (1,1,1,1,'2027-01-01 10:00:00','2027-01-01 11:00:00','confirmed')");
+${overlapFunction}
+$joined = (int) $db->query("SELECT COUNT(*) FROM bookings b JOIN customers c ON c.id=b.customer_id JOIN services s ON s.id=b.service_id")->fetchColumn();
+echo json_encode([$joined,
+  hasOverlap($db, 1, '2027-01-01 10:30:00', '2027-01-01 11:30:00'),
+  hasOverlap($db, 1, '2027-01-01 11:00:00', '2027-01-01 12:00:00'),
+  hasOverlap($db, 1, '2027-01-01 10:30:00', '2027-01-01 11:30:00', 1)
+]);`, 'utf8');
+  execFileSync('php', ['-l', runtimeFile], { stdio: 'pipe' });
+  const runtimeResult = JSON.parse(execFileSync('php', [runtimeFile], { encoding: 'utf8' }));
+  if (JSON.stringify(runtimeResult) !== JSON.stringify([1, true, false, false])) {
+    throw new Error('SQLite bookingschema, JOIN of overlapfunctie werkt niet als geïntegreerde runtimeproef.');
+  }
+} finally {
+  rmSync(bookingSnippetDirectory, { recursive: true, force: true });
+}
+
 const phpFilter = window.document.querySelector('[data-snippet-filter="php"]');
 phpFilter.click();
 const wrongSnippetVisible = [...window.document.querySelectorAll('.snippet-item')]
@@ -738,7 +848,7 @@ if (sqliteRoute.getAttribute('aria-pressed') !== 'true' || window.document.query
 if (window.document.querySelector('#database').hidden || !window.document.querySelector('#mysql-route').hidden || !window.document.querySelector('#javascript-route').hidden) {
   throw new Error('Routefocus toont niet alleen de PHP + SQLite-hoofdstukken.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '10') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '11') {
   throw new Error('De voortgang is niet aangepast aan PHP + SQLite.');
 }
 if (stack.value !== 'php-sqlite'
@@ -760,7 +870,7 @@ javascriptRoute.click();
 if (!window.document.querySelector('#xampp').hidden || window.document.querySelector('#javascript-route').hidden) {
   throw new Error('De JavaScript-route filtert de PHP-hoofdstukken niet goed.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '7' || stack.value !== 'js-sqlite') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '8' || stack.value !== 'js-sqlite') {
   throw new Error('JavaScript-voortgang of buildertechniek is niet routespecifiek.');
 }
 if (window.document.querySelector('[data-frontend-panel="js"]').hidden) {
@@ -808,6 +918,10 @@ if (window.document.documentElement.lang !== 'en'
   || !window.document.querySelector('[data-builder-csrf-option]').textContent.includes('Optional for PHP')
   || relationLab.querySelector('[data-relation-update]').textContent !== 'Save'
   || relationLab.querySelector('[data-relation-delete-country]').textContent !== 'Remove'
+  || !bookingLibrary.querySelector('h2').textContent.includes('Build any type of booking website')
+  || bookingLibrary.querySelector('[data-booking-result]').textContent !== '48 recipes visible'
+  || !window.document.querySelector('.appkit-heading h3').textContent.includes('complete CRUD app')
+  || window.document.querySelector('.skip-link').textContent !== 'Skip to main content'
   || ![...window.document.querySelector('[data-field-key="type"]').options].some((option) => option.textContent === 'Long text')
   || window.localStorage.getItem('cfd-language') !== 'en'
   || englishButton.getAttribute('aria-pressed') !== 'true') {
