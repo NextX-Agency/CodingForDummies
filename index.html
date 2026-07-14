@@ -38,6 +38,7 @@
         <a href="#stack">Bouwroute</a>
         <a href="#frontend-koppelen">HTML + CSS</a>
         <a href="#builder">CRUD-builder</a>
+        <a href="#relaties">Relaties</a>
         <a href="#codebank" data-route-link="php-sqlite">Codebank</a>
         <a href="#foutzoeker">Foutzoeker</a>
       </nav>
@@ -112,6 +113,7 @@
             <a href="#mysql-route" data-route-link="php-mysql"><span>06</span> MySQL koppelen</a>
             <a href="#crud" data-route-link="php-sqlite php-mysql"><span>07</span> PHP CRUD bouwen</a>
             <a href="#javascript-route" data-route-link="js-sqlite"><span>08</span> JavaScript route</a>
+            <a href="#relaties"><span>Relatie</span> CRUD-relaties</a>
             <a href="#snippets"><span>Bank</span> Snippetbibliotheek</a>
             <a href="#uitbreiden"><span>09</span> Uitbreiden</a>
             <a href="#eigen-maken"><span>10</span> Eigen thema</a>
@@ -917,6 +919,234 @@ db.exec(`
 
             <div class="warning-callout"><span>!</span><div><b>Open de frontend niet als los bestand.</b><p>De API bestaat alleen terwijl <code>node backend/server.js</code> draait. Gebruik altijd <code>http://localhost:3000</code>.</p></div></div>
             <label class="chapter-check"><input type="checkbox" data-progress-item="javascript" data-progress-routes="js-sqlite"><span><b>Mijn JavaScript API antwoordt</b><small>Open <code>http://localhost:3000/api/students</code>; je moet een JSON-array zien.</small></span></label>
+          </section>
+
+          <section id="relaties" class="guide-section relation-section" data-search-title="CRUD-relaties one-to-many foreign key JOIN HTML PHP templates">
+            <div class="section-number">Praktijkhoofdstuk · CRUD-relaties</div>
+            <h2>Koppel twee tabellen zonder de draad kwijt te raken.</h2>
+            <p class="section-intro">Een relatie betekent dat je niet dezelfde informatie in iedere rij herhaalt. In dit voorbeeld staat ieder land één keer in <code>landen</code> en bewaart een student alleen het bijbehorende <code>land_id</code>. Probeer het eerst visueel en gebruik daarna de HTML- en PHP-template.</p>
+
+            <div class="relation-decision">
+              <div><span>Begin hiermee</span><h3>Één land heeft meerdere studenten.</h3><p>Dit heet een <strong>one-to-many-relatie</strong>. De tabel aan de “many”-kant bewaart de foreign key.</p></div>
+              <dl>
+                <div><dt>Oudertabel</dt><dd><code>landen.id</code></dd></div>
+                <div><dt>Kindtabel</dt><dd><code>studenten.land_id</code></dd></div>
+                <div><dt>Leesquery</dt><dd><code>JOIN</code></dd></div>
+                <div><dt>Verwijderregel</dt><dd><code>RESTRICT</code></dd></div>
+              </dl>
+            </div>
+
+            <div class="relation-schema" aria-label="Visueel databaseschema voor landen en studenten">
+              <article class="relation-table relation-table--parent">
+                <header><span>1</span><div><b>landen</b><small>De lijst waaruit je kiest</small></div></header>
+                <div class="relation-field is-key"><code>id</code><span>PRIMARY KEY</span></div>
+                <div class="relation-field"><code>naam</code><span>TEXT</span></div>
+                <div class="relation-field"><code>code</code><span>TEXT</span></div>
+              </article>
+              <div class="relation-connector" aria-hidden="true"><span>één land</span><i></i><b>1 → ∞</b><span>veel studenten</span></div>
+              <article class="relation-table relation-table--child">
+                <header><span>∞</span><div><b>studenten</b><small>Iedere rij kiest één land</small></div></header>
+                <div class="relation-field is-key"><code>id</code><span>PRIMARY KEY</span></div>
+                <div class="relation-field"><code>naam</code><span>TEXT</span></div>
+                <div class="relation-field is-foreign"><code>land_id</code><span>FOREIGN KEY</span></div>
+              </article>
+            </div>
+
+            <div class="relation-crud-map" aria-label="Wat CRUD met de relatie doet">
+              <article><span>C</span><div><b>Create</b><p>Kies een bestaand land en bewaar diens <code>id</code> bij de nieuwe student.</p></div></article>
+              <article><span>R</span><div><b>Read</b><p>Gebruik <code>JOIN</code> om naast <code>land_id</code> ook de leesbare landnaam te tonen.</p></div></article>
+              <article><span>U</span><div><b>Update</b><p>Wijzig <code>land_id</code> wanneer de student aan een ander land wordt gekoppeld.</p></div></article>
+              <article><span>D</span><div><b>Delete</b><p>Verwijder een student normaal; blokkeer een land zolang studenten het nog gebruiken.</p></div></article>
+            </div>
+
+            <div class="relation-lab" data-relation-lab>
+              <div class="relation-lab-heading">
+                <div><span>Interactief voorbeeld</span><h3>Test de relatie zonder database.</h3><p>De oefening bootst <code>JOIN</code> en <code>ON DELETE RESTRICT</code> na. Je wijzigingen blijven alleen in dit browservenster.</p></div>
+                <button type="button" data-relation-reset>Herstel voorbeeld</button>
+              </div>
+              <p class="relation-lab-status" data-relation-status role="status" aria-live="polite">Klaar om een student of land toe te voegen.</p>
+
+              <div class="relation-lab-grid">
+                <article class="relation-lab-panel">
+                  <header><div><span>Kindtabel</span><h4>Studenten</h4></div><b data-relation-student-count>0 rijen</b></header>
+                  <form class="relation-add-form" data-relation-student-form>
+                    <label><span>Naam student</span><input name="student_name" type="text" maxlength="40" placeholder="Bijv. Amina" required></label>
+                    <label><span>Land</span><select name="country_id" data-relation-country-select required></select></label>
+                    <button type="submit">Student toevoegen</button>
+                  </form>
+                  <div class="relation-student-list" data-relation-student-list></div>
+                </article>
+
+                <article class="relation-lab-panel relation-lab-panel--parent">
+                  <header><div><span>Oudertabel</span><h4>Landen</h4></div><b data-relation-country-count>0 rijen</b></header>
+                  <form class="relation-add-form relation-add-form--country" data-relation-country-form>
+                    <label><span>Nieuw land</span><input name="country_name" type="text" maxlength="40" placeholder="Bijv. Brazilië" required></label>
+                    <button type="submit">Land toevoegen</button>
+                  </form>
+                  <div class="relation-country-list" data-relation-country-list></div>
+                </article>
+              </div>
+
+              <template data-relation-student-template>
+                <div class="relation-student-row">
+                  <div><span data-relation-student-name></span><small><code data-relation-student-key></code> → <b data-relation-student-country></b></small></div>
+                  <label><span class="visually-hidden">Wijzig land</span><select data-relation-update-select></select></label>
+                  <button type="button" data-relation-update>Opslaan</button>
+                  <button type="button" class="is-danger" data-relation-delete-student>Verwijder</button>
+                </div>
+              </template>
+
+              <template data-relation-country-template>
+                <div class="relation-country-row">
+                  <div><span data-relation-country-name></span><small><code data-relation-country-key></code></small></div>
+                  <b data-relation-usage></b>
+                  <button type="button" data-relation-delete-country>Verwijder</button>
+                </div>
+              </template>
+            </div>
+
+            <div class="relation-template-heading">
+              <div><span>Copy-paste templates</span><h3>De zichtbare HTML en de PHP-logica gebruiken exact dezelfde namen.</h3></div>
+              <a class="button button--secondary" href="./downloads/studenten-crud.zip">Download compleet relatieproject <span>↓</span></a>
+            </div>
+
+            <div class="relation-template-grid">
+              <article>
+                <div class="relation-template-label"><span>Template 1</span><div><b>HTML-view in index.php</b><small>Formulier plus bewerkbare relationele rijen</small></div></div>
+                <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Plaats de view in het HTML-deel" data-code-start="na &lt;main&gt;" data-code-end="vóór &lt;/main&gt;" data-code-action="Gebruik dit nadat de PHP-template $countries en $students heeft geladen." data-code-check="Voeg een student toe, wijzig het land en verwijder alleen de teststudent."><div class="code-toolbar"><span>index.php · HTML/PHP-view</span><button type="button" data-copy-target="relation-html-template">Kopieer HTML-template</button></div><pre><code id="relation-html-template">&lt;section class="relation-crud"&gt;
+  &lt;form method="post"&gt;
+    &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+    &lt;input type="hidden" name="intent" value="create_relation"&gt;
+    &lt;label&gt;Naam &lt;input name="naam" required maxlength="80"&gt;&lt;/label&gt;
+    &lt;label&gt;Land
+      &lt;select name="land_id" required&gt;
+        &lt;option value=""&gt;Kies een land&lt;/option&gt;
+        &lt;?php foreach ($countries as $country): ?&gt;
+          &lt;option value="&lt;?= e($country['id']) ?&gt;"&gt;
+            &lt;?= e($country['naam']) ?&gt;
+          &lt;/option&gt;
+        &lt;?php endforeach; ?&gt;
+      &lt;/select&gt;
+    &lt;/label&gt;
+    &lt;button type="submit"&gt;Student toevoegen&lt;/button&gt;
+  &lt;/form&gt;
+
+  &lt;div class="relation-crud__list"&gt;
+    &lt;?php foreach ($students as $student): ?&gt;
+      &lt;article&gt;
+        &lt;form method="post"&gt;
+          &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+          &lt;input type="hidden" name="intent" value="update_relation"&gt;
+          &lt;input type="hidden" name="id" value="&lt;?= e($student['id']) ?&gt;"&gt;
+          &lt;input name="naam" value="&lt;?= e($student['naam']) ?&gt;" required&gt;
+          &lt;select name="land_id" required&gt;
+            &lt;?php foreach ($countries as $country): ?&gt;
+              &lt;option value="&lt;?= e($country['id']) ?&gt;"
+                &lt;?= (int) $country['id'] === (int) $student['land_id'] ? 'selected' : '' ?&gt;&gt;
+                &lt;?= e($country['naam']) ?&gt;
+              &lt;/option&gt;
+            &lt;?php endforeach; ?&gt;
+          &lt;/select&gt;
+          &lt;button type="submit"&gt;Wijzig&lt;/button&gt;
+        &lt;/form&gt;
+        &lt;form method="post" data-confirm="Student verwijderen?"&gt;
+          &lt;input type="hidden" name="_token" value="&lt;?= e(csrf_token()) ?&gt;"&gt;
+          &lt;input type="hidden" name="intent" value="delete_relation"&gt;
+          &lt;input type="hidden" name="id" value="&lt;?= e($student['id']) ?&gt;"&gt;
+          &lt;button type="submit"&gt;Verwijder&lt;/button&gt;
+        &lt;/form&gt;
+      &lt;/article&gt;
+    &lt;?php endforeach; ?&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre></div>
+              </article>
+
+              <article>
+                <div class="relation-template-label"><span>Template 2</span><div><b>PHP CRUD + JOIN</b><small>Veilige prepared statements en foreign-keycontrole</small></div></div>
+                <div class="code-block" data-code-file="studenten-crud/index.php" data-code-method="Plaats de logica vóór de HTML" data-code-start="$db = database();" data-code-end="vóór &lt;!DOCTYPE html&gt;" data-code-action="Plak dit na de databaseverbinding. De helpers staan al in includes/functions.php van de downloadstarter." data-code-check="Test Create, Read, Update en Delete afzonderlijk met tijdelijke gegevens."><div class="code-toolbar"><span>index.php · PHP-relatielogica</span><button type="button" data-copy-target="relation-php-template">Kopieer PHP-template</button></div><pre><code id="relation-php-template">&lt;?php
+// Verwacht de helpers uit includes/functions.php van de downloadstarter.
+// De compacte oefentabel gebruikt de bestaande landen als oudertabel.
+$db-&gt;exec(
+    'CREATE TABLE IF NOT EXISTS relatie_demo_studenten (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        naam TEXT NOT NULL,
+        land_id INTEGER NOT NULL,
+        FOREIGN KEY (land_id) REFERENCES landen(id) ON DELETE RESTRICT
+    )'
+);
+$countries = $db-&gt;query('SELECT id, naam FROM landen ORDER BY naam')-&gt;fetchAll();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    &amp;&amp; in_array(post_text('intent'), ['create_relation', 'update_relation', 'delete_relation'], true)
+) {
+    try {
+        verify_csrf($_POST['_token'] ?? null);
+        $intent = post_text('intent');
+
+        if ($intent === 'delete_relation') {
+            $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+            $statement = $db-&gt;prepare('DELETE FROM relatie_demo_studenten WHERE id = ?');
+            $statement-&gt;execute([$id]);
+            if ($statement-&gt;rowCount() === 0) {
+                throw new RuntimeException('Student niet gevonden.');
+            }
+        } else {
+            $naam = required_text('naam', 'Naam', 80);
+            $landId = positive_id($_POST['land_id'] ?? null, 'Land');
+            $landCheck = $db-&gt;prepare('SELECT COUNT(*) FROM landen WHERE id = ?');
+            $landCheck-&gt;execute([$landId]);
+            if ((int) $landCheck-&gt;fetchColumn() !== 1) {
+                throw new RuntimeException('Kies een bestaand land.');
+            }
+
+            if ($intent === 'create_relation') {
+                $statement = $db-&gt;prepare(
+                    'INSERT INTO relatie_demo_studenten (naam, land_id) VALUES (:naam, :land_id)'
+                );
+                $statement-&gt;execute(['naam' =&gt; $naam, 'land_id' =&gt; $landId]);
+            } else {
+                $id = positive_id($_POST['id'] ?? null, 'Student-ID');
+                $statement = $db-&gt;prepare(
+                    'UPDATE relatie_demo_studenten SET naam = :naam, land_id = :land_id WHERE id = :id'
+                );
+                $statement-&gt;execute(['naam' =&gt; $naam, 'land_id' =&gt; $landId, 'id' =&gt; $id]);
+                if ($statement-&gt;rowCount() === 0) {
+                    $exists = $db-&gt;prepare('SELECT COUNT(*) FROM relatie_demo_studenten WHERE id = ?');
+                    $exists-&gt;execute([$id]);
+                    if ((int) $exists-&gt;fetchColumn() === 0) {
+                        throw new RuntimeException('Student niet gevonden.');
+                    }
+                }
+            }
+        }
+
+        flash('success', 'Relatie is opgeslagen.');
+    } catch (RuntimeException $error) {
+        flash('error', $error-&gt;getMessage());
+    } catch (PDOException $error) {
+        flash('error', 'De database kon de relatie niet opslaan.');
+    }
+    redirect('index.php#relaties');
+}
+
+// READ: JOIN vervangt het nummer door de leesbare landnaam.
+$students = $db-&gt;query(
+    'SELECT studenten.id, studenten.naam, studenten.land_id,
+            landen.naam AS land_naam
+     FROM relatie_demo_studenten AS studenten
+     JOIN landen ON landen.id = studenten.land_id
+     ORDER BY studenten.naam'
+)-&gt;fetchAll();</code></pre></div>
+              </article>
+            </div>
+
+            <div class="relation-rules">
+              <div><span>1</span><p><b>Maak eerst de ouder.</b> Een student kan pas naar een land verwijzen als dat land bestaat.</p></div>
+              <div><span>2</span><p><b>Bewaar alleen het id.</b> De landnaam haal je bij het lezen op met een <code>JOIN</code>.</p></div>
+              <div><span>3</span><p><b>Kies bewust een delete-regel.</b> Gebruik <code>RESTRICT</code> om per ongeluk gegevensverlies te voorkomen.</p></div>
+            </div>
+
+            <label class="chapter-check"><input type="checkbox" data-progress-item="relations"><span><b>Ik heb een relatie toegevoegd, gewijzigd en veilig verwijderd</b><small>Ik begrijp waar de foreign key staat en waarom de READ-query een JOIN gebruikt.</small></span></label>
           </section>
 
           <section id="snippets" class="guide-section snippet-section" data-search-title="Universele snippets login relaties uploads CSV soft delete detailpagina transacties">

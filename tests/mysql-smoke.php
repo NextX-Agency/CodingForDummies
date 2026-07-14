@@ -3,16 +3,26 @@
 declare(strict_types=1);
 
 $databaseName = 'cfd_test_' . bin2hex(random_bytes(4));
-$connection = new PDO(
-    'mysql:host=127.0.0.1;port=3306;charset=utf8mb4',
-    'root',
-    '',
-    [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ]
-);
+$host = getenv('CFD_MYSQL_HOST') ?: '127.0.0.1';
+$port = getenv('CFD_MYSQL_PORT') ?: '3306';
+$username = getenv('CFD_MYSQL_USER') ?: 'root';
+$password = getenv('CFD_MYSQL_PASSWORD') ?: '';
+
+try {
+    $connection = new PDO(
+        "mysql:host={$host};port={$port};charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]
+    );
+} catch (PDOException $exception) {
+    echo "PHP MySQL schema + CRUD: SKIP (start MySQL of stel CFD_MYSQL_* in)\n";
+    exit(0);
+}
 
 try {
     $connection->exec("CREATE DATABASE `{$databaseName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");

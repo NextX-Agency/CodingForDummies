@@ -526,6 +526,103 @@ try {
   rmSync(generatedDirectory, { recursive: true, force: true });
 }
 
+const relationLab = window.document.querySelector('[data-relation-lab]');
+if (!relationLab
+  || relationLab.querySelectorAll('.relation-student-row').length !== 3
+  || relationLab.querySelectorAll('.relation-country-row').length !== 3
+  || !window.document.getElementById('relation-html-template').textContent.includes('name="land_id"')
+  || !window.document.getElementById('relation-php-template').textContent.includes('JOIN landen ON landen.id = studenten.land_id')
+  || !window.document.getElementById('relation-php-template').textContent.includes('ON DELETE RESTRICT')) {
+  throw new Error('Het relatiehoofdstuk mist de interactieve startdata, HTML-template, JOIN of foreign-keyregel.');
+}
+
+const relationStudentForm = relationLab.querySelector('[data-relation-student-form]');
+relationStudentForm.elements.student_name.value = 'Teststudent';
+relationStudentForm.elements.country_id.value = '3';
+relationStudentForm.dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+if (relationLab.querySelectorAll('.relation-student-row').length !== 4
+  || !relationLab.querySelector('[data-relation-student-list]').textContent.includes('land_id=3')
+  || !relationLab.querySelector('[data-relation-student-list]').textContent.includes('Curaçao')) {
+  throw new Error('De relatielab kan geen nieuwe kindrij met een geldige foreign key toevoegen.');
+}
+
+const createdRelationRow = [...relationLab.querySelectorAll('.relation-student-row')]
+  .find((row) => row.textContent.includes('Teststudent'));
+createdRelationRow.querySelector('[data-relation-update-select]').value = '1';
+createdRelationRow.querySelector('[data-relation-update]').click();
+const updatedRelationRow = [...relationLab.querySelectorAll('.relation-student-row')]
+  .find((row) => row.textContent.includes('Teststudent'));
+if (!updatedRelationRow.textContent.includes('land_id=1') || !updatedRelationRow.textContent.includes('Suriname')) {
+  throw new Error('De relatielab kan een bestaande foreign key niet wijzigen.');
+}
+
+const surinameRow = [...relationLab.querySelectorAll('.relation-country-row')]
+  .find((row) => row.textContent.includes('Suriname'));
+surinameRow.querySelector('[data-relation-delete-country]').click();
+if (!relationLab.querySelector('[data-relation-status]').textContent.includes('nog gekoppeld')
+  || !relationLab.querySelector('[data-relation-country-list]').textContent.includes('Suriname')) {
+  throw new Error('ON DELETE RESTRICT wordt niet zichtbaar nagebootst in de relatielab.');
+}
+
+updatedRelationRow.querySelector('[data-relation-delete-student]').click();
+if (relationLab.querySelector('[data-relation-student-list]').textContent.includes('Teststudent')) {
+  throw new Error('De relatielab kan een kindrij niet verwijderen.');
+}
+relationLab.querySelector('[data-relation-reset]').click();
+
+const relationPhpTemplate = window.document.getElementById('relation-php-template').textContent;
+const relationTemplateDirectory = mkdtempSync(join(tmpdir(), 'cfd-relation-template-'));
+try {
+  const relationDatabase = join(relationTemplateDirectory, 'relation.sqlite').replaceAll('\\', '\\\\');
+  const helpers = `<?php
+declare(strict_types=1);
+session_start();
+function post_text(string $key): string { return trim((string) ($_POST[$key] ?? '')); }
+function required_text(string $key, string $label, int $maxLength = 120): string {
+  $value = post_text($key);
+  if ($value === '' || strlen($value) > $maxLength) throw new RuntimeException($label . ' is ongeldig.');
+  return $value;
+}
+function positive_id(mixed $value, string $label = 'ID'): int {
+  $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+  if ($id === false) throw new RuntimeException($label . ' is ongeldig.');
+  return (int) $id;
+}
+function verify_csrf(mixed $token): void { if ($token !== 'test-token') throw new RuntimeException('CSRF'); }
+function flash(string $type, string $message): void {}
+function redirect(string $location): never { exit(0); }
+$db = new PDO('sqlite:${relationDatabase}');
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$db->exec('PRAGMA foreign_keys = ON');
+$db->exec('CREATE TABLE IF NOT EXISTS landen (id INTEGER PRIMARY KEY, naam TEXT NOT NULL)');
+$db->exec("INSERT OR IGNORE INTO landen (id, naam) VALUES (1, 'Suriname'), (2, 'Nederland')");
+`;
+  const templateBody = relationPhpTemplate.replace(/^<\?php\s*/, '');
+  const runRelationTemplate = (filename, method, post = {}, printRows = false) => {
+    const phpPost = Object.entries(post).map(([key, value]) => `${JSON.stringify(key)} => ${JSON.stringify(value)}`).join(', ');
+    const source = `${helpers}\n$_SERVER['REQUEST_METHOD'] = '${method}';\n$_POST = [${phpPost}];\n${templateBody}\n${printRows ? 'echo json_encode($students);' : ''}`;
+    const file = join(relationTemplateDirectory, filename);
+    writeFileSync(file, source, 'utf8');
+    execFileSync('php', ['-l', file], { stdio: 'pipe' });
+    return execFileSync('php', [file], { encoding: 'utf8' });
+  };
+  runRelationTemplate('create.php', 'POST', { _token: 'test-token', intent: 'create_relation', naam: 'Relatietest', land_id: '1' });
+  if (!runRelationTemplate('read.php', 'GET', {}, true).includes('Relatietest')) {
+    throw new Error('De PHP-relatietemplate kan een gekoppelde rij niet maken of via JOIN lezen.');
+  }
+  runRelationTemplate('update.php', 'POST', { _token: 'test-token', intent: 'update_relation', id: '1', naam: 'Gewijzigde relatietest', land_id: '2' });
+  const updatedRelationJson = runRelationTemplate('read-updated.php', 'GET', {}, true);
+  if (!updatedRelationJson.includes('Gewijzigde relatietest') || !updatedRelationJson.includes('Nederland')) {
+    throw new Error('De PHP-relatietemplate kan de foreign key niet wijzigen.');
+  }
+  runRelationTemplate('delete.php', 'POST', { _token: 'test-token', intent: 'delete_relation', id: '1' });
+  if (runRelationTemplate('read-deleted.php', 'GET', {}, true).includes('Gewijzigde relatietest')) {
+    throw new Error('De PHP-relatietemplate kan een kindrij niet verwijderen.');
+  }
+} finally {
+  rmSync(relationTemplateDirectory, { recursive: true, force: true });
+}
+
 const phpFilter = window.document.querySelector('[data-snippet-filter="php"]');
 phpFilter.click();
 const wrongSnippetVisible = [...window.document.querySelectorAll('.snippet-item')]
@@ -641,7 +738,7 @@ if (sqliteRoute.getAttribute('aria-pressed') !== 'true' || window.document.query
 if (window.document.querySelector('#database').hidden || !window.document.querySelector('#mysql-route').hidden || !window.document.querySelector('#javascript-route').hidden) {
   throw new Error('Routefocus toont niet alleen de PHP + SQLite-hoofdstukken.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '9') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '10') {
   throw new Error('De voortgang is niet aangepast aan PHP + SQLite.');
 }
 if (stack.value !== 'php-sqlite'
@@ -663,7 +760,7 @@ javascriptRoute.click();
 if (!window.document.querySelector('#xampp').hidden || window.document.querySelector('#javascript-route').hidden) {
   throw new Error('De JavaScript-route filtert de PHP-hoofdstukken niet goed.');
 }
-if (window.document.querySelector('[data-progress-total]').textContent !== '6' || stack.value !== 'js-sqlite') {
+if (window.document.querySelector('[data-progress-total]').textContent !== '7' || stack.value !== 'js-sqlite') {
   throw new Error('JavaScript-voortgang of buildertechniek is niet routespecifiek.');
 }
 if (window.document.querySelector('[data-frontend-panel="js"]').hidden) {
@@ -709,6 +806,8 @@ if (window.document.documentElement.lang !== 'en'
   || window.document.querySelector('[data-reset-builder]').textContent !== 'Restore product example'
   || window.document.querySelector('[data-download-builder]').textContent !== 'Download file'
   || !window.document.querySelector('[data-builder-csrf-option]').textContent.includes('Optional for PHP')
+  || relationLab.querySelector('[data-relation-update]').textContent !== 'Save'
+  || relationLab.querySelector('[data-relation-delete-country]').textContent !== 'Remove'
   || ![...window.document.querySelector('[data-field-key="type"]').options].some((option) => option.textContent === 'Long text')
   || window.localStorage.getItem('cfd-language') !== 'en'
   || englishButton.getAttribute('aria-pressed') !== 'true') {
@@ -718,6 +817,7 @@ dutchButton.click();
 await new Promise((resolve) => window.setTimeout(resolve, 0));
 if (window.document.documentElement.lang !== 'nl'
   || !window.document.querySelector('.hero-copy').textContent.includes('Van lege map')
+  || relationLab.querySelector('[data-relation-update]').textContent !== 'Opslaan'
   || !window.document.querySelector('[data-builder-test-title]').textContent.includes('app in één bestand')) {
   throw new Error('De Nederlandse taalversie kan niet volledig worden hersteld.');
 }

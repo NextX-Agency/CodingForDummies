@@ -205,6 +205,7 @@ function applyLanguage(language, updateUrl = true) {
     entry.text = entry.element.textContent.replace(/\s+/g, " ").trim();
   });
   $("[data-crud-builder]")?.refreshLanguage?.();
+  $("[data-relation-lab]")?.refreshLanguage?.();
   if (activeRoute && routeDefinitions[activeRoute]) updateRouteDownloads(routeDefinitions[activeRoute]);
   applyTheme(document.documentElement.dataset.theme || "light");
   localStorage.setItem("cfd-language", activeLanguage);
@@ -2815,6 +2816,171 @@ if (phpMap) {
 
   anatomyButtons.forEach((button) => button.addEventListener("click", () => renderPhpAnatomy(button.dataset.anatomyFile)));
   renderPhpAnatomy("index");
+}
+
+const relationLab = $("[data-relation-lab]");
+if (relationLab) {
+  const initialCountries = [
+    { id: 1, name: "Suriname" },
+    { id: 2, name: "Nederland" },
+    { id: 3, name: "Curaçao" }
+  ];
+  const initialStudents = [
+    { id: 1, name: "Aisha", countryId: 1 },
+    { id: 2, name: "Noah", countryId: 2 },
+    { id: 3, name: "Ravi", countryId: 1 }
+  ];
+  let countries = initialCountries.map((country) => ({ ...country }));
+  let students = initialStudents.map((student) => ({ ...student }));
+  let nextCountryId = 4;
+  let nextStudentId = 4;
+
+  const studentForm = $("[data-relation-student-form]", relationLab);
+  const countryForm = $("[data-relation-country-form]", relationLab);
+  const countrySelect = $("[data-relation-country-select]", relationLab);
+  const studentList = $("[data-relation-student-list]", relationLab);
+  const countryList = $("[data-relation-country-list]", relationLab);
+  const studentTemplate = $("[data-relation-student-template]", relationLab);
+  const countryTemplate = $("[data-relation-country-template]", relationLab);
+  const status = $("[data-relation-status]", relationLab);
+
+  function setRelationStatus(message, isError = false) {
+    status.textContent = translatedText(message);
+    status.classList.toggle("is-error", isError);
+  }
+
+  function relationCount(count, singularNl, pluralNl, singularEn, pluralEn) {
+    if (activeLanguage === "en") return `${count} ${count === 1 ? singularEn : pluralEn}`;
+    return `${count} ${count === 1 ? singularNl : pluralNl}`;
+  }
+
+  function fillCountrySelect(select, selectedId = null) {
+    select.replaceChildren();
+    if (countries.length === 0) {
+      const option = document.createElement("option");
+      option.textContent = translatedText("Voeg eerst een land toe");
+      option.disabled = true;
+      option.selected = true;
+      select.append(option);
+      return;
+    }
+    countries.forEach((country) => {
+      const option = document.createElement("option");
+      option.value = String(country.id);
+      option.textContent = country.name;
+      option.selected = country.id === selectedId;
+      select.append(option);
+    });
+  }
+
+  function renderRelationLab() {
+    fillCountrySelect(countrySelect);
+    studentForm.querySelector('button[type="submit"]').disabled = countries.length === 0;
+    studentList.replaceChildren();
+    countryList.replaceChildren();
+
+    if (students.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "relation-empty";
+      empty.textContent = translatedText("Nog geen studenten. Voeg hierboven de eerste rij toe.");
+      studentList.append(empty);
+    }
+
+    students.forEach((student) => {
+      const country = countries.find((item) => item.id === student.countryId);
+      const row = studentTemplate.content.firstElementChild.cloneNode(true);
+      $("[data-relation-student-name]", row).textContent = student.name;
+      $("[data-relation-student-key]", row).textContent = `land_id=${student.countryId}`;
+      $("[data-relation-student-country]", row).textContent = country?.name || translatedText("Onbekend land");
+      const updateSelect = $("[data-relation-update-select]", row);
+      fillCountrySelect(updateSelect, student.countryId);
+      $("[data-relation-update]", row).addEventListener("click", () => {
+        student.countryId = Number(updateSelect.value);
+        setRelationStatus("De koppeling van de student is gewijzigd.");
+        renderRelationLab();
+      });
+      $("[data-relation-delete-student]", row).addEventListener("click", () => {
+        students = students.filter((item) => item.id !== student.id);
+        setRelationStatus("Student en bijbehorende koppeling verwijderd.");
+        renderRelationLab();
+      });
+      studentList.append(row);
+    });
+
+    countries.forEach((country) => {
+      const usage = students.filter((student) => student.countryId === country.id).length;
+      const row = countryTemplate.content.firstElementChild.cloneNode(true);
+      $("[data-relation-country-name]", row).textContent = country.name;
+      $("[data-relation-country-key]", row).textContent = `id=${country.id}`;
+      $("[data-relation-usage]", row).textContent = relationCount(usage, "student", "studenten", "student", "students");
+      const deleteButton = $("[data-relation-delete-country]", row);
+      deleteButton.classList.toggle("is-blocked", usage > 0);
+      deleteButton.title = usage > 0 ? translatedText("Nog in gebruik: ON DELETE RESTRICT blokkeert verwijderen.") : "";
+      deleteButton.addEventListener("click", () => {
+        if (usage > 0) {
+          setRelationStatus("Dit land is nog gekoppeld aan een student. Wijzig of verwijder die student eerst.", true);
+          return;
+        }
+        countries = countries.filter((item) => item.id !== country.id);
+        setRelationStatus("Land verwijderd.");
+        renderRelationLab();
+      });
+      countryList.append(row);
+    });
+
+    $("[data-relation-student-count]", relationLab).textContent = relationCount(students.length, "rij", "rijen", "row", "rows");
+    $("[data-relation-country-count]", relationLab).textContent = relationCount(countries.length, "rij", "rijen", "row", "rows");
+  }
+
+  studentForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const values = new FormData(studentForm);
+    const name = String(values.get("student_name") || "").trim();
+    const countryId = Number(values.get("country_id"));
+    if (!name || !countries.some((country) => country.id === countryId)) {
+      setRelationStatus("Vul een naam in en kies een bestaand land.", true);
+      return;
+    }
+    students.push({ id: nextStudentId, name, countryId });
+    nextStudentId += 1;
+    studentForm.reset();
+    setRelationStatus("Student toegevoegd en aan het gekozen land gekoppeld.");
+    renderRelationLab();
+  });
+
+  countryForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const values = new FormData(countryForm);
+    const name = String(values.get("country_name") || "").trim();
+    if (!name) {
+      setRelationStatus("Vul eerst een landnaam in.", true);
+      return;
+    }
+    if (countries.some((country) => country.name.toLocaleLowerCase("nl") === name.toLocaleLowerCase("nl"))) {
+      setRelationStatus("Dit land staat al in de oudertabel.", true);
+      return;
+    }
+    countries.push({ id: nextCountryId, name });
+    nextCountryId += 1;
+    countryForm.reset();
+    setRelationStatus("Land toegevoegd; het is nu beschikbaar in de keuzelijsten.");
+    renderRelationLab();
+  });
+
+  $("[data-relation-reset]", relationLab).addEventListener("click", () => {
+    countries = initialCountries.map((country) => ({ ...country }));
+    students = initialStudents.map((student) => ({ ...student }));
+    nextCountryId = 4;
+    nextStudentId = 4;
+    setRelationStatus("Voorbeeld hersteld.");
+    renderRelationLab();
+  });
+
+  relationLab.refreshLanguage = () => {
+    renderRelationLab();
+    translateSubtree(relationLab);
+  };
+  renderRelationLab();
 }
 
 // Pas de gekozen taal pas toe nadat alle interactieve uitlegblokken zijn opgebouwd.

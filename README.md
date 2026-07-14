@@ -12,6 +12,8 @@ Iedere route heeft een downloadbare studentenadministratie met een gekoppeld lan
 
 De gids bevat daarnaast een frontendwerkbank die HTML, CSS en functionaliteit bestand voor bestand koppelt. De interactieve CRUD-builder laat Create, Read, Update en Delete afzonderlijk kiezen, gebruikt gevalideerde PHP-datatypes zoals `int`, `float`, `bool` en `string`, en opent direct met één complete testbare PHP- of JavaScript-app. Daarna zijn losse SQL-, HTML-, CSS-, backend- en browserbestanden beschikbaar om te kopiëren of downloaden. De snippetbibliotheek bevat zeventien complete recepten, waaronder relaties, detailpagina's, login, uploads, CSV, soft delete, transacties, gebruikersbeheer-CRUD, rollen, profielinstellingen, zoeken, paginering, bulkacties en een activiteitenlog. De interface ondersteunt Nederlands, English, light mode en dark mode.
 
+Het hoofdstuk **CRUD-relaties** maakt de koppeling tussen `landen.id` en `studenten.land_id` zichtbaar. Een interactieve oefening demonstreert Create, een JOIN bij Read, het wijzigen van een foreign key en `ON DELETE RESTRICT`. Bij het hoofdstuk staan op elkaar afgestemde HTML/PHP- en PHP/SQL-templates plus een download van het complete relatieproject.
+
 ## Gids lokaal starten
 
 ```bash
