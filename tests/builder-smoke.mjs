@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const script = readFileSync(new URL('../script.js', import.meta.url), 'utf8');
-const styles = readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../advanced.html', import.meta.url), 'utf8');
+const script = readFileSync(new URL('../advanced.js', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../advanced.css', import.meta.url), 'utf8');
 const englishLocale = readFileSync(new URL('../public/translations-en.js', import.meta.url), 'utf8');
 const phpStarter = readFileSync(new URL('../public/code/index.php.txt', import.meta.url), 'utf8');
 const jsServerStarter = readFileSync(new URL('../public/code/js-server.js.txt', import.meta.url), 'utf8');

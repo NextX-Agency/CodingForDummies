@@ -11,6 +11,7 @@ const errors = [];
 const assert = (condition, message) => { if (!condition) errors.push(message); };
 
 assert(existsSync(indexPath), 'dist/index.html ontbreekt.');
+assert(existsSync(join(dist, 'advanced.html')), 'dist/advanced.html ontbreekt.');
 if (existsSync(indexPath)) {
   const html = readFileSync(indexPath, 'utf8');
   const document = new JSDOM(html).window.document;
@@ -32,6 +33,9 @@ if (existsSync(indexPath)) {
 for (const required of [
   '404.html', '404.css', 'theme-init.js', 'site.webmanifest', 'og.png', 'robots.txt', 'sitemap.xml',
   'downloads/studenten-crud.zip', 'downloads/php-mysql-crud.zip', 'downloads/javascript-sqlite-crud.zip',
+  'downloads/beginner-website-template.zip',
+  'templates/beginner-site/index.html', 'templates/beginner-site/style.css',
+  'templates/beginner-site/script.js', 'templates/beginner-site/README.md',
 ]) {
   assert(existsSync(join(dist, required)), `Publiek releasebestand ontbreekt in dist: ${required}`);
 }

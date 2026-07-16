@@ -130,8 +130,8 @@ assert(
 
 const sitemap = read('public/sitemap.xml');
 assert(sitemap.includes('https://www.codingfordommies.quest/</loc>'), 'Nederlandse hoofd-URL ontbreekt in sitemap.');
-assert(sitemap.includes('/?lang=en</loc>'), 'Engelse URL ontbreekt in sitemap.');
-assert(!sitemap.includes('?lang=nl'), 'Sitemap bevat een overbodige Nederlandse query-URL.');
+assert(sitemap.includes('/advanced</loc>'), 'Gevorderde pagina ontbreekt in sitemap.');
+assert(!sitemap.includes('?lang='), 'Sitemap bevat nog een oude taal-query-URL.');
 assert(read('public/robots.txt').includes('https://www.codingfordommies.quest/sitemap.xml'), 'robots.txt verwijst niet naar de sitemap.');
 
 if (errors.length) {
