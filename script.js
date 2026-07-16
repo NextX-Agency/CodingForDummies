@@ -61,12 +61,18 @@ const englishTranslations = {
   "Wat wil je nu doen?": "What do you want to do now?",
   "Ik begin vanaf nul": "I am starting from scratch",
   "Volg de gids stap voor stap.": "Follow the guide step by step.",
+  "Ik bouw de voorkant": "I am building the frontend",
+  "Vind HTML, CSS, nav, hero en footer.": "Find HTML, CSS, navigation, hero and footer.",
   "Ik wil mijn eigen CRUD": "I want my own CRUD",
   "Gebruik de generator voor je eigen onderwerp.": "Use the generator for your own subject.",
   "Ik zoek één functie": "I need one feature",
   "Kies in gewone woorden wat je wilt toevoegen.": "Choose in plain words what you want to add.",
   "Mijn code geeft een fout": "My code shows an error",
   "Zoek op een woord uit de foutmelding.": "Search for a word from the error message.",
+  "Of bekijk de hele gids": "Or view the full guide",
+  "← Kies een ander doel": "← Choose another goal",
+  "Je bekijkt nu": "You are now viewing",
+  "Toon alles": "Show everything",
   "Basis · volg deze volgorde": "Basics · follow this order",
   "Extra · open wanneer nodig": "Extras · open when needed",
   "Complete bestanden": "Complete files",
@@ -2282,6 +2288,11 @@ const routeResult = $("[data-route-result]");
 const routeFocus = $("[data-route-focus]");
 const routeSections = $$('[data-route-section]');
 const routeLinks = $$('[data-route-link]');
+const allGuideSections = $$('.guide-section');
+const guideFocusToolbar = $("[data-guide-focus-toolbar]");
+const chapterSelect = $("[data-chapter-select]");
+let activeChapterId = null;
+let fullGuideEnabled = false;
 
 function routeMatches(element, routeKey) {
   return element.dataset.routeSection?.split(" ").includes(routeKey)
@@ -2290,14 +2301,77 @@ function routeMatches(element, routeKey) {
 
 function applyRouteFocus() {
   const shouldFocus = Boolean(activeRoute && routeFocus?.checked);
-  routeSections.forEach((section) => {
-    section.hidden = shouldFocus && !routeMatches(section, activeRoute);
+  allGuideSections.forEach((section) => {
+    const hiddenByChapter = Boolean(activeChapterId && section.id !== activeChapterId);
+    const hiddenByRoute = Boolean(
+      shouldFocus
+      && !fullGuideEnabled
+      && !activeChapterId
+      && section.hasAttribute("data-route-section")
+      && !routeMatches(section, activeRoute)
+    );
+    section.hidden = hiddenByChapter || hiddenByRoute;
   });
   routeLinks.forEach((link) => {
-    link.hidden = shouldFocus && !routeMatches(link, activeRoute);
+    link.hidden = shouldFocus && !fullGuideEnabled && !routeMatches(link, activeRoute);
   });
-  document.body.classList.toggle("route-focused", shouldFocus);
+  document.body.classList.toggle("route-focused", shouldFocus && !fullGuideEnabled);
   updateProgress();
+}
+
+function showFocusedChapter(chapterId, { scroll = true } = {}) {
+  const chapter = document.getElementById(chapterId);
+  if (!chapter?.classList.contains("guide-section")) return;
+
+  activeChapterId = chapterId;
+  fullGuideEnabled = false;
+  document.body.classList.remove("simple-home", "full-guide");
+  document.body.classList.add("simple-guide-active");
+  if (guideFocusToolbar) guideFocusToolbar.hidden = false;
+  if (chapterSelect) chapterSelect.value = chapterId;
+  applyRouteFocus();
+
+  if (window.location.hash !== `#${chapterId}`) history.pushState(null, "", `#${chapterId}`);
+  if (scroll) window.setTimeout(() => chapter.scrollIntoView({ behavior: "smooth", block: "start" }), 20);
+}
+
+function showGuideHome() {
+  activeChapterId = null;
+  fullGuideEnabled = false;
+  document.body.classList.remove("simple-guide-active", "full-guide");
+  document.body.classList.add("simple-home");
+  if (guideFocusToolbar) guideFocusToolbar.hidden = true;
+  applyRouteFocus();
+  history.pushState(null, "", `${window.location.pathname}${window.location.search}`);
+  $(".start-overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function showFullGuide() {
+  activeChapterId = null;
+  fullGuideEnabled = true;
+  document.body.classList.remove("simple-home", "simple-guide-active");
+  document.body.classList.add("full-guide");
+  if (guideFocusToolbar) guideFocusToolbar.hidden = true;
+  applyRouteFocus();
+  $("#bouwroute")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.addEventListener("click", (event) => {
+  const chapterLink = event.target.closest('a[href^="#"]');
+  if (!chapterLink) return;
+  const chapterId = decodeURIComponent(chapterLink.getAttribute("href").slice(1));
+  if (!document.getElementById(chapterId)?.classList.contains("guide-section")) return;
+  event.preventDefault();
+  showFocusedChapter(chapterId);
+});
+
+chapterSelect?.addEventListener("change", () => showFocusedChapter(chapterSelect.value));
+$("[data-guide-home]")?.addEventListener("click", showGuideHome);
+$$('[data-show-full-guide]').forEach((button) => button.addEventListener("click", showFullGuide));
+
+const requestedChapter = decodeURIComponent(window.location.hash.slice(1));
+if (document.getElementById(requestedChapter)?.classList.contains("guide-section")) {
+  showFocusedChapter(requestedChapter, { scroll: false });
 }
 
 function renderPersonalRoute(route) {

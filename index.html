@@ -59,7 +59,7 @@
       }
     </script>
   </head>
-  <body>
+  <body class="simple-home">
     <a class="skip-link" href="#main-content">Ga direct naar de inhoud</a>
     <noscript><div class="noscript-notice">JavaScript staat uit. De uitleg en code blijven leesbaar, maar de builder, zoekfunctie en interactieve voorbeelden werken dan niet.</div></noscript>
     <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
@@ -131,13 +131,41 @@
 
       <nav class="start-overview" aria-label="Kies wat je nu wilt doen">
         <div class="start-overview-heading"><span>Snel naar de juiste plek</span><b>Wat wil je nu doen?</b></div>
-        <a href="#begin"><span>01</span><div><b>Ik begin vanaf nul</b><small>Volg de gids stap voor stap.</small></div><i>→</i></a>
-        <a href="#builder"><span>02</span><div><b>Ik wil mijn eigen CRUD</b><small>Gebruik de generator voor je eigen onderwerp.</small></div><i>→</i></a>
-        <a href="#snippets"><span>03</span><div><b>Ik zoek één functie</b><small>Kies in gewone woorden wat je wilt toevoegen.</small></div><i>→</i></a>
-        <a href="#foutzoeker"><span>04</span><div><b>Mijn code geeft een fout</b><small>Zoek op een woord uit de foutmelding.</small></div><i>→</i></a>
+        <a href="#begin" data-guide-start="begin"><span>01</span><div><b>Ik begin vanaf nul</b><small>Volg de gids stap voor stap.</small></div><i>→</i></a>
+        <a href="#frontend-koppelen" data-guide-start="frontend-koppelen"><span>02</span><div><b>Ik bouw de voorkant</b><small>Vind HTML, CSS, nav, hero en footer.</small></div><i>→</i></a>
+        <a href="#snippets" data-guide-start="snippets"><span>03</span><div><b>Ik zoek één functie</b><small>Kies in gewone woorden wat je wilt toevoegen.</small></div><i>→</i></a>
+        <a href="#foutzoeker" data-guide-start="foutzoeker"><span>04</span><div><b>Mijn code geeft een fout</b><small>Zoek op een woord uit de foutmelding.</small></div><i>→</i></a>
+        <button type="button" class="show-full-guide" data-show-full-guide>Of bekijk de hele gids</button>
       </nav>
 
       <div class="guide-layout" id="bouwroute">
+        <div class="guide-focus-toolbar" data-guide-focus-toolbar hidden>
+          <button type="button" data-guide-home>← Kies een ander doel</button>
+          <label for="chapter-select"><span>Je bekijkt nu</span><select id="chapter-select" data-chapter-select>
+            <optgroup label="Basis">
+              <option value="begin">Begin hier</option>
+              <option value="stack">Kies je stack</option>
+              <option value="xampp">XAMPP klaarzetten</option>
+              <option value="mappen">Projectmap maken</option>
+              <option value="frontend-koppelen">HTML + CSS koppelen</option>
+              <option value="database">SQLite koppelen</option>
+              <option value="mysql-route">MySQL koppelen</option>
+              <option value="crud">PHP CRUD bouwen</option>
+              <option value="codebank">Complete PHP-bestanden</option>
+              <option value="javascript-route">JavaScript-route</option>
+            </optgroup>
+            <optgroup label="Extra wanneer nodig">
+              <option value="builder">CRUD-builder</option>
+              <option value="relaties">CRUD-relaties</option>
+              <option value="boekingen">Booking-snippets</option>
+              <option value="snippets">Snippetbibliotheek</option>
+              <option value="uitbreiden">Uitbreiden</option>
+              <option value="eigen-maken">Eigen thema</option>
+              <option value="foutzoeker">Foutzoeker</option>
+            </optgroup>
+          </select></label>
+          <button type="button" data-show-full-guide>Toon alles</button>
+        </div>
         <aside class="guide-sidebar" aria-label="Hoofdstukken">
           <div class="sidebar-progress">
             <div><span>Jouw voortgang</span><strong><span data-progress-count>0</span>/<span data-progress-total>11</span></strong></div>

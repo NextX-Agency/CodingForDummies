@@ -123,8 +123,22 @@ kbd { display: inline-block; padding: 1px 5px; border: 1px solid #c9cbc8; backgr
 .start-overview > a b { font-size: 12px; }
 .start-overview > a small { color: var(--muted); font-size: 9px; }
 .start-overview > a i { color: var(--blue); font-style: normal; }
+.show-full-guide { grid-column: 1 / -1; justify-self: end; margin-top: 12px; padding: 7px 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--muted); font-size: 10px; font-weight: 700; cursor: pointer; }
+.show-full-guide:hover { color: var(--blue); }
+.simple-home .guide-layout { display: none; }
+.simple-home .start-overview { padding-bottom: 90px; }
 
 .guide-layout { display: grid; grid-template-columns: 270px minmax(0, 930px); gap: clamp(50px, 7vw, 110px); justify-content: center; width: min(1400px, 92vw); margin: 0 auto; padding: 85px 0 130px; }
+.guide-focus-toolbar { grid-column: 1 / -1; display: grid; grid-template-columns: auto minmax(260px, 1fr) auto; gap: 18px; padding: 14px; align-items: center; border: 1px solid var(--line); background: var(--white); box-shadow: var(--shadow); }
+.guide-focus-toolbar > button { padding: 9px 11px; border: 0; background: transparent; color: var(--blue); font-size: 10px; font-weight: 700; cursor: pointer; }
+.guide-focus-toolbar > button:last-child { border: 1px solid #b7bdc6; color: var(--ink); }
+.guide-focus-toolbar label { display: grid; grid-template-columns: auto minmax(190px, 1fr); gap: 10px; align-items: center; }
+.guide-focus-toolbar label span { color: var(--muted); font: 700 8px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.guide-focus-toolbar select { width: 100%; min-height: 39px; padding: 0 34px 0 11px; border: 1px solid #aeb6c2; background: var(--paper); color: var(--ink); font-size: 11px; font-weight: 700; }
+.simple-guide-active .guide-layout { grid-template-columns: minmax(0, 930px); gap: 28px; width: min(930px, 92vw); padding-top: 45px; }
+.simple-guide-active .guide-sidebar { display: none; }
+.simple-guide-active .guide-content { grid-column: 1; }
+.simple-guide-active .guide-section { padding-top: 15px; }
 .guide-sidebar { position: sticky; top: 110px; align-self: start; max-height: calc(100vh - 130px); overflow-y: auto; scrollbar-width: thin; }
 .sidebar-progress { padding: 16px 0 20px; border-bottom: 1px solid var(--line); }
 .sidebar-progress > div:first-child { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 11px; }
@@ -1093,6 +1107,9 @@ kbd { display: inline-block; padding: 1px 5px; border: 1px solid #c9cbc8; backgr
   .start-overview > a:nth-of-type(3) { border-left: 1px solid var(--line); }
   .snippet-start-here { grid-template-columns: 1fr; }
   .guide-layout { display: block; width: min(92vw, 850px); padding-top: 65px; }
+  .simple-guide-active .guide-layout { width: min(92vw, 850px); padding-top: 40px; }
+  .guide-focus-toolbar { grid-template-columns: 1fr auto; margin-bottom: 28px; }
+  .guide-focus-toolbar > button:first-child { grid-column: 1 / -1; justify-self: start; padding-left: 0; }
   .guide-sidebar { position: static; display: grid; grid-template-columns: 1fr auto; gap: 20px; max-height: none; margin-bottom: 70px; overflow: visible; }
   .sidebar-route, .beginner-mode-toggle { margin-top: 0; }
   .chapter-nav { display: none; }
@@ -1141,6 +1158,10 @@ kbd { display: inline-block; padding: 1px 5px; border: 1px solid #c9cbc8; backgr
   .start-overview-heading { display: grid; gap: 2px; }
   .start-overview > a, .start-overview > a:nth-of-type(2), .start-overview > a:nth-of-type(3) { border-right: 1px solid var(--line); border-left: 1px solid var(--line); }
   .guide-sidebar { grid-template-columns: 1fr; }
+  .guide-focus-toolbar { grid-template-columns: 1fr; }
+  .guide-focus-toolbar > button:first-child { grid-column: auto; }
+  .guide-focus-toolbar label { grid-template-columns: 1fr; }
+  .guide-focus-toolbar > button { justify-self: stretch; }
   .sidebar-download { display: none; }
   .guide-section { padding-bottom: 80px; }
   .guide-section + .guide-section { padding-top: 80px; }

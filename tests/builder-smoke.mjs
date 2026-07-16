@@ -758,6 +758,29 @@ if (startOverviewLinks.length !== 4
   throw new Error('Het vereenvoudigde startoverzicht of de scheiding tussen basis en extra ontbreekt.');
 }
 
+if (!window.document.body.classList.contains('simple-home')) {
+  throw new Error('De rustige doelkeuze is niet de standaardweergave.');
+}
+startOverviewLinks.find((link) => link.dataset.guideStart === 'frontend-koppelen').click();
+const visibleFocusedSections = [...window.document.querySelectorAll('.guide-section')].filter((section) => !section.hidden);
+if (!window.document.body.classList.contains('simple-guide-active')
+  || visibleFocusedSections.length !== 1
+  || visibleFocusedSections[0].id !== 'frontend-koppelen'
+  || window.document.querySelector('[data-guide-focus-toolbar]').hidden) {
+  throw new Error('Een doelkeuze toont niet precies het gekozen hoofdstuk.');
+}
+const chapterSelect = window.document.querySelector('[data-chapter-select]');
+chapterSelect.value = 'snippets';
+chapterSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
+if (window.document.querySelector('#snippets').hidden || !window.document.querySelector('#frontend-koppelen').hidden) {
+  throw new Error('De compacte hoofdstukkeuze wisselt niet tussen onderdelen.');
+}
+window.document.querySelector('[data-guide-home]').click();
+if (!window.document.body.classList.contains('simple-home')) throw new Error('Terugkeren naar de rustige doelkeuze werkt niet.');
+window.document.querySelector('[data-show-full-guide]').click();
+if (!window.document.body.classList.contains('full-guide')) throw new Error('De volledige gids kan niet worden geopend.');
+window.document.querySelector('[data-guide-home]').click();
+
 const quickSnippetButtons = [...window.document.querySelectorAll('[data-quick-snippet]')];
 if (quickSnippetButtons.length !== 6) throw new Error('De zes snelle snippetkeuzes ontbreken.');
 quickSnippetButtons.find((button) => button.dataset.quickSnippet === 'snippet-search-filter').click();
