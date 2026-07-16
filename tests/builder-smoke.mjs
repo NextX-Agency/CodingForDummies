@@ -4,9 +4,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
-const html = readFileSync(new URL('../advanced.html', import.meta.url), 'utf8');
-const script = readFileSync(new URL('../advanced.js', import.meta.url), 'utf8');
-const styles = readFileSync(new URL('../advanced.css', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const script = readFileSync(new URL('../script.js', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
 const englishLocale = readFileSync(new URL('../public/translations-en.js', import.meta.url), 'utf8');
 const phpStarter = readFileSync(new URL('../public/code/index.php.txt', import.meta.url), 'utf8');
 const jsServerStarter = readFileSync(new URL('../public/code/js-server.js.txt', import.meta.url), 'utf8');
@@ -749,6 +749,29 @@ const snippetPickButtons = [...window.document.querySelectorAll('[data-snippet-p
 if (snippetPickButtons.length !== snippetRecipes.length
   || snippetPickButtons.some((button) => !window.document.getElementById(button.dataset.snippetPick))) {
   throw new Error('De gewone-taal functiekiezer maakt niet ieder snippetrecept vindbaar.');
+}
+
+const startOverviewLinks = [...window.document.querySelectorAll('.start-overview a')];
+if (startOverviewLinks.length !== 4
+  || startOverviewLinks.some((link) => !window.document.querySelector(link.getAttribute('href')))
+  || window.document.querySelectorAll('.chapter-group').length !== 2) {
+  throw new Error('Het vereenvoudigde startoverzicht of de scheiding tussen basis en extra ontbreekt.');
+}
+
+const quickSnippetButtons = [...window.document.querySelectorAll('[data-quick-snippet]')];
+if (quickSnippetButtons.length !== 6) throw new Error('De zes snelle snippetkeuzes ontbreken.');
+quickSnippetButtons.find((button) => button.dataset.quickSnippet === 'snippet-search-filter').click();
+if (!window.document.getElementById('snippet-search-filter').closest('.snippet-item').open) {
+  throw new Error('Een snelle snippetkeuze opent niet het bijbehorende bestaande recept.');
+}
+
+const appkitDetails = window.document.querySelector('details.appkit-details');
+if (!appkitDetails || appkitDetails.open || !appkitDetails.querySelector('#app-core-files')) {
+  throw new Error('De complete appstructuur staat niet overzichtelijk ingeklapt.');
+}
+
+for (const templateId of ['simple-nav-template', 'simple-hero-template', 'simple-footer-template', 'simple-components-css']) {
+  if (!window.document.getElementById(templateId)) throw new Error(`Eenvoudige componenttemplate ontbreekt: ${templateId}.`);
 }
 
 for (const recipe of snippetRecipes) {

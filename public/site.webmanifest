@@ -1,13 +1,13 @@
 {
-  "name": "CodingForDommies — Simpele code",
+  "name": "CodingForDommies — CRUD-gids",
   "short_name": "CodingForDommies",
-  "description": "Eenvoudige HTML-, CSS- en JavaScript-snippets met een complete beginnerstemplate.",
+  "description": "Complete CRUD-gids met builder, appkern, relaties, 65 snippets, bookingpakket en geteste starters.",
   "lang": "nl",
   "start_url": "/",
   "scope": "/",
   "display": "minimal-ui",
-  "background_color": "#fffaf0",
-  "theme_color": "#3457d5",
+  "background_color": "#f3f0e8",
+  "theme_color": "#10233f",
   "categories": ["education", "developer tools"],
   "icons": [
     {
